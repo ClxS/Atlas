@@ -1,7 +1,7 @@
 #pragma once
 #include <filesystem>
 
-namespace cpp_conv::tools::utility
+namespace atlas::tools::utility
 {
     class TemporaryFile
     {

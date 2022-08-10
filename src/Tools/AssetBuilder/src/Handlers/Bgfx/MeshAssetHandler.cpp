@@ -63,7 +63,7 @@ std::variant<std::vector<OutputArtifact>, ErrorString> MeshAssetHandler::Cook(co
 
     auto metadata = std::get<0>(metadataResult);
 
-    cpp_conv::tools::utility::TemporaryFile tempBinFile;
+    atlas::tools::utility::TemporaryFile tempBinFile;
 
     std::string sourceFile = metadata.m_SourceFile;
     std::string outputFile = tempBinFile.GetFile().string();

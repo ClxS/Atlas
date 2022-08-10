@@ -47,7 +47,7 @@ std::variant<std::vector<OutputArtifact>, ErrorString> Texture2DAssetHandler::Co
 
     auto metadata = std::get<0>(metadataResult);
 
-    cpp_conv::tools::utility::TemporaryFile tempBinFile(".dds");
+    atlas::tools::utility::TemporaryFile tempBinFile(".dds");
 
     std::string sourceFile = metadata.m_SourceFile;
     std::string outputFile = tempBinFile.GetFile().string();
