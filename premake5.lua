@@ -1,38 +1,50 @@
-require "AtlasModule"
+require "lua/AtlasModule"
+
+local engineRoot = ''
+
+function setEngineRoot(path)
+	engineRoot = path
+end
 
 function includeEngine()
 	group("Engine")
-	include("src/Engine/AtlasAppHost")
-    include("src/Engine/AtlasCore")
-    include("src/Engine/AtlasGame")
-    include("src/Engine/AtlasInput")
-    include("src/Engine/AtlasMaths")
-    include("src/Engine/AtlasRender")
-    include("src/Engine/AtlasResource")
-    include("src/Engine/AtlasScene")
+	include(engineRoot .. "/src/Engine/AtlasAppHost")
+    include(engineRoot .. "/src/Engine/AtlasCore")
+    include(engineRoot .. "/src/Engine/AtlasGame")
+    include(engineRoot .. "/src/Engine/AtlasInput")
+    include(engineRoot .. "/src/Engine/AtlasMaths")
+    include(engineRoot .. "/src/Engine/AtlasRender")
+    include(engineRoot .. "/src/Engine/AtlasResource")
+    include(engineRoot .. "/src/Engine/AtlasScene")
 end
 
 function includeEngineThirdParty()
 	group("ThirdParty")
-	include('src/ThirdParty/benchmark.lua')
-	include('src/ThirdParty/eigen.lua')
-	include('src/ThirdParty/fixed_string.lua')
-	include('src/ThirdParty/freetype.lua')
-	include('src/ThirdParty/gtest.lua')
-	include('src/ThirdParty/imgui.lua')
-	include('src/ThirdParty/rmlui.lua')
-	include('src/ThirdParty/sdl.lua')
-	include('src/ThirdParty/sdlimage.lua')
-	include('src/ThirdParty/tomlcpp.lua')
-	include('src/ThirdParty/fmt.lua')
+	include(engineRoot .. '/src/ThirdParty/benchmark.lua')
+	include(engineRoot .. '/src/ThirdParty/eigen.lua')
+	include(engineRoot .. '/src/ThirdParty/fixed_string.lua')
+	include(engineRoot .. '/src/ThirdParty/freetype.lua')
+	include(engineRoot .. '/src/ThirdParty/gtest.lua')
+	include(engineRoot .. '/src/ThirdParty/imgui.lua')
+	include(engineRoot .. '/src/ThirdParty/rmlui.lua')
+	include(engineRoot .. '/src/ThirdParty/sdl.lua')
+	include(engineRoot .. '/src/ThirdParty/sdlimage.lua')
+	include(engineRoot .. '/src/ThirdParty/tomlcpp.lua')
+	include(engineRoot .. '/src/ThirdParty/fmt.lua')
 
 	group("ThirdParty/bgfx")
-	include('src/ThirdParty/bgfx.lua')
-	include('src/ThirdParty/bimg.lua')
-	include('src/ThirdParty/bx.lua')
+	include(engineRoot .. '/src/ThirdParty/bgfx.lua')
+	include(engineRoot .. '/src/ThirdParty/bimg.lua')
+	include(engineRoot .. '/src/ThirdParty/bx.lua')
 end
 
 function includeEngineTests()
 	group("Engine/Tests")
-	include("src/Engine/Tests/AtlasSceneTests")
+	include(engineRoot .. "/src/Engine/Tests/AtlasSceneTests")
+end
+
+function includeEngineTools()
+	group("Tools")
+    include(engineRoot .. "/src/Tools/Core")
+    include(engineRoot .. "/src/Tools/AssetBuilder")
 end
