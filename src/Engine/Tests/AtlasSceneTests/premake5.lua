@@ -9,3 +9,6 @@ test "AtlasSceneTests"
     includedirs {
         "src",
     }
+    linkoptions {
+        "/IGNORE:4217", -- ignore linker warning about empty object file"
+    }

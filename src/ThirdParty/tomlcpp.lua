@@ -11,6 +11,7 @@ project "tomlcpp"
 	exports {
 		["includedirs"]	= path.getabsolute("tomlcpp"),
 	}
+	unitybuild(true)
 
 project "tomlcpp_tools"
 	platforms { "Tools_Win64" }
@@ -26,3 +27,4 @@ project "tomlcpp_tools"
 	exports {
 		["includedirs"]	= path.getabsolute("tomlcpp"),
 	}
+	unitybuild(true)

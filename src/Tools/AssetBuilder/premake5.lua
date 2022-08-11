@@ -1,7 +1,11 @@
+if not toolsDirectory then
+    error("Solution must set toolsDirectory variable")
+end
+
 project "AssetBuilder"
 	platforms { "Tools_Win64" }
 	kind "ConsoleApp"
-	targetdir(path.getabsolute("../../../bin/tools"))
+	targetdir(toolsDirectory)
 	targetname "AssetBuilder"
 	language "C++"
 	debugdir "$(TargetDir)"

@@ -8,3 +8,4 @@ project "eigen"
 	exports {
 		["includedirs"]	= path.getabsolute("eigen"),
 	}
+	unitybuild(true)

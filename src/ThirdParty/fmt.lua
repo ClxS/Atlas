@@ -9,3 +9,4 @@ project "fmt"
 	exports {
 		["includedirs"]	= path.getabsolute("fmt/include"),
 	}
+	unitybuild(true)

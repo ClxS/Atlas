@@ -61,3 +61,4 @@ project "freetype"
             "freetype/src/base/ftver.rc",
         }
     filter{}
+    unitybuild(true)

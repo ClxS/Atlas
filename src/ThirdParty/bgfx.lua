@@ -141,6 +141,9 @@ project "spirv-opt"
 	files {
 		"bgfx/3rdparty/spirv-tools/source/**"
 	}
+	buildoptions {
+		"/FS"
+	}
 
 project "spirv-cross"
 	kind "StaticLib"
@@ -183,31 +186,6 @@ project "fcpp"
 		    path.getabsolute("bgfx/3rdparty/fcpp"),
         }
 	}
-
-project "shaderc"
-	kind "ConsoleApp"
-	targetdir(path.getabsolute("../../bin/tools"))
-    files {
-		"bgfx.lua",
-		"bgfx/tools/shaderc/**",
-		"bgfx/src/vertexlayout.**",
-		"bgfx/src/shader**",
-    }
-    includedirs {
-        "bimg/include",
-        "bx/include",
-        "bgfx/include",
-        "bgfx/3rdparty/webgpu/include",
-        "bgfx/3rdparty/dxsdk/include",
-    }
-    links {
-        "bx",
-        "spirv-opt",
-        "spirv-cross",
-        "fcpp",
-        "glsl-optimizer",
-        "glslang",
-    }
 
 project "shaderc"
 	kind "ConsoleApp"

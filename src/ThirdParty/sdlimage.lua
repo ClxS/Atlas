@@ -1,6 +1,6 @@
 project "SDLImage"
 	kind "None"
-	filter {"platforms:SDL"}
+	filter {"platforms:Windows"}
 		kind "StaticLib"
 		defines {
 			'LOAD_BMP',
@@ -19,3 +19,4 @@ project "SDLImage"
 			["includedirs"]	= path.getabsolute("SDL_Image"),	
 		}
 	filter {}
+	unitybuild(true)

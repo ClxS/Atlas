@@ -1,6 +1,6 @@
 project "imgui"
 	kind "None"
-	filter {"platforms:SDL"}
+	filter {"platforms:Windows"}
 		kind "StaticLib"
 		includedirs {
 			"imgui",
@@ -20,3 +20,4 @@ project "imgui"
 			["includedirs"]	= path.getabsolute("imgui"),
 		}
 	filter {}
+	unitybuild(true)

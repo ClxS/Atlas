@@ -7,6 +7,7 @@ project "astc"
 	exports {
 		["includedirs"]	= path.getabsolute("bimg/3rdparty/astc")
 	}
+	unitybuild(true)
 
 project "astc-codec"
     kind "StaticLib"
@@ -37,6 +38,7 @@ project "edtaa3"
 	exports {
 		["includedirs"]	= path.getabsolute("bimg/3rdparty/edtaa3")
 	}
+	unitybuild(true)
 
 project "etc1"
     kind "StaticLib"
@@ -47,6 +49,7 @@ project "etc1"
 	exports {
 		["includedirs"]	= path.getabsolute("bimg/3rdparty/etc1")
 	}
+	unitybuild(true)
 
 project "etc2"
     kind "StaticLib"
@@ -57,6 +60,7 @@ project "etc2"
     links {
         "bx",
     }
+	unitybuild(true)
 
 project "iqa"
     kind "StaticLib"
@@ -74,6 +78,7 @@ project "lodepng"
 		"bimg.lua",
 		"bimg/3rdparty/lodepng/**",
     }
+	unitybuild(true)
 
 -- TODO[CJones] We need to fix this. bx has changed nvtt to depend on bx which is not okay
 project "nvtt"
@@ -107,6 +112,7 @@ project "stb"
 		"bimg.lua",
 		"bimg/3rdparty/stb/**",
     }
+	unitybuild(true)
 
 project "tinyexr"
     kind "StaticLib"
@@ -120,6 +126,7 @@ project "tinyexr"
 		    path.getabsolute("bimg/3rdparty/tinyexr/deps/miniz"),
         }
 	}
+	unitybuild(true)
 
 project "bimg"
 	kind "StaticLib"
@@ -145,3 +152,4 @@ project "bimg"
         "iqa",
         "tinyexr",
     }
+	unitybuild(true)

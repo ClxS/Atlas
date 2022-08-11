@@ -7,3 +7,4 @@ project "fixed_string"
 	exports {
 		["includedirs"]	= path.getabsolute("fixed_string/include"),
 	}
+	unitybuild(true)

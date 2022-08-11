@@ -37,3 +37,4 @@ project "bx"
             }
         }
     filter {}
+	unitybuild(true)
