@@ -6,7 +6,7 @@ function lib(name)
     		"*.lua",
     		"include/**",
     		"src/**",
-    		"platform/SDL/**",
+    		"platform/Windows/**",
     	}
         includedirs {
             ".",
@@ -22,13 +22,13 @@ function lib(name)
             }
         }
 
-        filter { "platforms:SDL" }
+        filter { "platforms:Windows" }
             includedirs {
-                "platform/SDL/src",
+                "platform/Windows/src",
             }
             exports {
                 ["includedirs"] = {
-                    path.getabsolute("platform/SDL/include"),
+                    path.getabsolute("platform/Windows/include"),
                 }
             }
         filter {}
