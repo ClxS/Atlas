@@ -107,7 +107,7 @@ std::variant<std::vector<OutputArtifact>, ErrorString> ShaderProgramAssetHandler
     writer.AddDoubleSizedFixup("vertex");
     writer.AddDoubleSizedFixup("fragment");
     writer.AddData<int32_t>(metadata.m_TextureSlotCount);
-    writer.AddData<int32_t>(metadata.m_TextureSlotInfo.size());
+    writer.AddData<int32_t>(static_cast<int32_t>(metadata.m_TextureSlotInfo.size()));
     writer.AddDoubleSizedFixup("textureData");
 
     // Payload

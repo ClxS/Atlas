@@ -113,7 +113,7 @@ namespace asset_builder::utility::file_utility
             const auto fixup = *it;
             m_FixupPointers.erase(it);
 
-            const uint32_t start = m_Buffer.size();
+            const uint32_t start = static_cast<uint32_t>(m_Buffer.size());
             end = start + end;
             memcpy(&(m_Buffer[fixup.second.m_Base]), &start, sizeof(uint32_t));
             memcpy(&(m_Buffer[fixup.second.m_Base + sizeof(uint32_t)]), &end, sizeof(uint32_t));

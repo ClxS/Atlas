@@ -1,6 +1,6 @@
 project "SDL"
 	kind "None"
-	filter {"platforms:SDL"}
+	filter {"platforms:Windows"}
 		kind "StaticLib"
 		links {
 			"winmm.lib",

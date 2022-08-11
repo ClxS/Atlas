@@ -14,7 +14,7 @@ std::optional<std::filesystem::path> asset_builder::utility::path_utility::getCu
     }
 
     // Use GetModuleFileName() with module handle to get the path
-    GetModuleFileNameA(hModule, ownPath.data(), ownPath.size());
+    GetModuleFileNameA(hModule, ownPath.data(), static_cast<DWORD>(ownPath.size()));
 
     const std::filesystem::path result = ownPath;
     return result.parent_path();
