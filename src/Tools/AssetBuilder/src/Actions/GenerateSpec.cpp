@@ -147,14 +147,14 @@ namespace
         outFile << std::string(2 * 4, ' ') << "std::optional<atlas::resource::AssetRegistryEntry> GetAsset(const atlas::resource::RegistryId id) override\n";
         outFile << std::string(2 * 4, ' ') << "{\n";
         outFile << std::string(3 * 4, ' ') << "return core_bundle::c_Files[id.m_Value];\n";
-        outFile << std::string(2 * 4, ' ') << "};\n";
+        outFile << std::string(2 * 4, ' ') << "}\n";
         outFile << std::string(2 * 4, ' ') << "std::optional<atlas::resource::RegistryId> TryLookupId(const uint64_t relativeNameHash) override\n";
         outFile << std::string(2 * 4, ' ') << "{\n";
         outFile << std::string(3 * 4, ' ') << "for(uint32_t i = 0; i < core_bundle::c_Files.size(); i++) {\n";
         outFile << std::string(4 * 4, ' ') << "if (core_bundle::c_Files[i].m_RelativeNameHash == relativeNameHash) { return { i }; }\n";
         outFile << std::string(3 * 4, ' ') << "}\n";
         outFile << std::string(3 * 4, ' ') << "return {};\n";
-        outFile << std::string(2 * 4, ' ') << "};\n";
+        outFile << std::string(2 * 4, ' ') << "}\n";
         outFile << std::string(1 * 4, ' ') << "};\n";
         outFile << "}";
         return outFile.str();

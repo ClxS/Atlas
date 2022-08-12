@@ -12,10 +12,12 @@ project "benchmark"
     defines {
         "BENCHMARK_STATIC_DEFINE",
     }
-
 	exports {
 		["includedirs"]	= {
 		    path.getabsolute("benchmark/include"),
 		    path.getabsolute("AtlasShims/benchmark/include"),
-        }
+        },
+        ["defines"] = {
+            "BENCHMARK_STATIC_DEFINE",
+        },
 	}

@@ -23,6 +23,8 @@ project "bgfx"
         },
         ["links"] = {
             "bx",
+            "bimg",
+            "bimg_encode",
         }
 	}
 	links {

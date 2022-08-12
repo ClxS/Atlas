@@ -4,6 +4,7 @@ test "AtlasSceneTests"
 		"premake5.lua",
 	}
     links {
+        "benchmark",
         "AtlasScene",
     }
     includedirs {

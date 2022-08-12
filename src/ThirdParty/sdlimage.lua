@@ -19,4 +19,3 @@ project "SDLImage"
 			["includedirs"]	= path.getabsolute("SDL_Image"),	
 		}
 	filter {}
-	unitybuild(true)
