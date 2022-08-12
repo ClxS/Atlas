@@ -1,0 +1,4 @@
+[shader]
+type = "fragment"
+model = "5_0"
+source = "textured_frag.sc"

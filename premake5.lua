@@ -16,6 +16,7 @@ function includeEngine()
     include(engineRoot .. "/src/Engine/AtlasRender")
     include(engineRoot .. "/src/Engine/AtlasResource")
     include(engineRoot .. "/src/Engine/AtlasScene")
+    include(engineRoot .. "/src/Engine/AtlasUI")
 end
 
 function includeEngineThirdParty()

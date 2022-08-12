@@ -1,0 +1,4 @@
+[shaderProgram]
+vertex = "rmlui_basic/vert.metadata"
+fragment = "rmlui_basic/untextured_frag.metadata"
+textureSlotCount = 0
