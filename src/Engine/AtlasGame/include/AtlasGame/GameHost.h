@@ -13,6 +13,7 @@
 #include "AtlasRender/Renderer.h"
 #include "AtlasRender/AssetTypes/MeshAsset.h"
 #include "AtlasRender/AssetTypes/ModelAsset.h"
+#include "AtlasTrace/Logging.h"
 #include "Utility/FrameLimiter.h"
 
 namespace atlas::game
@@ -62,8 +63,9 @@ namespace atlas::game
         {
         }
 
-        bool InitialiseRenderer()
+        bool InitialiseRenderer() const
         {
+            AT_INFO(AtlasGame, "Initialising renderer");
             auto& app = app_host::Application::Get();
 
 #if !BX_PLATFORM_EMSCRIPTEN
@@ -102,6 +104,7 @@ namespace atlas::game
 
         static bool InitialiseUI(const bgfx::ViewId uiView)
         {
+            AT_INFO(AtlasGame, "Initialising UI");
             return ui::rml::config::initialiseRmlUi(uiView);
         }
 
@@ -119,8 +122,11 @@ namespace atlas::game
 
         int Run()
         {
+            AT_INFO(AtlasGame, "Initialising Game... {}", 3434);
+
             if (!app_host::Application::Get().Initialise(m_GameArguments.m_GameName))
             {
+                AT_ERROR(AtlasGame, "Failed to initialise application");
                 return static_cast<int>(ReturnCode::ReturnCode_ApplicationFailed);
             }
 

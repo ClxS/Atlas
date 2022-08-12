@@ -8,6 +8,7 @@ lib "AtlasUI"
             "AtlasRender",
             "AtlasResource",
             "AtlasAppHost",
+            "AtlasTrace",
 
             "bgfx",
             "RmlUI",

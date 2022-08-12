@@ -14,6 +14,8 @@
 #include <RmlUi/Core.h>
 #include <RmlUi/Debugger/Debugger.h>
 
+#include "AtlasTrace/Logging.h"
+
 namespace
 {
     std::unique_ptr<Rml::FileInterface> g_fileInterface;
@@ -79,20 +81,25 @@ bool atlas::ui::rml::config::initialiseRmlUi(bgfx::ViewId uiViewId)
         Rml::Style::FontStyle::Normal,
         Rml::Style::FontWeight::Normal))
     {
-        assert(false); // "Failed to load main font");
+        AT_ERROR(AtlasUI, "Failed to load main font. AssetBundleId: {}:{}",
+            resources::registry::CoreBundle::GetStringId(),
+            resources::registry::core_bundle::fonts::c_LatoLatin_Regular.m_Value);
         return false;
     }
 
     if (!Rml::LoadFontFace(
        g_backupFont->GetData(),
        static_cast<int>(g_backupFont->GetDataSize()),
-       "LatoLatin",
+       "NotoEmoji",
        Rml::Style::FontStyle::Normal,
        Rml::Style::FontWeight::Normal))
     {
-        assert(false); // "Failed to load main font");
+        AT_ERROR(AtlasUI, "Failed to load backup font. AssetBundleId: {}:{}",
+            resources::registry::CoreBundle::GetStringId(),
+            resources::registry::core_bundle::fonts::c_NotoEmoji_Regular.m_Value);
         return false;
     }
 
+    AT_INFO(AtlasUI, "RmlUi initialised");
     return true;
 }
