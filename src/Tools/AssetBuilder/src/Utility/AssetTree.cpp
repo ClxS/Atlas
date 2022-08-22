@@ -61,28 +61,13 @@ AssetTree AssetTree::CreateFromFileStructure(const std::string& root, const std:
 
     const fs::path dataRoot = root;
 
-    const fs::path commonFolder = dataRoot / "common";
-    const fs::path commonPrivateFolder = dataRoot / "commonPrivate";
-    const fs::path platformFolder = dataRoot / (platform);
-    const fs::path platformPrivateFolder = dataRoot / (platform + "Private");
+    const fs::path commonFolder = dataRoot;
 
     AssetTree tree("");
     std::stack<std::tuple<fs::path, fs::path, AssetTree::TreeNode&>> sourceFolders;
     if (exists(commonFolder))
     {
         sourceFolders.push({commonFolder, commonFolder, tree.GetRoot()});
-    }
-    if (exists(commonPrivateFolder))
-    {
-        sourceFolders.push({commonPrivateFolder, commonPrivateFolder, tree.GetRoot()});
-    }
-    if (exists(platformFolder))
-    {
-        sourceFolders.push({platformFolder, platformFolder, tree.GetRoot()});
-    }
-    if (exists(platformPrivateFolder))
-    {
-        sourceFolders.push({platformPrivateFolder, platformPrivateFolder, tree.GetRoot()});
     }
 
     while(!sourceFolders.empty())

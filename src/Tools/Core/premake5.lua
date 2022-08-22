@@ -1,5 +1,5 @@
 project "ToolsCore"
-	platforms { "Tools_Win64" }
+	platforms { "Windows" }
 	kind "StaticLib"
 	targetdir "bin/tools/lib"
 	language "C++"
