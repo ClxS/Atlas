@@ -12,19 +12,3 @@ project "tomlcpp"
 		["includedirs"]	= path.getabsolute("tomlcpp"),
 	}
 	unitybuild(true)
-
-project "tomlcpp_tools"
-	platforms { "Tools_Win64" }
-	kind "StaticLib"
-	files {
-		"tomlcpp/toml.h",
-		"tomlcpp/toml.c",
-		"tomlcpp/tomlcpp.hpp",
-		"tomlcpp/tomlcpp.cpp",
-		"tomlcpp.lua",
-	}
-
-	exports {
-		["includedirs"]	= path.getabsolute("tomlcpp"),
-	}
-	unitybuild(true)

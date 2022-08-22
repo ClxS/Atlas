@@ -3,7 +3,7 @@ if not toolsDirectory then
 end
 
 project "AssetBuilder"
-	platforms { "Tools_Win64" }
+	platforms { "Windows" }
 	kind "ConsoleApp"
 	targetdir(toolsDirectory)
 	targetname "AssetBuilder"
@@ -16,8 +16,10 @@ project "AssetBuilder"
 	    "**",
 	}
 	links {
-		"tomlcpp_tools",
+		"tomlcpp",
 		"ToolsCore",
+
+		"AtlasTrace",
 	}
 	flags { "FatalWarnings" }
 	cppdialect "C++latest"
