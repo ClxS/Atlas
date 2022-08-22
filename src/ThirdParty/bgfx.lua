@@ -191,7 +191,7 @@ project "fcpp"
 
 project "shaderc"
 	kind "ConsoleApp"
-	targetdir(path.getabsolute("../../bin/tools"))
+	targetdir(toolsDirectory)
     files {
 		"bgfx.lua",
 		"bgfx/tools/shaderc/**",
@@ -216,7 +216,7 @@ project "shaderc"
 
 project "geometryc"
 	kind "ConsoleApp"
-	targetdir(path.getabsolute("../../bin/tools"))
+	targetdir(toolsDirectory)
     files {
 		"bgfx.lua",
 		"bgfx/tools/geometryc/**",
@@ -279,7 +279,7 @@ project "bimg_encode"
 
 project "texturec"
 	kind "ConsoleApp"
-	targetdir(path.getabsolute("../../bin/tools"))
+	targetdir(toolsDirectory)
 	files {
 		"bimg/tools/texturec/**",
 	}
