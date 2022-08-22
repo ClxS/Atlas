@@ -63,7 +63,7 @@ namespace atlas::game
         {
         }
 
-        bool InitialiseRenderer() const
+        [[nodiscard]] bool InitialiseRenderer() const
         {
             AT_INFO(AtlasGame, "Initialising renderer");
             auto& app = app_host::Application::Get();
@@ -102,13 +102,13 @@ namespace atlas::game
             return true;
         }
 
-        static bool InitialiseUI(const bgfx::ViewId uiView)
+        [[nodiscard]] static bool InitialiseUI(const bgfx::ViewId uiView)
         {
             AT_INFO(AtlasGame, "Initialising UI");
             return ui::rml::config::initialiseRmlUi(uiView);
         }
 
-        bool InitialiseResourceSystem() const
+        [[nodiscard]] bool InitialiseResourceSystem() const
         {
             resource::ResourceLoader::RegisterTypeHandler<render::VertexShader>(render::vertexShaderLoadHandler);
             resource::ResourceLoader::RegisterTypeHandler<render::FragmentShader>(render::fragmentShaderLoadHandler);
@@ -120,7 +120,7 @@ namespace atlas::game
             return true;
         }
 
-        int Run()
+        [[nodiscard]] int Run()
         {
             AT_INFO(AtlasGame, "Initialising Game... {}", 3434);
 
@@ -132,7 +132,6 @@ namespace atlas::game
 
             logStartUp();
             srand(static_cast<unsigned>(time(nullptr)));
-            auto [iWidth, iHeight] = app_host::Application::Get().GetAppDimensions();
 
             utility::FrameLimiter frameLimiter(m_GameArguments.m_FrameRateCap);
             frameLimiter.Start();
@@ -166,8 +165,6 @@ namespace atlas::game
                 frameLimiter.Limit();
                 frameLimiter.EndFrame();
             }
-
-            return static_cast<int>(ReturnCode::ReturnCode_Success);
         }
 
     private:
