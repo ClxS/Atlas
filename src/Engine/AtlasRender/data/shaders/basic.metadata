@@ -1,0 +1,9 @@
+[shaderProgram]
+vertex = "basic/basic_vert.metadata"
+fragment = "basic/basic_frag.metadata"
+textureSlotCount = 2
+
+[[shaderProgram.textureSlotInfo]]
+slot = 1
+reserved = true
+type = "shadowMap"

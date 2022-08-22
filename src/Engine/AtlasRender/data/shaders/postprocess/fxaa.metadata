@@ -1,0 +1,4 @@
+[shaderProgram]
+vertex = "fxaa/fxaa_vert.metadata"
+fragment = "fxaa/fxaa_frag.metadata"
+textureSlotCount = 1

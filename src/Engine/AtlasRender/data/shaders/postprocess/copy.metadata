@@ -1,0 +1,4 @@
+[shaderProgram]
+vertex = "copy/copy_vert.metadata"
+fragment = "copy/copy_frag.metadata"
+textureSlotCount = 1

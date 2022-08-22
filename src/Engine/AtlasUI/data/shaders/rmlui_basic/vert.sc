@@ -3,7 +3,7 @@ $output v_texcoord0, v_color0
 
 uniform mat3 u_transform;
 
-#include "../../common/common.sh"
+#include "common.sh"
 
 void main()
 {
