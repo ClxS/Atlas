@@ -5,7 +5,7 @@
 
 struct Arguments : public cppconv::tools::arg_parser::ArgumentsBase
 {
-    ARG_CTOR_6_V(Arguments, Mode, DataRoot, Platform, Namespace, OutputFile, UpdateOnlySpecification, Types)
+    ARG_CTOR_7_V(Arguments, Mode, DataRoot, Platform, Namespace, OutputFile, UpdateOnlySpecification, Types, ShaderIncludes)
 
     VERB_2(Mode, "generate-spec", "cook");
 
@@ -16,4 +16,6 @@ struct Arguments : public cppconv::tools::arg_parser::ArgumentsBase
     ARG(UpdateOnlySpecification, bool, 'd', "spec-only", "If true, the builder will only generate the updated asset specification");
 
     ARG(Types, std::vector<std::string>, 't', "types", "[Cook Only] Only cooks assets which are of a listed time. Semi-colon delimited");
+
+    ARG(ShaderIncludes, std::vector<std::string>, 'i', "shader-includes", "[Cook Only] Adds 'includes directory' information to shader compilation. Semi-colon delimited");
 };

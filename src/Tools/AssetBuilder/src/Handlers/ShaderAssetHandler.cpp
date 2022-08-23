@@ -27,6 +27,8 @@ namespace
         std::string m_Model;
         std::string m_SourceFile;
     };
+
+    std::vector<std::string> g_commonIncludes;
 }
 
 std::variant<ShaderMetadata, ErrorString> readMetadata(const std::filesystem::path& path)
@@ -106,15 +108,25 @@ std::variant<std::vector<OutputArtifact>, ErrorString> ShaderAssetHandler::Cook(
         return "Could not determine current directory";
     }
 
+    std::string extraArgs;
+    if (!g_commonIncludes.empty())
+    {
+        for (const auto& include : g_commonIncludes)
+        {
+            extraArgs += std::format(" -i \"{}\"" , include);
+        }
+    }
+
     std::string processName = (currentDirectory.value() / "shaderc.exe").string();
     std::string args = std::format(
-        R"(-f "{}" -o "{}" --platform {} --type {} --verbose --debug -i -p {}_{})",
+        R"(-f "{}" -o "{}" --platform {} --type {} --verbose --debug -p {}_{}{})",
         sourceFile,
         outputFile,
         platform,
         shaderType,
         shaderModelPrefix,
-        shaderModel);
+        shaderModel,
+        extraArgs);
 
     std::string stdOut, stdErr;
     int exitCode = asset_builder::utility::process_utility::execute(processName, args, stdOut, stdErr);
@@ -122,7 +134,7 @@ std::variant<std::vector<OutputArtifact>, ErrorString> ShaderAssetHandler::Cook(
     // TODO Capture output
     if (exitCode != 0)
     {
-        return std::format("shaderc failed with code {}. {} {}", exitCode, processName, args);
+        return std::format("shaderc failed with code {}. {} {}\n{}\n{}", exitCode, processName, args, stdOut, stdErr);
     }
 
     auto [fileContents, size] = asset_builder::utility::file_utility::readFile(outputFile);
@@ -135,4 +147,9 @@ std::variant<std::vector<OutputArtifact>, ErrorString> ShaderAssetHandler::Cook(
     artifacts.emplace_back(std::move(fileContents), size, GetAssetRelativeOutputPath(asset));
 
     return artifacts;
+}
+
+void ShaderAssetHandler::SetCommonIncludes(std::vector<std::string> includes)
+{
+    g_commonIncludes = std::move(includes);
 }

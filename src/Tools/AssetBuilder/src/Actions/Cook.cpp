@@ -11,6 +11,8 @@
 #include "Asset.h"
 #include "AssetHandler.h"
 #include "AssetTree.h"
+#include "ShaderAssetHandler.h"
+#include "AtlasTrace/Logging.h"
 
 
 void cookAssets(const std::vector<std::string>& types, const AssetTree::TreeNode& node, const std::filesystem::path& dataRoot, const std::filesystem::path& outputRoot)
@@ -35,14 +37,14 @@ void cookAssets(const std::vector<std::string>& types, const AssetTree::TreeNode
         std::filesystem::path outputPath = outputRoot / asset.m_pAssociatedHandler->GetAssetRelativeOutputPath(asset);
         if (!exists(outputPath.parent_path()) && !create_directories(outputPath.parent_path()))
         {
-            std::cerr << "Failed to create directory " << outputPath.parent_path() << "\n";
+            AT_ERROR(Cook, "Failed to create directory {}", outputPath.parent_path().string());
             continue;
         }
 
         auto assets = asset.m_pAssociatedHandler->Cook(asset);
         if (std::holds_alternative<ErrorString>(assets))
         {
-            std::cerr << std::get<1>(assets) << "\n";
+            AT_ERROR(Cook, "Failed to build asset {}\n{}", asset.m_SourceAssetPath.string(), std::get<1>(assets));
             continue;
         }
 
@@ -53,7 +55,7 @@ void cookAssets(const std::vector<std::string>& types, const AssetTree::TreeNode
             file.open(outputFile, std::ios::binary | std::ios::out);
             if (file.fail())
             {
-                std::cerr << std::format("Unable to open path for writing {}. {}\n", writableAsset.m_OutputPath.string(), GetLastError());
+                AT_ERROR(Cook, "Unable to open path for writing {}. {}", writableAsset.m_OutputPath.string(), GetLastError());
                 continue;
             }
 
@@ -70,6 +72,11 @@ ExitCode asset_builder::actions::cook(const Arguments& args)
     }
 
     namespace fs = std::filesystem;
+
+    if (!args.m_ShaderIncludes.m_Value.empty())
+    {
+        ShaderAssetHandler::SetCommonIncludes(args.m_ShaderIncludes.m_Value);
+    }
 
     const fs::path dataRoot = args.m_DataRoot.m_Value;
     const fs::path outputRoot = args.m_OutputFile.m_Value;

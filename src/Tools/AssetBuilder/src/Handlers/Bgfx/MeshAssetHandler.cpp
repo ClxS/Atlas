@@ -87,7 +87,7 @@ std::variant<std::vector<OutputArtifact>, ErrorString> MeshAssetHandler::Cook(co
     // TODO Capture output
     if (exitCode != 0)
     {
-        return std::format("geometryc failed with code {}. {} {}", exitCode, processName, args);
+        return std::format("geometryc failed with code {}. {} {}\n{}\n{}", exitCode, processName, args, stdOut, stdErr);
     }
 
     auto [fileContents, size] = asset_builder::utility::file_utility::readFile(outputFile);

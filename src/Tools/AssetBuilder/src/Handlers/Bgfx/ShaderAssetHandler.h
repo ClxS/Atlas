@@ -13,4 +13,6 @@ public:
     std::filesystem::path GetAssetRelativeOutputPath(const Asset& fullPath) override;
 
     std::variant<std::vector<OutputArtifact>, ErrorString> Cook(const Asset& asset) override;
+
+    static void SetCommonIncludes(std::vector<std::string> includes);
 };
