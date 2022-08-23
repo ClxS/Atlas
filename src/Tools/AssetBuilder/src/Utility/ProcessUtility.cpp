@@ -1,96 +1,176 @@
 #include "ProcessUtility.h"
-#include <Windows.h>
-#include <corecrt_io.h>
 #include <format>
-#include <iostream>
-#include <thread>
-#include <variant>
+#include <Windows.h>
 
-HANDLE createStdOutHandle()
+#include "AtlasTrace/Logging.h"
+
+namespace
 {
-    SECURITY_ATTRIBUTES saAttr;
-    ZeroMemory(&saAttr, sizeof(saAttr));
-    saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
-    saAttr.bInheritHandle = TRUE;
-    saAttr.lpSecurityDescriptor = nullptr;
-
-    HANDLE pipeHandle {};
-    HANDLE pipeWriteHandle {};
-    if (!CreatePipe(&pipeHandle, &pipeWriteHandle, &saAttr, 0))
+    struct SafeHandlePair
     {
-        // log error
-        std::cerr << std::format("Failed to create stdout pipe. Error: {}", GetLastError());
-        return {};
-    }
+        SafeHandlePair() = default;
 
-    if (!SetHandleInformation(pipeHandle, HANDLE_FLAG_INHERIT, 0))
-    {
-        // log error
-        std::cerr << std::format("Failed to create set pipe handle information. Error: {}", GetLastError());
-        return {};
-    }
+        // ReSharper disable once CppParameterMayBeConst
+        SafeHandlePair(HANDLE readHandle, HANDLE writeHandle) : m_ReadHandle(readHandle), m_WriteHandle(writeHandle)
+        {
+        }
 
-    return pipeHandle;
-}
+        SafeHandlePair(const SafeHandlePair&) = delete;
 
-std::tuple<HANDLE, HANDLE> createStdOutHandles()
-{
-    return {
-        createStdOutHandle(),
-        createStdOutHandle()
+        SafeHandlePair(SafeHandlePair&& other) noexcept
+        {
+            m_ReadHandle = other.m_ReadHandle;
+            m_WriteHandle = other.m_WriteHandle;
+            other.m_ReadHandle = INVALID_HANDLE_VALUE;
+            other.m_WriteHandle = INVALID_HANDLE_VALUE;
+        }
+
+        ~SafeHandlePair()
+        {
+            CloseReadHandle();
+            CloseWriteHandle();
+        }
+
+        void CloseReadHandle()
+        {
+            if (m_ReadHandle != INVALID_HANDLE_VALUE)
+            {
+                CloseHandle(m_ReadHandle);
+                m_ReadHandle = INVALID_HANDLE_VALUE;
+            }
+        }
+
+        void CloseWriteHandle()
+        {
+            if (m_WriteHandle != INVALID_HANDLE_VALUE)
+            {
+                CloseHandle(m_WriteHandle);
+                m_WriteHandle = INVALID_HANDLE_VALUE;
+            }
+        }
+
+        HANDLE m_ReadHandle = INVALID_HANDLE_VALUE;
+        HANDLE m_WriteHandle = INVALID_HANDLE_VALUE;
     };
+
+    int executeChildProcess(const std::string& executable, const std::string& args, const SafeHandlePair& stdOutHandles,
+                             const SafeHandlePair& stdErrHandles)
+    {
+        PROCESS_INFORMATION piProcInfo;
+        STARTUPINFOA siStartInfo;
+
+        ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
+        ZeroMemory(&siStartInfo, sizeof(STARTUPINFO));
+        siStartInfo.cb = sizeof(STARTUPINFO);
+        siStartInfo.hStdOutput = stdOutHandles.m_WriteHandle;
+        siStartInfo.hStdError = stdErrHandles.m_WriteHandle;
+        siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
+
+        // Create the child process.
+
+        std::string mutableArgs = args;
+
+        const BOOL success = CreateProcessA(
+            executable.c_str(),
+            mutableArgs.data(),
+            nullptr,
+            nullptr,
+            TRUE,
+            0,
+            nullptr,
+            nullptr,
+            &siStartInfo,
+            &piProcInfo);
+
+        DWORD exitCode = -1;
+
+        // If an error occurs, exit the application.
+        if (! success)
+        {
+            AT_ERROR(ProcessUtility, "CreateProcess failed ({}).\n", GetLastError());
+            exitCode = -1;
+        }
+        else
+        {
+            // Close handles to the child process and its primary thread.
+            // Some applications might keep these handles to monitor the status
+            // of the child process, for example.
+
+            do
+            {
+                if (FALSE == GetExitCodeProcess(piProcInfo.hProcess, &exitCode))
+                {
+                    AT_ERROR(ProcessUtility, "GetExitCodeProcess failed");
+                    exitCode = -1;
+                }
+            } while(STILL_ACTIVE == exitCode);
+
+            CloseHandle(piProcInfo.hProcess);
+            CloseHandle(piProcInfo.hThread);
+        }
+
+        return static_cast<int>(exitCode);
+    }
+
+    std::string readFromPipe(const SafeHandlePair& handles)
+    {
+        constexpr int c_bufferSize = 4096;
+
+        DWORD dwRead;
+        CHAR chBuf[c_bufferSize];
+
+        std::string output;
+        for (;;)
+        {
+            const BOOL success = ReadFile(handles.m_ReadHandle, chBuf, c_bufferSize, &dwRead, nullptr);
+            if (! success || dwRead == 0)
+            {
+                break;
+            }
+
+            output += std::string_view(chBuf, dwRead);
+        }
+
+        return output;
+    }
+
+    SafeHandlePair createPipes()
+    {
+        SECURITY_ATTRIBUTES saAttr;
+        saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
+        saAttr.bInheritHandle = TRUE;
+        saAttr.lpSecurityDescriptor = nullptr;
+
+        HANDLE readHandle, writeHandle;
+
+        if (! CreatePipe(&readHandle, &writeHandle, &saAttr, 0))
+        {
+            AT_ERROR(ProcessUtilty, "CreatePipe failed. Error: {}", GetLastError());
+            return {INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE};
+        }
+
+        if (! SetHandleInformation(readHandle, HANDLE_FLAG_INHERIT, 0))
+        {
+            AT_ERROR(ProcessUtilty, "SetHandleInformation failed. Error: {}", GetLastError());
+            return {INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE};
+        }
+
+        return {readHandle, writeHandle};
+    }
 }
 
 int asset_builder::utility::process_utility::execute(const std::string& executable, const std::string& args,
-    std::string& stdOut, std::string& stdErr)
+                                                     std::string& stdOut, std::string& stdErr)
 {
-    // additional information
-    STARTUPINFOA si;
-    PROCESS_INFORMATION pi;
+    SafeHandlePair stdOutPipe = createPipes();
+    SafeHandlePair stdErrPipe = createPipes();
 
-    auto [stdOutHandle, stdErrHandle] = createStdOutHandles();
+    const int exitCode = executeChildProcess(executable, args, stdOutPipe, stdErrPipe);
+    stdOutPipe.CloseWriteHandle();
+    stdErrPipe.CloseWriteHandle();
 
-    // set the size of the structures
-    ZeroMemory(&si, sizeof(si));
-    ZeroMemory(&pi, sizeof(pi));
-
-    si.cb = sizeof(si);
-    if (stdOutHandle && stdErrHandle)
-    {
-        si.hStdOutput = stdOutHandle;
-        si.hStdError = stdErrHandle;
-        si.dwFlags |= STARTF_USESTDHANDLES;
-    }
-
-    std::string mutableArgs = args;
-
-    // start the program up
-    if (!CreateProcessA(
-            executable.c_str(),
-            mutableArgs.data(),
-            nullptr, // Process handle not inheritable
-            nullptr, // Thread handle not inheritable
-            TRUE, // Set handle inheritance to FALSE
-            NULL, // Opens file in a separate console
-            nullptr, // Use parent's environment block
-            nullptr, // Use parent's starting directory
-            &si,
-            &pi))
-    {
-        std::cerr << "CreateProcess failed " << GetLastError() << "\n";
-        return -1;
-    }
-
-    WaitForSingleObject( pi.hProcess, INFINITE );
-
-    DWORD exitCode;
-    GetExitCodeProcess(pi.hProcess, &exitCode);
-
-    // Close process and thread handles.
-    CloseHandle(pi.hProcess);
-    CloseHandle(pi.hThread);
-    CloseHandle(stdOutHandle);
-    CloseHandle(stdErrHandle);
+    stdOut = readFromPipe(stdOutPipe);
+    stdErr = readFromPipe(stdErrPipe);
 
     return exitCode;
 }
