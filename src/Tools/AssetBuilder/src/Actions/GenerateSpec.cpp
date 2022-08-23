@@ -10,6 +10,7 @@
 #include "Asset.h"
 #include "AssetHandler.h"
 #include "AssetTree.h"
+#include "AtlasTrace/Logging.h"
 
 namespace
 {
@@ -175,6 +176,7 @@ ExitCode asset_builder::actions::generateSpec(const Arguments& args)
 {
     if (!args.m_OutputFile.m_bIsSet)
     {
+        AT_ERROR(AssetBuilder, "Output file not set");
         return ExitCode::MissingRequiredArgument;
     }
 
@@ -186,7 +188,7 @@ ExitCode asset_builder::actions::generateSpec(const Arguments& args)
     const fs::path outputPath = args.m_OutputFile.m_Value;
     if (doesFileContentsMatch(outputPath, outputFileText))
     {
-        printf("File is up to date");
+        AT_INFO(AssetBuilder, "File is up to date");
         return ExitCode::Success;
     }
 
@@ -197,7 +199,7 @@ ExitCode asset_builder::actions::generateSpec(const Arguments& args)
 
     if (!doesFileContentsMatch(outputPath, outputFileText))
     {
-        printf("File did not match after writing");
+        AT_ERROR(AssetBuilder, "File did not match after writing");
         return ExitCode::FileOutputMismatch;
     }
 

@@ -10,6 +10,7 @@
 
 #include "Actions/Cook.h"
 #include "Actions/GenerateSpec.h"
+#include "AtlasTrace/Logging.h"
 #include "Processing/AssetProcessor.h"
 
 ExitCode mainImpl(const int argc, char **argv)
@@ -17,7 +18,7 @@ ExitCode mainImpl(const int argc, char **argv)
     const Arguments args;
     if (!args.TryRead(argc, argv))
     {
-        std::cerr << "Failed to read arguments\n";
+        AT_ERROR(AssetBuilder, "Failed to parse arguments");
         return ExitCode::ArgumentParseError;
     }
 
@@ -29,12 +30,18 @@ ExitCode mainImpl(const int argc, char **argv)
         case fnv1("generate-spec"): return asset_builder::actions::generateSpec(args);
         case fnv1("cook"): return asset_builder::actions::cook(args);
         default:
-            std::cerr << "Unknown verb " << args.m_Mode.m_Value << "\n";
+            AT_ERROR(AssetBuilder, "Unknown mode: {}", args.m_Mode.m_Value);
             return ExitCode::UnknownMode;
     }
 }
 
 int main(const int argc, char **argv)
 {
-    return static_cast<int>(mainImpl(argc, argv));
+    ExitCode exitCode = mainImpl(argc, argv);
+    if (exitCode != ExitCode::Success)
+    {
+        AT_ERROR(AssetBuilder, "Exit code: {}", static_cast<int>(exitCode));
+    }
+
+    return static_cast<int>(exitCode);
 }

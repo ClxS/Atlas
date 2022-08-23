@@ -68,6 +68,7 @@ ExitCode asset_builder::actions::cook(const Arguments& args)
 {
     if (!args.m_OutputFile.m_bIsSet)
     {
+        AT_ERROR(Cook, "Output file (-o,--output) not set");
         return ExitCode::MissingRequiredArgument;
     }
 

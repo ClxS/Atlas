@@ -13,6 +13,8 @@ project "SDL"
 			"SDL/include",
 		}
 		files {
+		    "sdl.lua",
+
 			"SDL/include/*",
 			"SDL/src/*",
 			"SDL/src/*/*",
@@ -32,7 +34,7 @@ project "SDL"
 			"SDL/src/thread/generic/*",
 			"SDL/src/video/yuv2rgb/*",
 			"SDL/src/video/dummy/*",
-		}		
+		}
 		removefiles {
 			"**winrt.h",
 			"**winrt.cpp",
@@ -41,8 +43,11 @@ project "SDL"
 			'HAVE_LIBC',
 		}
 		flags { "MultiProcessorCompile" }
-		
+
 		exports {
 			["includedirs"]	= path.getabsolute("SDL/include"),
+		}
+		linkoptions {
+            "/ignore:4204",
 		}
 	filter {}
