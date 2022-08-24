@@ -16,6 +16,8 @@ namespace
         {
         }
 
+        std::string_view GetName() const override { return "A"; }
+
         void Initialise(atlas::scene::EcsManager&) override
         {
             m_AInit();
@@ -39,6 +41,8 @@ namespace
               , m_BUpdate{std::move(bUpdate)}
         {
         }
+
+        std::string_view GetName() const override { return "B"; }
 
         void Initialise(atlas::scene::EcsManager&) override
         {
@@ -68,7 +72,7 @@ namespace
         {
         }
 
-        void ConstructSystems(atlas::scene::SystemsBuilder& builder) override
+        void ConstructSystems(atlas::scene::SystemsBuilder& builder, atlas::scene::SystemsBuilder& frameBuilder) override
         {
             builder.RegisterSystem<A>(m_AInit, m_AUpdate);
             builder.RegisterSystem<B>(m_BInit, m_BUpdate);

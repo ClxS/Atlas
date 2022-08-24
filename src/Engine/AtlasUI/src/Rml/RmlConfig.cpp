@@ -74,7 +74,7 @@ bool atlas::ui::rml::config::initialiseRmlUi(bgfx::ViewId uiViewId)
     g_backupFont = resource::ResourceLoader::LoadAsset<resources::registry::CoreBundle, asset_types::RmlUiFont>(
         resources::registry::core_bundle::fonts::c_NotoEmoji_Regular);
 
-    if (!Rml::LoadFontFace(
+    if (!g_mainFont || !Rml::LoadFontFace(
         g_mainFont->GetData(),
         static_cast<int>(g_mainFont->GetDataSize()),
         "LatoLatin",
@@ -87,7 +87,7 @@ bool atlas::ui::rml::config::initialiseRmlUi(bgfx::ViewId uiViewId)
         return false;
     }
 
-    if (!Rml::LoadFontFace(
+    if (!g_backupFont || !Rml::LoadFontFace(
        g_backupFont->GetData(),
        static_cast<int>(g_backupFont->GetDataSize()),
        "NotoEmoji",

@@ -93,7 +93,7 @@ namespace
             {
                 const bx::Sphere sphere = { { lookAtPosition.x(), lookAtPosition.y(), lookAtPosition.z() }, 0.025f };
                 debug_draw::createScope();
-                debug_draw::setColor(0xfff0c0ff);
+                debug_draw::setColor(0xffffc0f0_argb);
                 debug_draw::createScope();
                 debug_draw::setLod(0);
                 debug_draw::draw(sphere);
@@ -105,7 +105,7 @@ namespace
                 {
                     const bx::Sphere sphere = { { cameraPosition.x(), cameraPosition.y(), cameraPosition.z() }, 0.015f };
                     debug_draw::createScope();
-                    debug_draw::setColor(0xff000000);
+                    debug_draw::setColor(0xff000000_argb);
                     debug_draw::createScope();
                     debug_draw::setLod(0);
                     debug_draw::draw(sphere);
@@ -116,7 +116,7 @@ namespace
             {
                 const bx::Sphere sphere = { { lookAtRealPosition.x(), lookAtRealPosition.y(), lookAtRealPosition.z() }, 0.015f };
                 debug_draw::createScope();
-                debug_draw::setColor(0xff0000ff);
+                debug_draw::setColor(0xffff0000_argb);
                 debug_draw::createScope();
                 debug_draw::setLod(0);
                 debug_draw::draw(sphere);
@@ -124,19 +124,19 @@ namespace
 
             {
                 debug_draw::createScope();
-                debug_draw::setColor(0xff000000);
+                debug_draw::setColor(0xff000000_argb);
                 debug_draw::moveTo({ cameraPosition.x(), cameraPosition.y(), cameraPosition.z() });
                 debug_draw::lineTo({ lookAtPosition.x(), lookAtPosition.y(), lookAtPosition.z() });
             }
             {
                 debug_draw::createScope();
                 const auto cameraForwardEnd = lookAtPosition + cameraForwardVector;
-                debug_draw::setColor(0xff444444);
+                debug_draw::setColor(0xff444444_argb);
                 debug_draw::moveTo({ lookAtPosition.x(), lookAtPosition.y(), lookAtPosition.z() });
                 debug_draw::lineTo({ cameraForwardEnd.x(), cameraForwardEnd.y(), cameraForwardEnd.z() });
 
                 const auto cameraRightEnd = lookAtPosition + cameraRightVector;
-                debug_draw::setColor(0xffff4444);
+                debug_draw::setColor(0xff4444ff_argb);
                 debug_draw::moveTo({ lookAtPosition.x(), lookAtPosition.y(), lookAtPosition.z() });
                 debug_draw::lineTo({ cameraRightEnd.x(), cameraRightEnd.y(), cameraRightEnd.z() });
             }
@@ -144,7 +144,7 @@ namespace
             {
                 debug_draw::createScope();
                 const auto upEnd = lookAtPosition + upVector;
-                debug_draw::setColor(0xff4a33ff);
+                debug_draw::setColor(0xffff334a_argb);
                 debug_draw::moveTo({ lookAtPosition.x(), lookAtPosition.y(), lookAtPosition.z() });
                 debug_draw::lineTo({ upEnd.x(), upEnd.y(), upEnd.z() });
             }
@@ -152,7 +152,7 @@ namespace
             {
                 debug_draw::createScope();
                 const auto forwardEnd = lookAtPosition + forwardVector;
-                debug_draw::setColor(0xff69ff29);
+                debug_draw::setColor(0xff29ff69_argb);
                 debug_draw::moveTo({ lookAtPosition.x(), lookAtPosition.y(), lookAtPosition.z() });
                 debug_draw::lineTo({ forwardEnd.x(), forwardEnd.y(), forwardEnd.z() });
             }
@@ -164,6 +164,7 @@ namespace
 
 void atlas::game::scene::systems::cameras::CameraViewProjectionUpdateSystem::Initialise(atlas::scene::EcsManager& ecsManager)
 {
+    SystemBase::Initialise(ecsManager);
     atlas::render::debug::initialise();
 }
 

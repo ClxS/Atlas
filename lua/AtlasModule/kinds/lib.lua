@@ -7,6 +7,7 @@ function lib(name)
     		"include/**",
     		"src/**",
     		"platform/Windows/**",
+    		"natvis/**"
     	}
         includedirs {
             ".",

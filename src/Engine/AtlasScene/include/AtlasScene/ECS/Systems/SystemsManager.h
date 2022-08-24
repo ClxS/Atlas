@@ -100,6 +100,18 @@ namespace atlas::scene
             }
         }
 
+        void InitialiseDeferred(SystemsBuilder& builder, EcsManager& ecsManager)
+        {
+            std::cout << "Systems Order:";
+            for (auto& system : builder.m_Systems)
+            {
+                std::cout << std::format("\t{}", system.m_SystemName);
+                m_Systems.push_back(system.m_pSystem);
+            }
+
+            builder.m_Systems.clear();
+        }
+
         void Update(EcsManager& ecsManager) const
         {
             for (const auto& system : m_Systems)
@@ -112,6 +124,8 @@ namespace atlas::scene
         {
             system->Update(ecsManager);
         }
+
+        [[nodiscard]] const std::vector<SystemBase*>& GetSystems() const { return m_Systems; }
 
     private:
         std::vector<SystemBase*> m_Systems;

@@ -4,6 +4,8 @@
 #include <bx/allocator.h>
 #include <bx/bounds.h>
 
+#include "AtlasCore/Colour.h"
+
 namespace atlas::render::debug
 {
     void initialise();
@@ -19,7 +21,7 @@ namespace atlas::render::debug
 
     namespace debug_draw
     {
-        void begin(uint16_t _viewId, bool _depthTestLess = true, bgfx::Encoder* _encoder = NULL);
+        void begin(uint16_t viewId, bool depthTestLess = true, bgfx::Encoder* encoder = nullptr);
 
         void end();
 
@@ -27,71 +29,71 @@ namespace atlas::render::debug
 
         void pop();
 
-        void setDepthTestLess(bool _depthTestLess);
+        void setDepthTestLess(bool depthTestLess);
 
-        void setState(bool _depthTest, bool _depthWrite, bool _clockwise);
+        void setState(bool depthTest, bool depthWrite, bool clockwise);
 
-        void setColor(uint32_t _abgr);
+        void setColor(core::Colour32 colour);
 
-        void setLod(uint8_t _lod);
+        void setLod(uint8_t lod);
 
-        void setWireframe(bool _wireframe);
+        void setWireframe(bool wireframe);
 
-        void setStipple(bool _stipple, float _scale = 1.0f, float _offset = 0.0f);
+        void setStipple(bool stipple, float scale = 1.0f, float offset = 0.0f);
 
-        void setSpin(float _spin);
+        void setSpin(float spin);
 
-        void setTransform(const void* _mtx);
+        void setTransform(const void* mtx);
 
-        void setTranslate(float _x, float _y, float _z);
+        void setTranslate(float x, float y, float z);
 
-        void pushTransform(const void* _mtx);
+        void pushTransform(const void* mtx);
 
         void popTransform();
 
-        void moveTo(float _x, float _y, float _z = 0.0f);
+        void moveTo(float x, float y, float z = 0.0f);
 
-        void moveTo(const bx::Vec3& _pos);
+        void moveTo(const bx::Vec3& pos);
 
-        void lineTo(float _x, float _y, float _z = 0.0f);
+        void lineTo(float x, float y, float z = 0.0f);
 
-        void lineTo(const bx::Vec3& _pos);
+        void lineTo(const bx::Vec3& pos);
 
         void close();
 
-        void draw(const bx::Aabb& _aabb);
+        void draw(const bx::Aabb& aabb);
 
-        void draw(const bx::Cylinder& _cylinder);
+        void draw(const bx::Cylinder& cylinder);
 
-        void draw(const bx::Capsule& _capsule);
+        void draw(const bx::Capsule& capsule);
 
-        void draw(const bx::Disk& _disk);
+        void draw(const bx::Disk& disk);
 
-        void draw(const bx::Obb& _obb);
+        void draw(const bx::Obb& obb);
 
-        void draw(const bx::Sphere& _sphere);
+        void draw(const bx::Sphere& sphere);
 
-        void draw(const bx::Triangle& _triangle);
+        void draw(const bx::Triangle& triangle);
 
-        void draw(const bx::Cone& _cone);
+        void draw(const bx::Cone& cone);
 
-        void drawFrustum(const void* _viewProj);
+        void drawFrustum(const void* viewProj);
 
-        void drawAxis(float _x, float _y, float _z, float _len = 1.0f, float _thickness = 0.0f);
+        void drawAxis(float x, float y, float z, float len = 1.0f, float thickness = 0.0f);
 
-        void drawCircle(const bx::Vec3& _normal, const bx::Vec3& _center, float _radius, float _weight = 0.0f);
+        void drawCircle(const bx::Vec3& normal, const bx::Vec3& center, float radius, float weight = 0.0f);
 
-        void drawQuad(const bx::Vec3& _normal, const bx::Vec3& _center, float _size);
+        void drawQuad(const bx::Vec3& normal, const bx::Vec3& center, float size);
 
-        void drawQuad(bgfx::TextureHandle _handle, const bx::Vec3& _normal, const bx::Vec3& _center, float _size);
+        void drawQuad(bgfx::TextureHandle handle, const bx::Vec3& normal, const bx::Vec3& center, float size);
 
-        void drawCone(const bx::Vec3& _from, const bx::Vec3& _to, float _radius);
+        void drawCone(const bx::Vec3& from, const bx::Vec3& to, float radius);
 
-        void drawCylinder(const bx::Vec3& _from, const bx::Vec3& _to, float _radius);
+        void drawCylinder(const bx::Vec3& from, const bx::Vec3& to, float radius);
 
-        void drawCapsule(const bx::Vec3& _from, const bx::Vec3& _to, float _radius);
+        void drawCapsule(const bx::Vec3& from, const bx::Vec3& to, float radius);
 
-        void drawGrid(const bx::Vec3& _normal, const bx::Vec3& _center, uint32_t _size = 20, float _step = 1.0f);
+        void drawGrid(const bx::Vec3& normal, const bx::Vec3& center, uint32_t size = 20, float step = 1.0f);
 
         DebugDrawEncoderScopePush createScope();
     }

@@ -7,6 +7,8 @@ namespace atlas::game::scene::systems::cameras
     class CameraViewProjectionUpdateSystem final : public atlas::scene::SystemBase
     {
     public:
+        std::string_view GetName() const override { return "CameraViewProjectionUpdateSystem"; }
+
         explicit CameraViewProjectionUpdateSystem(const bgfx::ViewId viewId) : m_ViewId{viewId} {}
         void Initialise(atlas::scene::EcsManager&) override;
         void Update(atlas::scene::EcsManager& ecs) override;

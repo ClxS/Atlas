@@ -1,4 +1,5 @@
 #pragma once
+#include <string_view>
 
 namespace atlas::scene
 {
@@ -8,6 +9,8 @@ namespace atlas::scene
     {
     public:
         virtual ~SystemBase() = default;
+
+        virtual std::string_view GetName() const = 0;
 
         virtual void Initialise(EcsManager&)
         {

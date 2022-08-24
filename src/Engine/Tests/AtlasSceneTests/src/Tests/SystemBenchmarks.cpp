@@ -9,6 +9,8 @@ namespace
     {
         int m_X = 0;
 
+        std::string_view GetName() const override { return "A"; }
+
         void Update(atlas::scene::EcsManager& ecs) override
         {
             for (auto entity : ecs.GetEmptyEntities())
@@ -21,6 +23,8 @@ namespace
     struct B final : public atlas::scene::SystemBase
     {
         int m_X = 0;
+
+        std::string_view GetName() const override { return "B"; }
 
         void Update(atlas::scene::EcsManager& ecs) override
         {

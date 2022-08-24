@@ -13,6 +13,8 @@ public:
     {
     }
 
+    std::string_view GetName() const override { return "TestSystemBase"; }
+
     void Update(atlas::scene::EcsManager& manager) override { m_Callback(manager); }
 
 private:

@@ -2,6 +2,8 @@ function app(name)
     project(name)
         kind "WindowedApp"
     	language "C++"
+        targetdir(imageDirectory)
+        debugdir(imageDirectory)
     	files {
     		"*.lua",
     		"include/**",

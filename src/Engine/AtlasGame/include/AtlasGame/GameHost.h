@@ -9,11 +9,11 @@
 #include <AtlasResource/ResourceLoader.h>
 #include <bgfx/platform.h>
 
-#include "AtlasUI/Rml/RmlConfig.h"
 #include "AtlasRender/Renderer.h"
 #include "AtlasRender/AssetTypes/MeshAsset.h"
 #include "AtlasRender/AssetTypes/ModelAsset.h"
 #include "AtlasTrace/Logging.h"
+#include "AtlasUI/Rml/RmlConfig.h"
 #include "Utility/FrameLimiter.h"
 
 namespace atlas::game
@@ -35,7 +35,7 @@ namespace atlas::game
         }
 
     protected:
-        scene::SceneManager m_SceneManager;
+        atlas::scene::SceneManager m_SceneManager;
     };
 
     template<typename TGameImplementation>
