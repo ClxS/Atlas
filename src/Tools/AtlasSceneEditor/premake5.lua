@@ -9,4 +9,7 @@ app "AtlasSceneEditor"
         "AtlasScene",
         "AtlasResource",
         "AtlasRender",
+
+        "grpc"
     }
+    generateRpcServices()

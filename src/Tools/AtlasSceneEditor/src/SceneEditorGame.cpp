@@ -1,13 +1,28 @@
 ﻿#include "AtlasSceneEditorPCH.h"
 
 #include "SceneEditorState.h"
+#include "TestService.h"
 #include "AtlasGame/GameHost.h"
+#include "AtlasGame/Scene/Components/PositionComponent.h"
+#include "AtlasGame/Scene/Components/Cameras/FreeCameraComponent.h"
+#include "AtlasGame/Scene/Components/Cameras/LookAtCameraComponent.h"
+#include "AtlasGame/Scene/Components/Cameras/SphericalLookAtCameraComponent.h"
+#include "AtlasGame/Scene/Components/Lighting/DirectionalLightComponent.h"
 #include "Utility/Constants.h"
 
 namespace
 {
     void registerComponents()
     {
+        using namespace atlas::resource;
+        using namespace atlas::scene;
+        using namespace atlas::game::scene::systems::cameras;
+        ComponentRegistry::RegisterComponent<atlas::game::scene::components::cameras::LookAtCameraComponent>();
+        ComponentRegistry::RegisterComponent<atlas::game::scene::components::cameras::SphericalLookAtCameraComponent>();
+        ComponentRegistry::RegisterComponent<atlas::game::scene::components::cameras::SphericalLookAtCameraComponent_Private>();
+        ComponentRegistry::RegisterComponent<atlas::game::scene::components::cameras::FreeCameraComponent>();
+        ComponentRegistry::RegisterComponent<atlas::game::scene::components::PositionComponent>();
+        ComponentRegistry::RegisterComponent<atlas::game::scene::components::cameras::DirectionalLightComponent>();
     }
 
     void registerAssetBundles()
@@ -43,6 +58,11 @@ namespace
             setBgfxSettings();
 
             m_SceneManager.TransitionTo<atlas::scene_editor::SceneEditorState>();
+        }
+
+        void RegisterRpc(atlas::rpc::RpcServer& server) override
+        {
+            server.RegisterService<atlas::scene_editor::rpc::TestServiceImpl>();
         }
     };
 }

@@ -9,6 +9,7 @@
 #include <AtlasResource/ResourceLoader.h>
 #include <bgfx/platform.h>
 
+#include "../../../AtlasRpc/include/AtlasRpc/RpcManager.h"
 #include "AtlasRender/Renderer.h"
 #include "AtlasRender/AssetTypes/MeshAsset.h"
 #include "AtlasRender/AssetTypes/ModelAsset.h"
@@ -33,6 +34,7 @@ namespace atlas::game
         {
             m_SceneManager.Update();
         }
+        virtual void RegisterRpc(rpc::RpcServer& server) {}
 
     protected:
         atlas::scene::SceneManager m_SceneManager;
@@ -152,6 +154,8 @@ namespace atlas::game
             }
 
             m_Game.OnStartup();
+            m_Game.RegisterRpc(m_RpcServer);
+            m_RpcServer.Initialise();
 
             auto& app = app_host::Application::Get();
             while(true)
@@ -170,5 +174,6 @@ namespace atlas::game
     private:
         Args m_GameArguments;
         TGameImplementation m_Game;
+        rpc::RpcServer m_RpcServer;
     };
 }

@@ -3,6 +3,7 @@
 
 #include "AtlasGame/Scene/Components/Cameras/LookAtCameraComponent.h"
 #include "AtlasGame/Scene/Components/Cameras/SphericalLookAtCameraComponent.h"
+#include "AtlasGame/Scene/Components/Debug/DebugAxisComponent.h"
 #include "AtlasGame/Scene/Components/Lighting/DirectionalLightComponent.h"
 #include "AtlasGame/Scene/Systems/Debug/DebugAxisInputSystem.h"
 #include "AtlasRender/Renderer.h"
@@ -30,7 +31,14 @@ namespace
 
         light.m_LightDirection.normalize();
     }
+
+    void addDebugRenderingComponents(atlas::scene::EcsManager& ecs)
+    {
+        const auto axisEntity = ecs.AddEntity();
+        ecs.AddComponent<atlas::game::scene::components::debug::DebugAxisComponent>(axisEntity);
+    }
 }
+
 
 void atlas::scene_editor::SceneEditorState::OnEntered(scene::SceneManager& sceneManager)
 {
@@ -38,6 +46,7 @@ void atlas::scene_editor::SceneEditorState::OnEntered(scene::SceneManager& scene
 
     addCameras(ecs);
     addLights(ecs);
+    addDebugRenderingComponents(ecs);
 
     EcsScene::OnEntered(sceneManager);
 }

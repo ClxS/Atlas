@@ -141,3 +141,8 @@ function deindent(s, keep_trailing_empty)
 
 	return table.concat(res, newline)
 end
+
+function getDirectory(str,sep)
+    sep=sep or'/'
+    return str:match("(.*"..sep..")")
+end

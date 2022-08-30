@@ -15,6 +15,7 @@ function includeEngine()
     include(engineRoot .. "/src/Engine/AtlasMaths")
     include(engineRoot .. "/src/Engine/AtlasRender")
     include(engineRoot .. "/src/Engine/AtlasResource")
+    include(engineRoot .. "/src/Engine/AtlasRpc")
     include(engineRoot .. "/src/Engine/AtlasScene")
     include(engineRoot .. "/src/Engine/AtlasTrace")
     include(engineRoot .. "/src/Engine/AtlasUI")
@@ -36,11 +37,15 @@ function includeEngineThirdParty()
 	include(engineRoot .. '/src/ThirdParty/sdlimage.lua')
 	include(engineRoot .. '/src/ThirdParty/tomlcpp.lua')
 	include(engineRoot .. '/src/ThirdParty/fmt.lua')
+	include(engineRoot .. '/src/ThirdParty/zlib.lua')
 
 	group("Engine/ThirdParty/bgfx")
 	include(engineRoot .. '/src/ThirdParty/bgfx.lua')
 	include(engineRoot .. '/src/ThirdParty/bimg.lua')
 	include(engineRoot .. '/src/ThirdParty/bx.lua')
+
+	group("Engine/ThirdParty/gRPC")
+	include(engineRoot .. '/src/ThirdParty/grpc.lua')
 end
 
 function includeEngineTests()

@@ -24,11 +24,11 @@ namespace cppconv::tools::arg_parser
     struct ArgumentParameterBase
     {
         ArgumentParameterBase(std::string name, bool isRequired, const char argSwitch, std::string longSwitch, bool(*readFunc)(const std::string&, void*))
-            : m_Name(std::move(name))
-            , m_bIsRequired(isRequired)
-            , m_Switch(argSwitch)
-            , m_SwitchLong(std::move(longSwitch))
-            , m_ReadFunc(readFunc)
+            : m_Name{std::move(name)}
+            , m_bIsRequired{isRequired}
+            , m_Switch{argSwitch}
+            , m_SwitchLong{std::move(longSwitch)}
+            , m_ReadFunc{readFunc}
         {
         }
         virtual ~ArgumentParameterBase() = default;

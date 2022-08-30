@@ -7,6 +7,7 @@ lib "AtlasGame"
             "AtlasScene",
             "AtlasRender",
             "AtlasResource",
+            "AtlasRpc",
             "AtlasAppHost",
             "AtlasTrace",
 

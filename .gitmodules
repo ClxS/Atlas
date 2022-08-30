@@ -49,3 +49,6 @@
 [submodule "src/ThirdParty/eigen"]
 	path = src/ThirdParty/eigen
 	url = https://gitlab.com/libeigen/eigen.git
+[submodule "src/ThirdParty/grpc"]
+	path = src/ThirdParty/grpc
+	url = https://github.com/grpc/grpc.git
