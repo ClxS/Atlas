@@ -67,7 +67,6 @@ project "abseil-cpp"
         '**/benchmarks.cc',
         '**/*_test_*.cc',
         '**/*_nonprod.cc',
-        '**/debugging/**',
     }
     defines {
         'WIN32_LEAN_AND_MEAN',
@@ -87,6 +86,7 @@ project "upb"
         ["includedirs"] = {
             path.getabsolute('grpc/third_party/upb'),
             path.getabsolute('grpc/third_party/upb/generated_for_cmake'),
+            path.getabsolute('grpc/src/core/ext/upbdefs-generated'),
         },
         ["links"] = {
             'protobuf',
@@ -106,6 +106,7 @@ project "upb"
         '**/bindings/lua/**',
     }
     includedirs {
+        'grpc/src/core/ext/upbdefs-generated',
         'grpc/src/core/ext/upb-generated',
     }
     excludes {
@@ -147,6 +148,7 @@ project "grpc"
     }
     language "C++"
     files {
+        'grpc.lua',
         'grpc/include/**',
         'grpc/src/cpp/**',
         'grpc/src/core/**',
@@ -154,27 +156,24 @@ project "grpc"
     excludes {
         '**/init_secure.cc',
 		'**/secure_create_auth_context.cc',
-		'**/grpc_plugin_registry.cc',
 		'**/grpc_cronet_plugin_registry.cc',
 		'**/xds_channel_secure.cc',
 		'**/grpclb_channel_secure.cc',
-		'**/filters/census/**',
-		'**/filters/load_reporting/**',
-		'**/transport/cronet/**',
 		'**/server/load_reporter/**',
-		'**/ext/filters/**',
-		'**/ext/xds/**',
-		'**/tsi/ssl/**',
-		'**/tsi/test_creds/**',
-		'**/lib/security/**',
-		'**/ext/*reflection*',
-		'**/ssl_transport_security.*',
-		'**/tsi/alts/crypt/**',
-		'**/httpcli_security_connector.cc',
+		'**/load_reporting/**',
+        '**/census/**',
+        '**.BUILD',
+    }
+    files {
+        '**/census/grpc_context.cc',
+    }
+    excludes {
+        '**/google_c2p/**',
     }
     includedirs {
         path.getabsolute('grpc'),
         path.getabsolute('grpc/third_party/cares/cares/include'),
+        path.getabsolute('grpc/third_party/xxhash'),
     }
     defines {
         'WIN32_LEAN_AND_MEAN',
@@ -182,6 +181,7 @@ project "grpc"
     }
     links {
         'Ws2_32.lib',
+        'OpenSSL'
     }
 
     warnings "Off"
@@ -214,11 +214,6 @@ project "grpc"
     }
 	includedirs {
 	    'grpc/third_party/re2',
-	}
-
-    excludes {
-	    'grpc/src/core/ext/upb-generated/**',
-	    'grpc/src/core/ext/upbdefs-generated/**',
 	}
 
 local function runCompiler(matches, include, outType, extraArgs)
