@@ -38,6 +38,7 @@ function includeEngineThirdParty()
 	include(engineRoot .. '/src/ThirdParty/tomlcpp.lua')
 	include(engineRoot .. '/src/ThirdParty/fmt.lua')
 	include(engineRoot .. '/src/ThirdParty/zlib.lua')
+	include(engineRoot .. '/src/ThirdParty/openssl.lua')
 
 	group("Engine/ThirdParty/bgfx")
 	include(engineRoot .. '/src/ThirdParty/bgfx.lua')
