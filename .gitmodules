@@ -52,3 +52,6 @@
 [submodule "src/ThirdParty/grpc"]
 	path = src/ThirdParty/grpc
 	url = https://github.com/grpc/grpc.git
+[submodule "src/ThirdParty/openssl"]
+	path = src/ThirdParty/openssl
+	url = https://github.com/openssl/openssl.git
