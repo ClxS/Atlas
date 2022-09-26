@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "RpcManager.h"
+#include "AsyncResponderFactory.h"
 
 namespace atlas::rpc
 {
@@ -13,6 +13,8 @@ namespace atlas::rpc
         IAsyncEndpoint& operator=(const IAsyncEndpoint&) = delete;
         IAsyncEndpoint& operator=(IAsyncEndpoint&&) = delete;
 
-        virtual std::vector<std::unique_ptr<IAsyncResponderFactory>> GetEndpointFactories() = 0;
+        virtual grpc::Service* GetService() = 0;
+
+        virtual void GetEndpointFactories(std::vector<std::unique_ptr<IAsyncResponderFactory>>& methods) = 0;
     };
 }

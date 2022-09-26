@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+#include <functional>
+#include <grpcpp/server.h>
+
 namespace atlas::rpc
 {
     template<typename TRequest, typename TResponse>

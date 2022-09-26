@@ -10,12 +10,15 @@ namespace atlas::scene_editor::rpc
     class TestServiceImpl final : public EchoService::AsyncService, public atlas::rpc::IAsyncEndpoint
     {
     public:
-        std::vector<std::unique_ptr<atlas::rpc::IAsyncResponderFactory>> GetEndpointFactories() override
+        grpc::Service* GetService() override
         {
-            return {{
-                ATLAS_RPC_BIND_METHOD(SendEcho, Echo, EchoResponse),
-                ATLAS_RPC_BIND_METHOD(SendEchoReverse, Echo, EchoResponse),
-            }};
+            return this;
+        }
+
+        void GetEndpointFactories(std::vector<std::unique_ptr<atlas::rpc::IAsyncResponderFactory>>& methods) override
+        {
+            methods.push_back(ATLAS_RPC_BIND_METHOD(SendEcho, Echo, EchoResponse));
+            methods.push_back(ATLAS_RPC_BIND_METHOD(SendEchoReverse, Echo, EchoResponse));
         }
 
         ::grpc::Status SendEcho(::grpc::ServerContext* context, const ::Echo* request, ::EchoResponse* response) override

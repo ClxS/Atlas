@@ -1,5 +1,7 @@
 ﻿#pragma once
-#include "IAsyncResponder.h"
+#include "AsyncResponder.h"
+#include "IAsyncResponderFactory.h"
+#include "MethodDefinitions.h"
 
 namespace grpc
 {
@@ -8,21 +10,8 @@ namespace grpc
 
 namespace atlas::rpc
 {
-    class IAsyncResponderFactory
-    {
-    public:
-        IAsyncResponderFactory() = default;
-        virtual ~IAsyncResponderFactory() = default;
-        IAsyncResponderFactory(const IAsyncResponderFactory&) = delete;
-        IAsyncResponderFactory(IAsyncResponderFactory&&) = delete;
-        IAsyncResponderFactory& operator=(const IAsyncResponderFactory&) = delete;
-        IAsyncResponderFactory& operator=(IAsyncResponderFactory&&) = delete;
-
-        virtual IAsyncResponder* Create(grpc::ServerCompletionQueue* completionQueue) = 0;
-    };
-
     template<typename TRequest, typename TResponse>
-    class AsyncResponderFactory : public IAsyncResponderFactory
+    class AsyncResponderFactory final : public IAsyncResponderFactory
     {
     public:
         AsyncResponderFactory(

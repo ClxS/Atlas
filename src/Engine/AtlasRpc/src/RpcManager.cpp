@@ -3,6 +3,7 @@
 
 #include <grpc++/server_builder.h>
 
+#include "AsyncResponder.h"
 #include "AsyncRpcService.h"
 #include "AtlasTrace/Logging.h"
 
@@ -16,7 +17,14 @@ void atlas::rpc::RpcServer::Initialise(const uint16_t port)
 
     for (const auto& service : m_Services)
     {
-        builder.RegisterService(reinterpret_cast<grpc::Service*>(service.get()));
+        grpc::Service* pService = service->GetService();
+        if (!pService)
+        {
+            AT_ERROR(Rpc, "AsyncEndpoint GetService returned nullptr");
+            continue;
+        }
+
+        builder.RegisterService(pService);
     }
 
     m_CompletionQueue = builder.AddCompletionQueue();
@@ -30,7 +38,9 @@ void atlas::rpc::RpcServer::Initialise(const uint16_t port)
 
             for (const auto& service : m_Services)
             {
-                for(const auto& factory : service->GetEndpointFactories())
+                std::vector<std::unique_ptr<IAsyncResponderFactory>> methods;
+                service->GetEndpointFactories(methods);
+                for(const auto& factory : methods)
                 {
                     factory->Create(m_CompletionQueue.get())->Bind();
                 }

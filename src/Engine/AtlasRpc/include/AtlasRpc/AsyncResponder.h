@@ -1,21 +1,11 @@
 ﻿#pragma once
 
+#include "IAsyncReponder.h"
+#include "IAsyncResponderFactory.h"
+#include "MethodDefinitions.h"
+
 namespace atlas::rpc
 {
-    class IAsyncResponder
-    {
-    public:
-        IAsyncResponder() = default;
-        virtual ~IAsyncResponder() = default;
-        IAsyncResponder(const IAsyncResponder&) = delete;
-        IAsyncResponder(IAsyncResponder&&) = delete;
-        IAsyncResponder& operator=(const IAsyncResponder&) = delete;
-        IAsyncResponder& operator=(IAsyncResponder&&) = delete;
-
-        virtual void Bind() = 0;
-        virtual void Process() = 0;
-    };
-
     template<typename TRequest, typename TResponse>
     class AsyncResponder final : public IAsyncResponder
     {
@@ -26,16 +16,16 @@ namespace atlas::rpc
             BindMethod<TRequest, TResponse>& bind,
             InvokeMethod<TRequest, TResponse>& invoke)
                 : m_Factory{parentFactory}
-        , m_CompletionQueue{completionQueue}
-        , m_Responder{m_Context}
-        , m_BindCallback{bind}
-        , m_InvokeCallback{invoke}
+                , m_CompletionQueue{completionQueue}
+                , m_Responder{&m_Context}
+                , m_BindCallback{bind}
+                , m_InvokeCallback{invoke}
         {
         }
 
         void Bind() override
         {
-            m_BindCallback(&m_Context, &m_Request, &m_Response, &m_CompletionQueue, &m_CompletionQueue, this);
+            m_BindCallback(&m_Context, &m_Request, &m_Responder, m_CompletionQueue, m_CompletionQueue, this);
         }
 
         void Process() override

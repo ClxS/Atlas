@@ -7,6 +7,7 @@
 #include "AtlasGame/Scene/Components/Cameras/FreeCameraComponent.h"
 #include "AtlasGame/Scene/Components/Cameras/LookAtCameraComponent.h"
 #include "AtlasGame/Scene/Components/Cameras/SphericalLookAtCameraComponent.h"
+#include "AtlasGame/Scene/Components/Debug/DebugAxisComponent.h"
 #include "AtlasGame/Scene/Components/Lighting/DirectionalLightComponent.h"
 #include "Utility/Constants.h"
 
@@ -21,8 +22,9 @@ namespace
         ComponentRegistry::RegisterComponent<atlas::game::scene::components::cameras::SphericalLookAtCameraComponent>();
         ComponentRegistry::RegisterComponent<atlas::game::scene::components::cameras::SphericalLookAtCameraComponent_Private>();
         ComponentRegistry::RegisterComponent<atlas::game::scene::components::cameras::FreeCameraComponent>();
-        ComponentRegistry::RegisterComponent<atlas::game::scene::components::PositionComponent>();
         ComponentRegistry::RegisterComponent<atlas::game::scene::components::cameras::DirectionalLightComponent>();
+        ComponentRegistry::RegisterComponent<atlas::game::scene::components::PositionComponent>();
+        ComponentRegistry::RegisterComponent<atlas::game::scene::components::debug::DebugAxisComponent>();
     }
 
     void registerAssetBundles()

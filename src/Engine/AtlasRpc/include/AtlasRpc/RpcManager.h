@@ -6,6 +6,9 @@
 
 #include <grpcpp/server.h>
 
+#include "AsyncRpcService.h"
+#include "MethodDefinitions.h"
+
 namespace grpc
 {
     class Service;
@@ -13,11 +16,10 @@ namespace grpc
 
 namespace atlas::rpc
 {
-
 #define ATLAS_RPC_BIND_METHOD(METHOD, REQUEST, RESPONSE) \
     std::make_unique<atlas::rpc::AsyncResponderFactory<REQUEST, RESPONSE>>(\
-        [this](auto a, auto b, auto c, auto d, auto e, auto f) { Request##METHOD(a, b, c, d, e, f); },\
-        [this](auto a, auto b, auto c) { return METHOD(a, b, c); })
+    [this](auto a, auto b, auto c, auto d, auto e, auto f) { Request##METHOD(a, b, c, d, e, f); },\
+    [this](auto a, auto b, auto c) { return METHOD(a, b, c); })
 
     constexpr uint16_t c_DefaultRpcPort = 50051;
 
@@ -25,7 +27,13 @@ namespace atlas::rpc
     {
     public:
         void Initialise(uint16_t port = c_DefaultRpcPort);
+        RpcServer() = default;
         ~RpcServer();
+
+        RpcServer(const RpcServer&) = delete;
+        RpcServer& operator=(const RpcServer&) = delete;
+        RpcServer(RpcServer&&) = delete;
+        RpcServer& operator=(RpcServer&&) = delete;
 
         void RegisterService(std::unique_ptr<IAsyncEndpoint>&& service);
 
