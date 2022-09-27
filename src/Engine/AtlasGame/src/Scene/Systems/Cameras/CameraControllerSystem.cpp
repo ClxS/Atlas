@@ -2,13 +2,13 @@
 #include "Scene/Systems/Cameras/CameraControllerSystem.h"
 
 #include "imgui.h"
+#include "LookAtCameraComponent.h"
 #include "AtlasScene/ECS/Components/EcsManager.h"
 #include "SDL_mouse.h"
 #include "SDL_keyboard.h"
+#include "SphericalLookAtCameraComponent.h"
 #include "AtlasAppHost/Application.h"
 #include "bx/math.h"
-#include "Scene/Components/Cameras/LookAtCameraComponent.h"
-#include "Scene/Components/Cameras/SphericalLookAtCameraComponent.h"
 
 namespace
 {
@@ -17,7 +17,7 @@ namespace
     constexpr float c_keyboardMoveScaling = 0.1f;
 
     std::tuple<Eigen::Vector3f, Eigen::Vector3f> getForwardAndRight(
-        const atlas::game::scene::components::cameras::LookAtCameraComponent& camera,
+        const atlas::game::LookAtCameraComponent& camera,
         const Eigen::Vector3f& up = { 0.0f, 1.0f, 0.0f })
     {
         Eigen::Matrix3f cameraRotation;
@@ -47,7 +47,7 @@ namespace
         }
     }
 
-    void moveCamera(atlas::game::scene::components::cameras::SphericalLookAtCameraComponent& camera, float forwardMovement, float rightMovement)
+    void moveCamera(atlas::game::SphericalLookAtCameraComponent& camera, float forwardMovement, float rightMovement)
     {
         Eigen::Vector3f cameraForwardVector;
         Eigen::Vector3f cameraRightVector;
@@ -77,7 +77,7 @@ namespace
     }
 
 
-    bool updateControls(atlas::game::scene::components::cameras::LookAtCameraComponent& camera)
+    bool updateControls(atlas::game::LookAtCameraComponent& camera)
     {
         // TODO These should be moved into AtlasInput as non-statics once it exists
         static int previousMouseX = 0;
@@ -140,7 +140,7 @@ namespace
         return true;
     }
 
-    bool updateControls(atlas::game::scene::components::cameras::SphericalLookAtCameraComponent& camera)
+    bool updateControls(atlas::game::SphericalLookAtCameraComponent& camera)
     {
         // TODO These should be moved into AtlasInput as non-statics once it exists
         static int previousMouseX = 0;
@@ -196,9 +196,9 @@ void atlas::game::scene::systems::cameras::CameraControllerSystem::Update(atlas:
         return;
     }
 
-    for(auto [entity, camera] : ecs.IterateEntityComponents<components::cameras::LookAtCameraComponent>())
+    for(auto [entity, camera] : ecs.IterateEntityComponents<LookAtCameraComponent>())
     {
-        if (!camera.m_bIsControlActive)
+        if (!camera.m_IsControlActive)
         {
             continue;
         }
@@ -206,9 +206,9 @@ void atlas::game::scene::systems::cameras::CameraControllerSystem::Update(atlas:
         updateControls(camera);
     }
 
-    for(auto [entity, camera] : ecs.IterateEntityComponents<components::cameras::SphericalLookAtCameraComponent>())
+    for(auto [entity, camera] : ecs.IterateEntityComponents<SphericalLookAtCameraComponent>())
     {
-        if (!camera.m_bIsControlActive)
+        if (!camera.m_IsControlActive)
         {
             continue;
         }

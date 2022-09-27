@@ -22,6 +22,7 @@ function includeEngine()
 
     group("Engine/Tools")
     include(engineRoot .. "/src/Tools/AtlasSceneEditor")
+    include(engineRoot .. "/src/Tools/ComponentGenerator")
 end
 
 function includeEngineThirdParty()
@@ -37,6 +38,7 @@ function includeEngineThirdParty()
 	include(engineRoot .. '/src/ThirdParty/sdlimage.lua')
 	include(engineRoot .. '/src/ThirdParty/tomlcpp.lua')
 	include(engineRoot .. '/src/ThirdParty/fmt.lua')
+	include(engineRoot .. '/src/ThirdParty/tinyxml2.lua')
 	include(engineRoot .. '/src/ThirdParty/zlib.lua')
 	include(engineRoot .. '/src/ThirdParty/openssl.lua')
 

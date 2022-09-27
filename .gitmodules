@@ -57,3 +57,6 @@
 	path = src/ThirdParty/openssl
 	url = https://github.com/openssl/openssl.git
 	ignore = dirty
+[submodule "src/ThirdParty/tinyxml2"]
+	path = src/ThirdParty/tinyxml2
+	url = https://github.com/ClxS/tinyxml2

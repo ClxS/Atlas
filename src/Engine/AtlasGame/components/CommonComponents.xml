@@ -1,0 +1,5 @@
+<Components>
+    <Position>
+        <Position Type="Vector3f" />
+    </Position>
+</Components>

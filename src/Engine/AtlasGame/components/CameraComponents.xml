@@ -1,0 +1,39 @@
+<Components>
+    <BaseCamera>
+        <ViewMatrix Type="Matrix4f" />
+        <ProjectionMatrix Type="Matrix4f" />
+        <NearFar Type="Vector2f" Default="0.01f, 100.0f" />
+        <IsRenderActive Type="bool" />
+        <IsControlActive Type="bool" />
+    </BaseCamera>
+
+    <FreeCamera Inherits="BaseCamera">
+        <CameraPosition Type="Vector3f" />
+        <Orientation Type="Quaternionf" />
+    </FreeCamera>
+
+    <LookAtCamera Inherits="BaseCamera">
+        <Up Type="Vector3f" Default="0.0f, 1.0f, 0.0f" />
+        <LookAtPoint Type="Vector3f" Default="7.0f, 0.0f, 0.0f" />
+        <Yaw Type="Angle" />
+        <Pitch Type="Angle" />
+        <Distance Type="float" Default="1.0f" />
+    </LookAtCamera>
+
+    <SphericalLookAtCamera Inherits="BaseCamera">
+        <SphericalCentre Type="Vector3f" />
+        <SphericalCentreDistance Type="float" Default="1.0f" />
+        <LookAtYaw Type="Angle" />
+        <LookAtPitch Type="Angle" />
+        <CameraYaw Type="Angle" />
+        <CameraPitch Type="Angle" />
+        <Distance Type="float" Default="1.0f" />
+    </SphericalLookAtCamera>
+
+    <SphericalLookAtCamera Private="true">
+        <LookAt Type="Vector3f" />
+        <Camera Type="Vector3f" />
+        <View Type="Matrix4f" />
+        <Projection Type="Matrix4f" />
+    </SphericalLookAtCamera>
+</Components>

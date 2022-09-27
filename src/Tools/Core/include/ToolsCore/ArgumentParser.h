@@ -2,6 +2,7 @@
 #include <functional>
 #include <string>
 #include <vector>
+#include <filesystem>
 
 namespace cppconv::tools::arg_parser
 {
@@ -20,6 +21,7 @@ namespace cppconv::tools::arg_parser
     DEFINE_ARG_TYPE_HANDLER(float);
     DEFINE_ARG_TYPE_HANDLER(std::string);
     DEFINE_ARG_TYPE_HANDLER(std::vector<std::string>);
+    DEFINE_ARG_TYPE_HANDLER(std::filesystem::path);
 
     struct ArgumentParameterBase
     {

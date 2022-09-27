@@ -2,19 +2,19 @@
 #include "AtlasGamePCH.h"
 #include "Scene/Systems/Cameras/CameraViewProjectionUpdateSystem.h"
 
+#include "LookAtCameraComponent.h"
+#include "SphericalLookAtCameraComponent.h"
+#include "SphericalLookAtCameraComponent_Private.h"
 #include "AtlasAppHost/Application.h"
 #include "AtlasRender/Debug/DebugDraw.h"
 #include "AtlasScene/ECS/Components/EcsManager.h"
 #include "bgfx/bgfx.h"
 #include "bx/math.h"
-#include "Scene/Components/Cameras/LookAtCameraComponent.h"
-#include "Scene/Components/Cameras/SphericalLookAtCameraComponent.h"
 
-using namespace atlas::game::scene::components::cameras;
 
 namespace
 {
-    void updateViewProjectMatrix(const bgfx::ViewId viewId, const LookAtCameraComponent& camera)
+    void updateViewProjectMatrix(const bgfx::ViewId viewId, const atlas::game::LookAtCameraComponent& camera)
     {
         Eigen::Matrix3f cameraRotation;
         cameraRotation =
@@ -34,13 +34,13 @@ namespace
             100.0f,
             bgfx::getCaps()->homogeneousDepth);
 
-        if (camera.m_bIsRenderActive)
+        if (camera.m_IsRenderActive)
         {
             bgfx::setViewTransform(viewId, view.data(), projection.data());
         }
     }
 
-    void updateViewProjectMatrix(const bgfx::ViewId viewId, const SphericalLookAtCameraComponent& camera, SphericalLookAtCameraComponent_Private& cameraPrivate, bool bAddDebugRendering)
+    void updateViewProjectMatrix(const bgfx::ViewId viewId, const atlas::game::SphericalLookAtCameraComponent& camera, atlas::game::SphericalLookAtCameraComponent_Private& cameraPrivate, bool bAddDebugRendering)
     {
         Eigen::Vector3f upVector;
         Eigen::Vector3f forwardVector;
@@ -81,7 +81,7 @@ namespace
         cameraPrivate.m_View = view;
         cameraPrivate.m_Projection = projection;
 
-        if (camera.m_bIsRenderActive)
+        if (camera.m_IsRenderActive)
         {
             bgfx::setViewTransform(viewId, view.data(), projection.data());
         }
@@ -182,7 +182,7 @@ void atlas::game::scene::systems::cameras::CameraViewProjectionUpdateSystem::Upd
 
     for(auto [entity, camera] : ecs.IterateEntityComponents<LookAtCameraComponent>())
     {
-        if (!camera.m_bIsRenderActive)
+        if (!camera.m_IsRenderActive)
         {
             continue;
         }

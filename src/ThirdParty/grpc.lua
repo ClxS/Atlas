@@ -162,7 +162,6 @@ project "grpc"
 		'**/server/load_reporter/**',
 		'**/load_reporting/**',
         '**/census/**',
-        '**.BUILD',
     }
     files {
         '**/census/grpc_context.cc',
@@ -211,6 +210,7 @@ project "grpc"
 	excludes {
 		'**/fuzz.cc',
 		'**/re2_fuzzer.cc',
+        '**.BUILD',
     }
 	includedirs {
 	    'grpc/third_party/re2',

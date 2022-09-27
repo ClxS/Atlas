@@ -13,3 +13,4 @@ app "AtlasSceneEditor"
         "grpc"
     }
     generateRpcServices()
+    generateCoreComponentRegistry("atlas::scene_editor", { 'engine', 'scene_editor' });

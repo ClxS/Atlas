@@ -1,21 +1,19 @@
 ﻿#include "AtlasSceneEditorPCH.h"
 #include "SceneEditorState.h"
 
-#include "AtlasGame/Scene/Components/Cameras/LookAtCameraComponent.h"
-#include "AtlasGame/Scene/Components/Cameras/SphericalLookAtCameraComponent.h"
-#include "AtlasGame/Scene/Components/Debug/DebugAxisComponent.h"
-#include "AtlasGame/Scene/Components/Lighting/DirectionalLightComponent.h"
+#include "AtlasGame/Components/DebugAxisComponent.h"
+#include "AtlasGame/Components/DirectionalLightComponent.h"
+#include "AtlasGame/Components/LookAtCameraComponent.h"
 #include "AtlasGame/Scene/Systems/Debug/DebugAxisInputSystem.h"
-#include "AtlasRender/Renderer.h"
 
 namespace
 {
     void addCameras(atlas::scene::EcsManager& ecs)
     {
         const auto cameraEntity = ecs.AddEntity();
-        auto& camera2 = ecs.AddComponent<atlas::game::scene::components::cameras::LookAtCameraComponent>(cameraEntity);
-        camera2.m_bIsRenderActive = false;
-        camera2.m_bIsControlActive = false;
+        auto& camera2 = ecs.AddComponent<atlas::game::LookAtCameraComponent>(cameraEntity);
+        camera2.m_IsRenderActive = false;
+        camera2.m_IsControlActive = false;
         camera2.m_Distance = 25.0f;
         camera2.m_LookAtPoint = {0.0f, 0.0f, 0.0f};
         camera2.m_Pitch = 30.0_degrees;
@@ -25,17 +23,17 @@ namespace
     void addLights(atlas::scene::EcsManager& ecs)
     {
         const auto lightEntity = ecs.AddEntity();
-        auto& light = ecs.AddComponent<atlas::game::scene::components::cameras::DirectionalLightComponent>(lightEntity);
-        light.m_LightDirection = {0.08f, -0.5, -0.70f };
-        light.m_LightColour = {1.0, 1.0, 1.0, 1.0f};
+        auto& light = ecs.AddComponent<atlas::game::DirectionalLightComponent>(lightEntity);
+        light.m_Direction = {0.08f, -0.5, -0.70f };
+        light.m_Colour = 0xffffffff_argb;
 
-        light.m_LightDirection.normalize();
+        light.m_Direction.normalize();
     }
 
     void addDebugRenderingComponents(atlas::scene::EcsManager& ecs)
     {
         const auto axisEntity = ecs.AddEntity();
-        ecs.AddComponent<atlas::game::scene::components::debug::DebugAxisComponent>(axisEntity);
+        ecs.AddComponent<atlas::game::DebugAxisComponent>(axisEntity);
     }
 }
 

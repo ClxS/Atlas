@@ -15,3 +15,5 @@ lib "AtlasGame"
             "RmlUI",
         }
     }
+
+    generateComponents("engine", "atlas::game");

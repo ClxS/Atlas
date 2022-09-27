@@ -39,6 +39,13 @@ bool cppconv::tools::arg_parser::TypedArgReader<std::string>::Read(const std::st
     return true;
 }
 
+bool cppconv::tools::arg_parser::TypedArgReader<std::filesystem::path>::Read(const std::string& value, void* pTargetVariable)
+{
+    const auto typedTarget = static_cast<std::filesystem::path*>(pTargetVariable);
+    *typedTarget = value;
+    return true;
+}
+
 bool cppconv::tools::arg_parser::TypedArgReader<std::vector<std::string>>::Read(const std::string& value, void* pTargetVariable)
 {
     const auto typedTarget = static_cast<std::vector<std::string>*>(pTargetVariable);
