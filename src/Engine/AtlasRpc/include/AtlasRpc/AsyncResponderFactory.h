@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "AsyncResponder.h"
 #include "IAsyncResponderFactory.h"
 #include "MethodDefinitions.h"
@@ -16,19 +16,22 @@ namespace atlas::rpc
     public:
         AsyncResponderFactory(
             BindMethod<TRequest, TResponse> bind,
-            InvokeMethod<TRequest, TResponse> invoke)
+            InvokeMethod<TRequest, TResponse> invoke,
+            InvokeAsyncMethod<TRequest, TResponse> invokeAsync)
                 : m_BindCallback{bind}
-        , m_InvokeCallback{invoke}
+                , m_InvokeCallback{invoke}
+                , m_InvokeAsyncCallback{invokeAsync}
         {
         }
 
         IAsyncResponder* Create(grpc::ServerCompletionQueue* completionQueue) override
         {
-            return new AsyncResponder<TRequest, TResponse>(*this, completionQueue, m_BindCallback, m_InvokeCallback);
+            return new AsyncResponder<TRequest, TResponse>(*this, completionQueue, m_BindCallback, m_InvokeCallback, m_InvokeAsyncCallback);
         }
 
     private:
         BindMethod<TRequest, TResponse> m_BindCallback;
         InvokeMethod<TRequest, TResponse> m_InvokeCallback;
+        InvokeAsyncMethod<TRequest, TResponse> m_InvokeAsyncCallback;
     };
 }

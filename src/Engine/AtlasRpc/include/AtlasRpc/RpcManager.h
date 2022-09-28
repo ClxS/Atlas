@@ -1,13 +1,11 @@
 #pragma once
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include <grpcpp/server.h>
 
 #include "AsyncRpcService.h"
-#include "MethodDefinitions.h"
 
 namespace grpc
 {
@@ -19,9 +17,16 @@ namespace atlas::rpc
 #define ATLAS_RPC_BIND_METHOD(METHOD, REQUEST, RESPONSE) \
     std::make_unique<atlas::rpc::AsyncResponderFactory<REQUEST, RESPONSE>>(\
     [this](auto a, auto b, auto c, auto d, auto e, auto f) { Request##METHOD(a, b, c, d, e, f); },\
-    [this](auto a, auto b, auto c) { return METHOD(a, b, c); })
+    [this](auto a, auto b, auto c) { return METHOD(a, b, c); },\
+    nullptr)
 
-    constexpr uint16_t c_DefaultRpcPort = 50051;
+#define ATLAS_RPC_BIND_ASYNC_METHOD(METHOD, REQUEST, RESPONSE) \
+    std::make_unique<atlas::rpc::AsyncResponderFactory<REQUEST, RESPONSE>>(\
+    [this](auto a, auto b, auto c, auto d, auto e, auto f) { Request##METHOD(a, b, c, d, e, f); },\
+    nullptr,\
+    [this](auto a, auto b, auto c, auto d) { METHOD(a, b, c, d); })
+
+    constexpr uint16_t c_DefaultRpcPort = 50099;
 
     class RpcServer
     {

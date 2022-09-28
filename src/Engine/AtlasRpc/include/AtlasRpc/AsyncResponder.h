@@ -14,12 +14,14 @@ namespace atlas::rpc
             IAsyncResponderFactory& parentFactory,
             grpc::ServerCompletionQueue* completionQueue,
             BindMethod<TRequest, TResponse>& bind,
-            InvokeMethod<TRequest, TResponse>& invoke)
+            InvokeMethod<TRequest, TResponse>& invoke,
+            InvokeAsyncMethod<TRequest, TResponse>& invokeAsync)
                 : m_Factory{parentFactory}
                 , m_CompletionQueue{completionQueue}
                 , m_Responder{&m_Context}
                 , m_BindCallback{bind}
                 , m_InvokeCallback{invoke}
+                , m_InvokeAsyncCallback{invokeAsync}
         {
         }
 
@@ -39,8 +41,20 @@ namespace atlas::rpc
             // Create a new Responder to take the place of this one.
             m_Factory.Create(m_CompletionQueue)->Bind();
 
-            grpc::Status status = m_InvokeCallback(&m_Context, &m_Request, &m_Response);
-            m_Responder.Finish(m_Response, status, this);
+            if (m_InvokeAsyncCallback)
+            {
+                m_InvokeAsyncCallback(&m_Context, &m_Request, &m_Responder, this);
+            }
+            else if (m_InvokeCallback)
+            {
+                grpc::Status status = m_InvokeCallback(&m_Context, &m_Request, &m_Response);
+                m_Responder.Finish(m_Response, status, this);
+            }
+            else
+            {
+                m_Responder.Finish(m_Response, grpc::Status(grpc::StatusCode::UNIMPLEMENTED, ""), this);
+            }
+
             m_bIsInvoked = true;
         }
 
@@ -57,5 +71,6 @@ namespace atlas::rpc
 
         BindMethod<TRequest, TResponse>& m_BindCallback;
         InvokeMethod<TRequest, TResponse>& m_InvokeCallback;
+        InvokeAsyncMethod<TRequest, TResponse>& m_InvokeAsyncCallback;
     };
 }

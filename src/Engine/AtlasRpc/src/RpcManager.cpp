@@ -1,4 +1,4 @@
-﻿#include "AtlasRpcPCH.h"
+#include "AtlasRpcPCH.h"
 #include "RpcManager.h"
 
 #include <grpc++/server_builder.h>
@@ -13,7 +13,7 @@ void atlas::rpc::RpcServer::Initialise(const uint16_t port)
     assert(!m_Server);
 
     grpc::ServerBuilder builder{};
-    builder.AddListeningPort(std::format("0.0.0.0:{}", port), grpc::InsecureServerCredentials());
+    builder.AddListeningPort(std::format("127.0.0.1:{}", port), grpc::InsecureServerCredentials());
 
     for (const auto& service : m_Services)
     {
@@ -31,19 +31,20 @@ void atlas::rpc::RpcServer::Initialise(const uint16_t port)
     m_Server = builder.BuildAndStart();
 
     m_RpcThread = std::thread{
-        [this]()
+        [this]
         {
             void* tag; // uniquely identifies a request.
             bool ok;
 
+            std::vector<std::unique_ptr<IAsyncResponderFactory>> methods;
             for (const auto& service : m_Services)
             {
-                std::vector<std::unique_ptr<IAsyncResponderFactory>> methods;
                 service->GetEndpointFactories(methods);
-                for(const auto& factory : methods)
-                {
-                    factory->Create(m_CompletionQueue.get())->Bind();
-                }
+            }
+
+            for (const auto& factory : methods)
+            {
+                factory->Create(m_CompletionQueue.get())->Bind();
             }
 
             while (true)
