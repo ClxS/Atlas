@@ -32,11 +32,11 @@ void atlas::game::utility::FrameLimiter::EndFrame()
     if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - m_startTime) >=
         m_logDuration)
     {
-#if _WIN32
+/*#if _WIN32
         OutputDebugStringA(std::format("\n\nFPS: {}",
                                        core::string_manipulation::to_string_with_precision(
                                            m_uiFrameCounter / static_cast<double>(m_logDuration.count()), 0)).c_str());
-#endif
+#endif */
 
         m_startTime = std::chrono::high_resolution_clock::now();
         m_uiFrameCounter = 0;
