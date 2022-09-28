@@ -1,8 +1,8 @@
 ﻿#include "AtlasSceneEditorPCH.h"
 
+#include "InstanceInteractionService.h"
 #include "Registry.h"
 #include "SceneEditorState.h"
-#include "TestService.h"
 #include "AtlasGame/GameHost.h"
 #include "Utility/Constants.h"
 
@@ -50,7 +50,7 @@ namespace
 
         void RegisterRpc(atlas::rpc::RpcServer& server) override
         {
-            server.RegisterService<atlas::scene_editor::rpc::TestServiceImpl>();
+            server.RegisterService<atlas::scene_editor::rpc::InstanceInteractionServiceImpl>();
         }
     };
 }
@@ -59,9 +59,11 @@ int gameMain(int argc, char* argv[])
 {
     atlas::game::GameHost<SceneEditorGame> game{
             {
-                "Fayre",
+                "Scene Editor",
                 atlas::scene_editor::constants::render_views::c_ui,
                 60
             }};
     return game.Run();
 }
+
+

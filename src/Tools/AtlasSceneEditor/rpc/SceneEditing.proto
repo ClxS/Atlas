@@ -1,0 +1,13 @@
+syntax = "proto3";
+import "Common.proto";
+
+service SceneEditingService {
+  rpc CreateNewScene(Unit) returns (Result) {}
+  rpc ClearScene(Unit) returns (Result) {}
+
+  rpc CreateEntity(Unit) returns (Entity) {}
+}
+
+message Entity {
+  int32 Id = 1;
+}

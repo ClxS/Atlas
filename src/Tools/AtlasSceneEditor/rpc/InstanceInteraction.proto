@@ -1,0 +1,26 @@
+syntax = "proto3";
+import "Common.proto";
+
+service InstanceInteractionService {
+  rpc RegisterNotificationEndpoint(SceneUpdateRegistration) returns (Result) {}
+  rpc GetComponentRegistry(Unit) returns (ComponentRegistry) {}
+}
+
+message ComponentField {
+  string Type = 1;
+  string FieldName = 2;
+}
+
+message ComponentInformation {
+  int32 TypeId = 1;
+  string ComponentName = 2;
+  repeated ComponentField Fields = 3;
+}
+
+message ComponentRegistry {
+  repeated ComponentInformation Components = 1;
+}
+
+message SceneUpdateRegistration {
+  string NotificationEndpoint = 1;
+}
