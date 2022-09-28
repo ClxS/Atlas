@@ -17,6 +17,8 @@ namespace atlas::scene
         {
             std::string_view m_Name;
             std::string_view m_Type;
+            std::size_t m_Offset;
+            std::size_t m_Size;
         };
 
         struct ComponentRegistration

@@ -302,6 +302,8 @@ namespace
             outFile << "{\n";
             for(const auto& component : components)
             {
+                std::string fullComponentName = getComponentFinalName(component);
+
                 std::stringstream fieldRegistrations;
                 int fieldCount = static_cast<int>(component.m_Fields.size());
                 for(int fieldIndex = 0; fieldIndex < fieldCount; fieldIndex++)
@@ -312,9 +314,11 @@ namespace
                     }
 
                     fieldRegistrations << std::format(
-                        "\t\t\t{{ \"{}\", \"{}\" }}",
-                        component.m_Fields[fieldIndex].m_Name,
-                        component.m_Fields[fieldIndex].m_Type);
+                        "\t\t\t{{ \"{}\", \"{}\", {}, {} }}",
+                        fullComponentName,
+                        component.m_Fields[fieldIndex].m_Type,
+                        std::format("offsetof({}, m_{})", fullComponentName, component.m_Fields[fieldIndex].m_Name),
+                        std::format("sizeof({})", component.m_Fields[fieldIndex].m_Type));
                 }
 
                 std::stringstream componentRegistration;
@@ -323,7 +327,7 @@ namespace
 
                 outFile << std::format(
                     "\tatlas::scene::ComponentRegistry::RegisterComponent<{}>({});\n",
-                    getComponentFinalName(component),
+                    fullComponentName,
                     componentRegistration.str());
             }
 
