@@ -35,7 +35,7 @@ struct TestComponent
 
 inline void registerTestComponents()
 {
-    atlas::scene::ComponentRegistry::RegisterComponent<TransformComponent>();
-    atlas::scene::ComponentRegistry::RegisterComponent<SizeComponent>();
-    atlas::scene::ComponentRegistry::RegisterComponent<TestComponent>();
+    atlas::scene::ComponentRegistry::RegisterComponent<TransformComponent>({});
+    atlas::scene::ComponentRegistry::RegisterComponent<SizeComponent>({});
+    atlas::scene::ComponentRegistry::RegisterComponent<TestComponent>({});
 }

@@ -2,6 +2,7 @@
 
 #include <map>
 #include <memory>
+#include <mutex>
 #include <unordered_map>
 
 #include "Pools.h"
@@ -12,6 +13,20 @@ namespace atlas::scene
     class ComponentRegistry
     {
     public:
+        struct ComponentField
+        {
+            std::string_view m_Name;
+            std::string_view m_Type;
+        };
+
+        struct ComponentRegistration
+        {
+            int32_t m_UniqueId;
+            std::string_view m_ComponentName;
+
+            std::vector<ComponentField> m_Fields;
+        };
+
         using PoolFactory = PoolBase* (*)(void);
 
         ComponentRegistry() = delete;
@@ -22,10 +37,13 @@ namespace atlas::scene
         ComponentRegistry operator=(const ComponentRegistry&&) = delete;
 
         template <typename TComponent>
-        static void RegisterComponent()
+        static void RegisterComponent(ComponentRegistration&& registration)
         {
-            core::TemplatedUniquenessCounter<TComponent, ComponentRegistry>::Ensure();
-            m_ComponentPoolFactory.push_back([]() { return static_cast<PoolBase*>(new ComponentPool<TComponent>()); });
+            std::lock_guard lock{m_ComponentRegistrationMutex};
+            registration.m_UniqueId = core::TemplatedUniquenessCounter<TComponent, ComponentRegistry>::Ensure();
+
+            m_ComponentRegistrations.emplace_back(registration);
+            m_ComponentPoolFactory.push_back([] { return static_cast<PoolBase*>(new ComponentPool<TComponent>()); });
         }
 
         static const std::vector<PoolFactory>& GetComponentPoolFactories()
@@ -47,7 +65,19 @@ namespace atlas::scene
             return 1ULL << index;
         }
 
+        static std::mutex& GetComponentRegistrationMutex()
+        {
+            return m_ComponentRegistrationMutex;
+        }
+
+        static const std::vector<ComponentRegistration>& GetComponentRegistrations()
+        {
+            return m_ComponentRegistrations;
+        }
+
     private:
+        inline static std::mutex m_ComponentRegistrationMutex;
+        inline static std::vector<ComponentRegistration> m_ComponentRegistrations;
         inline static std::vector<PoolFactory> m_ComponentPoolFactory;
     };
 }

@@ -15,7 +15,7 @@ function generateComponents(group, namespace)
 
     local origin = debug.getinfo(2).source
     origin = origin:sub(2)
-    origin = getDirectory(origin)    
+    origin = getDirectory(origin)
 
     local generatorPath = path.getabsolute(toolsDirectory .. '/ComponentGenerator.exe')
     local componentFolder = path.getabsolute(origin .. 'components')
@@ -23,9 +23,9 @@ function generateComponents(group, namespace)
                     generatorPath,
                     componentFolder,
                     p.api.scope.project.name,
-                    namespace)     
+                    namespace)
 
-    print("Generating components for " .. p.api.scope.project.name)                       
+    print("Generating components for " .. p.api.scope.project.name .. "(" .. command .. ")")
     os.execute(command)
 
     files {
@@ -41,7 +41,7 @@ end
 function generateCoreComponentRegistry(namespace, groups)
     local origin = debug.getinfo(2).source
     origin = origin:sub(2)
-    origin = getDirectory(origin)   
+    origin = getDirectory(origin)
     local componentFolder = path.getabsolute(origin .. 'components')
 
     local registration = {}
@@ -64,7 +64,7 @@ function buildRegistries()
     for _, v in pairs(outputRegistries) do
 
         local groupString = ""
-        local allGroups = {};        
+        local allGroups = {};
 
         for _, groupName in pairs(v.groups) do
             if componentNamespaceGroups[groupName] ~= nil then
@@ -88,10 +88,10 @@ function buildRegistries()
                     v.destination,
                     v.project,
                     v.namespace,
-                    groupString)   
+                    groupString)
 
-        print("Generating component registry " .. v.project .. '(' .. command .. ')')                       
-        os.execute(command)        
+        print("Generating component registry " .. v.project .. '(' .. command .. ')')
+        os.execute(command)
     end
 end
 
