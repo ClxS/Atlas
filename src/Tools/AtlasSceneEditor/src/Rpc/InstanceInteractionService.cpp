@@ -17,7 +17,7 @@ void atlas::scene_editor::rpc::InstanceInteractionServiceImpl::GetEndpointFactor
 grpc::Status atlas::scene_editor::rpc::InstanceInteractionServiceImpl::RegisterNotificationEndpoint(
     grpc::ServerContext* serverContext, const SceneUpdateRegistration* sceneUpdateRegistration, Result* result)
 {
-    return grpc::Status(grpc::StatusCode::UNIMPLEMENTED, "");
+    return grpc::Status{grpc::StatusCode::UNIMPLEMENTED, ""};
 }
 
 grpc::Status atlas::scene_editor::rpc::InstanceInteractionServiceImpl::GetComponentRegistry(
