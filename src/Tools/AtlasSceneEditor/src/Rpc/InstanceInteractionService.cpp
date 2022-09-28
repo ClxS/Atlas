@@ -1,6 +1,7 @@
 ﻿#include "AtlasSceneEditorPCH.h"
 #include "InstanceInteractionService.h"
 #include "AtlasScene/ECS/Components/ComponentRegistry.h"
+#include "AtlasTrace/Logging.h"
 
 grpc::Service* atlas::scene_editor::rpc::InstanceInteractionServiceImpl::GetService()
 {
@@ -17,6 +18,7 @@ void atlas::scene_editor::rpc::InstanceInteractionServiceImpl::GetEndpointFactor
 grpc::Status atlas::scene_editor::rpc::InstanceInteractionServiceImpl::RegisterNotificationEndpoint(
     grpc::ServerContext* serverContext, const SceneUpdateRegistration* sceneUpdateRegistration, Result* result)
 {
+    AT_ERROR(AtlasRpc, "Not implemented");
     return grpc::Status{grpc::StatusCode::UNIMPLEMENTED, ""};
 }
 

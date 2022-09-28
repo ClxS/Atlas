@@ -2,6 +2,7 @@
 
 #include "InstanceInteractionService.h"
 #include "Registry.h"
+#include "SceneEditingService.h"
 #include "SceneEditorState.h"
 #include "AtlasGame/GameHost.h"
 #include "Utility/Constants.h"
@@ -51,6 +52,7 @@ namespace
         void RegisterRpc(atlas::rpc::RpcServer& server) override
         {
             server.RegisterService<atlas::scene_editor::rpc::InstanceInteractionServiceImpl>();
+            server.RegisterService<atlas::scene_editor::rpc::SceneEditingServiceImpl>();
         }
     };
 }
