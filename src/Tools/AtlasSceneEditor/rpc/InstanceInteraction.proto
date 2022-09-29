@@ -6,19 +6,20 @@ service InstanceInteractionService {
   rpc GetComponentRegistry(Unit) returns (ComponentRegistry) {}
 }
 
-message ComponentField {
-  string Type = 1;
-  string FieldName = 2;
+message ComponentFieldInfo {
+  int32 Id = 1;
+  string Type = 2;
+  string FieldName = 3;
 }
 
-message ComponentInformation {
+message ComponentInfo {
   int32 TypeId = 1;
   string ComponentName = 2;
-  repeated ComponentField Fields = 3;
+  repeated ComponentFieldInfo Fields = 3;
 }
 
 message ComponentRegistry {
-  repeated ComponentInformation Components = 1;
+  repeated ComponentInfo Components = 1;
 }
 
 message SceneUpdateRegistration {

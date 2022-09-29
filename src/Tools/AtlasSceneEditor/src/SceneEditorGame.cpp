@@ -46,14 +46,17 @@ namespace
             loadDataAssets();
             setBgfxSettings();
 
-            m_SceneManager.TransitionTo<atlas::scene_editor::SceneEditorState>();
+            m_EditorState = &m_SceneManager.TransitionTo<atlas::scene_editor::SceneEditorState>();
         }
 
         void RegisterRpc(atlas::rpc::RpcServer& server) override
         {
             server.RegisterService<atlas::scene_editor::rpc::InstanceInteractionServiceImpl>();
-            server.RegisterService<atlas::scene_editor::rpc::SceneEditingServiceImpl>();
+            server.RegisterService<atlas::scene_editor::rpc::SceneEditingServiceImpl>(m_EditorState);
         }
+
+    private:
+        atlas::scene_editor::SceneEditorState* m_EditorState{nullptr};
     };
 }
 

@@ -28,12 +28,12 @@ grpc::Status atlas::scene_editor::rpc::InstanceInteractionServiceImpl::GetCompon
     std::lock_guard lock { scene::ComponentRegistry::GetComponentRegistrationMutex() };
     for(auto& component : scene::ComponentRegistry::GetComponentRegistrations())
     {
-        ComponentInformation& info = *componentRegistry->add_components();
-        info.set_typeid_(component.m_UniqueId);
+        ComponentInfo& info = *componentRegistry->add_components();
+        info.set_typeid_(component.m_UniqueId.m_Value);
         info.set_componentname(std::string(component.m_ComponentName).c_str());
         for(auto& field : component.m_Fields)
         {
-            ComponentField& fieldInfo = *info.add_fields();
+            ComponentFieldInfo& fieldInfo = *info.add_fields();
             fieldInfo.set_fieldname(std::string(field.m_Name));
             fieldInfo.set_type(std::string(field.m_Type));
         }

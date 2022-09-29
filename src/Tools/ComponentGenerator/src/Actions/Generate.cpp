@@ -314,16 +314,20 @@ namespace
                     }
 
                     fieldRegistrations << std::format(
-                        "\t\t\t{{ \"{}\", \"{}\", {}, {} }}",
+                        "\t\t\t{{ \"{}\", \"{}\", {}, {}, atlas::scene::ComponentFieldInfoId {{ {} }} }}",
                         fullComponentName,
                         component.m_Fields[fieldIndex].m_Type,
                         std::format("offsetof({}, m_{})", fullComponentName, component.m_Fields[fieldIndex].m_Name),
-                        std::format("sizeof({})", component.m_Fields[fieldIndex].m_Type));
+                        std::format("sizeof({})", component.m_Fields[fieldIndex].m_Type),
+                        fieldIndex);
                 }
 
                 std::stringstream componentRegistration;
                 componentRegistration << std::format(
-                    "{{\n\t\t-1,\n\t\t\"{}\",\n\t\t{{\n{} }} }}", component.m_Name, fieldRegistrations.str());
+                    "{{\n\t\t{},\n\t\t\"{}\",\n\t\t{{\n{} }} }}",
+                    "atlas::scene::ComponentInfoId::Invalid()",
+                    component.m_Name,
+                    fieldRegistrations.str());
 
                 outFile << std::format(
                     "\tatlas::scene::ComponentRegistry::RegisterComponent<{}>({});\n",

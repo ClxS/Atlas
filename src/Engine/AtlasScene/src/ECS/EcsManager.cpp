@@ -34,6 +34,7 @@ atlas::scene::EntityId atlas::scene::EcsManager::AddEntity()
 
 void atlas::scene::EcsManager::RemoveEntity(const EntityId entity)
 {
+    // TODO: Validate entities are actually extant throughout the manager
     const auto removedIndex = m_EntityIndices.GetCopy(entity.m_Value);
     auto& [_, entityPool, components] = GetPool(removedIndex.m_ArchetypeIndex);
 
@@ -69,6 +70,92 @@ void atlas::scene::EcsManager::RemoveEntity(const EntityId entity)
             pool->Pop();
         }
     }
+}
+
+void atlas::scene::EcsManager::Clear()
+{
+    m_EntityIndices.Clear();
+    for(auto& pool : m_ArchetypePools)
+    {
+        pool.Clear();
+    }
+}
+
+bool atlas::scene::EcsManager::DoesEntityHaveComponent(const EntityId entity,
+    const ComponentInfoId componentInfoId) const
+{
+    const auto [_, oldArchetypeIndex] = m_EntityIndices.GetCopy(entity.m_Value);
+    assert(oldArchetypeIndex.m_ArchetypeIndex >= 0);
+
+    const ArchetypePool& pool = GetPool(oldArchetypeIndex);
+
+    const uint64_t targetMask = ComponentRegistry::GetComponentMask(componentInfoId);
+    return pool.m_ArchetypeComponentMask & targetMask;
+}
+
+void* atlas::scene::EcsManager::GetComponent(const EntityId entityId, const ComponentInfoId componentInfoId)
+{
+    const auto [entityIndex, oldArchetypeIndex] = m_EntityIndices.GetCopy(entityId.m_Value);
+    assert(oldArchetypeIndex.m_ArchetypeIndex >= 0);
+
+    auto& archetypePool = GetPool(oldArchetypeIndex);
+    auto& componentPool = archetypePool.GetComponentPool(ComponentRegistry::GetComponentMask(componentInfoId));
+
+    return componentPool.m_Pool->Get(entityIndex);
+}
+
+void* atlas::scene::EcsManager::AddComponentCore(const EntityId entity, const ComponentInfoId componentId, std::function<void*(PoolBase*)> setInputEntity)
+{
+    const auto [oldEntityIndex, oldArchetypeIndex] = m_EntityIndices.GetCopy(entity.m_Value);
+    assert(oldEntityIndex >= 0);
+    assert(oldArchetypeIndex.m_ArchetypeIndex >= 0);
+
+    ArchetypeIndex newArchetypeIndex = ArchetypeIndex::Empty();
+    {
+        const uint64_t newMask = m_ArchetypePools[oldArchetypeIndex.m_ArchetypeIndex].m_ArchetypeComponentMask |
+            ComponentRegistry::GetComponentMask(componentId);
+        newArchetypeIndex = GetOrCreateArchetype(newMask);
+    }
+
+    // Important! We need to re-obtain the old pool in case the GetOrCreateArchetype caused an expansion (and thus moved it)
+    ArchetypePool& oldPool = GetPool(oldArchetypeIndex);
+
+    auto& [newArchetypeMask, newEntityPool, newComponentPools] = GetPool(newArchetypeIndex);
+
+    m_EntityIndices.Set(entity.m_Value, EntityIndex{newEntityPool.Size(), newArchetypeIndex});
+
+    void* returnValue = nullptr;
+
+    for (auto [poolMask, componentPool] : newComponentPools)
+    {
+        if (oldPool.m_ArchetypeComponentMask & poolMask)
+        {
+            componentPool->ClaimFromOtherPool(oldPool.GetComponentPool(poolMask).m_Pool, oldEntityIndex);
+        }
+        else
+        {
+            returnValue = setInputEntity(componentPool);
+        }
+    }
+
+    newEntityPool.Push(entity);
+    if (oldPool.m_EntityPool.Size() > 1 && oldEntityIndex != oldPool.m_EntityPool.Size() - 1)
+    {
+        oldPool.m_EntityPool.SwapAndPop(oldEntityIndex);
+        m_EntityIndices.Set(
+            oldPool.m_EntityPool.GetCopy(oldEntityIndex).m_Value,
+        {
+                oldEntityIndex,
+                oldArchetypeIndex
+            });
+    }
+    else
+    {
+        oldPool.m_EntityPool.Pop();
+    }
+
+    assert(returnValue);
+    return returnValue;
 }
 
 atlas::scene::ArchetypeIndex atlas::scene::EcsManager::GetOrCreateArchetype(uint64_t archetypeMask)

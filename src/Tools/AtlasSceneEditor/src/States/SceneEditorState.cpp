@@ -40,12 +40,7 @@ namespace
 
 void atlas::scene_editor::SceneEditorState::OnEntered(scene::SceneManager& sceneManager)
 {
-    scene::EcsManager& ecs = GetEcsManager();
-
-    addCameras(ecs);
-    addLights(ecs);
-    addDebugRenderingComponents(ecs);
-
+    ClearScene();
     EcsScene::OnEntered(sceneManager);
 }
 
@@ -54,4 +49,24 @@ void atlas::scene_editor::SceneEditorState::ConstructSystems(scene::SystemsBuild
     simBuilder.RegisterSystem<game::scene::systems::debug::DebugAxisInputSystem>();
 
     frameBuilder.RegisterSystem<game::scene::systems::debug::DebugAxisRenderSystem>();
+}
+
+void atlas::scene_editor::SceneEditorState::ClearScene()
+{
+    scene::EcsManager& ecs = GetEcsManager();
+    ecs.Clear();
+
+    addCameras(ecs);
+    addLights(ecs);
+    addDebugRenderingComponents(ecs);
+}
+
+atlas::scene::EntityId atlas::scene_editor::SceneEditorState::CreateEntity()
+{
+    return GetEcsManager().AddEntity();
+}
+
+void atlas::scene_editor::SceneEditorState::DeleteEntity(const scene::EntityId id)
+{
+    GetEcsManager().RemoveEntity(id);
 }

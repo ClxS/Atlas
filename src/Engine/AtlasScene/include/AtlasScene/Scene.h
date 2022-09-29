@@ -28,6 +28,9 @@ namespace atlas::scene
 
     class EcsScene : public SceneBase
     {
+    public:
+        EcsManager& GetEcsManager() { return m_EcsManager; }
+
     protected:
         ~EcsScene() override = default;
 
@@ -72,7 +75,6 @@ namespace atlas::scene
 
         virtual void ConstructSystems(SystemsBuilder& simBuilder, SystemsBuilder& frameBuilder) = 0;
 
-        EcsManager& GetEcsManager() { return m_EcsManager; }
 
     private:
         SystemsManager m_SimulationSystemsManager;

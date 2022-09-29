@@ -18,7 +18,12 @@ namespace atlas::scene_editor
     {
     public:
         void OnEntered(scene::SceneManager& sceneManager) override;
-
         void ConstructSystems(scene::SystemsBuilder& simBuilder, scene::SystemsBuilder& frameBuilder) override;
+
+        void ClearScene();
+
+        scene::EntityId CreateEntity();
+        void DeleteEntity(scene::EntityId id);
+
     };
 }

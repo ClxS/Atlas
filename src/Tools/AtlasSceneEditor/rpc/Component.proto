@@ -1,0 +1,11 @@
+﻿syntax = "proto3";
+
+message ComponentField {
+  int32 FieldId = 1;
+  bytes Value = 2;
+}
+
+message Component {
+  int32 Type = 1;
+  repeated ComponentField Fields = 2;
+}

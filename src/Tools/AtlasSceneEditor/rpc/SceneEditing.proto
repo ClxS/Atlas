@@ -1,13 +1,28 @@
 syntax = "proto3";
 import "Common.proto";
+import "Component.proto";
 
 service SceneEditingService {
   rpc CreateNewScene(Unit) returns (Result) {}
   rpc ClearScene(Unit) returns (Result) {}
 
   rpc CreateEntity(Unit) returns (Entity) {}
+  rpc DeleteEntity(Entity) returns (Result) {}
+
+  rpc AddComponent(AddComponentRequest) returns (Result) {}
+  rpc AddComponents(AddComponentsRequest) returns (Result) {}
 }
 
 message Entity {
   int32 Id = 1;
+}
+
+message AddComponentRequest {
+  Entity Entity = 1;
+  Component Component = 2;
+}
+
+message AddComponentsRequest {
+  Entity Entity = 1;
+  repeated Component Components = 2;
 }
