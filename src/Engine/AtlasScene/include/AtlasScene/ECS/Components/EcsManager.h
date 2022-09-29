@@ -1,7 +1,6 @@
 #pragma once
 
 #include <functional>
-#include <map>
 #include <memory>
 #include <tuple>
 
@@ -18,6 +17,11 @@ namespace atlas::scene
         {
             uint64_t m_PoolMask;
             PoolBase* m_Pool;
+
+            void Clear()
+            {
+                m_Pool->Clear();
+            }
         };
 
         struct ArchetypePool
@@ -46,6 +50,15 @@ namespace atlas::scene
             {
                 const uint64_t componentIndex = std::popcount(m_ArchetypeComponentMask & (componentMask - 1));
                 return m_Components[componentIndex];
+            }
+
+            void Clear()
+            {
+                m_EntityPool.Clear();
+                for(auto& componentPool : m_Components)
+                {
+                    componentPool.Clear();
+                }
             }
         };
 
@@ -94,7 +107,7 @@ namespace atlas::scene
         template <typename... TComponents>
         struct ComponentIteratorWrapper
         {
-            ComponentIteratorWrapper(std::vector<ArchetypePool>& archetypePools);
+            explicit ComponentIteratorWrapper(std::vector<ArchetypePool>& archetypePools);
             ComponentIterator<TComponents...> begin();
             ComponentIterator<TComponents...> end();
 
@@ -114,6 +127,16 @@ namespace atlas::scene
 
         void RemoveEntity(EntityId entity);
 
+        void Clear();
+
+        void* AddComponent(const EntityId entity, ComponentInfoId componentId)
+        {
+            return AddComponentCore(entity, componentId, [&](PoolBase* pool)
+            {
+                return pool->PushEmpty();
+            });
+        }
+
         template <typename TComponent, typename... TArgs>
         TComponent& AddComponent(EntityId entity, TArgs&& ...args);
 
@@ -122,6 +145,8 @@ namespace atlas::scene
 
         template <typename TComponent>
         void RemoveComponent(const EntityId entity);
+
+        [[nodiscard]] bool DoesEntityHaveComponent(const EntityId entity, const ComponentInfoId componentInfoId) const;
 
         template <typename TComponent>
         [[nodiscard]] bool DoesEntityHaveComponent(EntityId entity) const;
@@ -136,6 +161,8 @@ namespace atlas::scene
 
         template <typename TComponent, typename... TOtherComponents>
         [[nodiscard]] std::vector<EntityId> GetEntitiesWithComponents() const;
+
+        void* GetComponent(const EntityId entityId, const ComponentInfoId componentInfoId);
 
         template <typename TComponent>
         [[nodiscard]] TComponent& GetComponent(EntityId entityId);
@@ -160,6 +187,7 @@ namespace atlas::scene
 
 
     private:
+        void* AddComponentCore(EntityId entity, ComponentInfoId componentId, std::function<void*(PoolBase*)> setInputEntity);
 
         template <typename...>
         struct MaskLookup;
@@ -197,78 +225,27 @@ namespace atlas::scene
     };
 
     template <typename TComponent, typename ... TArgs>
-    TComponent& EcsManager::DoAddComponent(const EntityId entity,
-                                           std::function<TComponent*(ComponentPool<TComponent>*)> setInputEntity)
-    {
-        const auto [oldEntityIndex, oldArchetypeIndex] = m_EntityIndices.GetCopy(entity.m_Value);
-        assert(oldEntityIndex >= 0);
-        assert(oldArchetypeIndex.m_ArchetypeIndex >= 0);
-
-        ArchetypeIndex newArchetypeIndex = ArchetypeIndex::Empty();
-        {
-            const uint64_t newMask = m_ArchetypePools[oldArchetypeIndex.m_ArchetypeIndex].m_ArchetypeComponentMask |
-                ComponentRegistry::GetComponentMask<TComponent>();
-            newArchetypeIndex = GetOrCreateArchetype(newMask);
-        }
-
-        // Important! We need to re-obtain the old pool in case the GetOrCreateArchetype caused an expansion (and thus moved it)
-        ArchetypePool& oldPool = GetPool(oldArchetypeIndex);
-
-        auto& [newArchetypeMask, newEntityPool, newComponentPools] = GetPool(newArchetypeIndex);
-
-        m_EntityIndices.Set(entity.m_Value, EntityIndex{newEntityPool.Size(), newArchetypeIndex});
-
-        TComponent* returnValue = nullptr;
-
-        for (auto [poolMask, componentPool] : newComponentPools)
-        {
-            if (oldPool.m_ArchetypeComponentMask & poolMask)
-            {
-                componentPool->ClaimFromOtherPool(oldPool.GetComponentPool(poolMask).m_Pool, oldEntityIndex);
-            }
-            else
-            {
-                auto* typedComponentPool = static_cast<ComponentPool<TComponent>*>(componentPool);
-                returnValue = setInputEntity(typedComponentPool);
-            }
-        }
-
-        newEntityPool.Push(std::move(entity));
-        if (oldPool.m_EntityPool.Size() > 1 && oldEntityIndex != oldPool.m_EntityPool.Size() - 1)
-        {
-            oldPool.m_EntityPool.SwapAndPop(oldEntityIndex);
-            m_EntityIndices.Set(
-                oldPool.m_EntityPool.GetCopy(oldEntityIndex).m_Value,
-            {
-                    oldEntityIndex,
-                    oldArchetypeIndex
-                });
-        }
-        else
-        {
-            oldPool.m_EntityPool.Pop();
-        }
-
-        assert(returnValue);
-        return *returnValue;
-    }
-
-    template <typename TComponent, typename ... TArgs>
     TComponent& EcsManager::AddComponent(const EntityId entity, TArgs&&... args)
     {
-        return DoAddComponent<TComponent>(entity, [&](ComponentPool<TComponent>* pool)
+        return *static_cast<TComponent*>(AddComponentCore(
+            entity,
+            ComponentRegistry::GetComponentId<TComponent>(),
+            [&](PoolBase* pool)
         {
-            return &pool->Push(std::forward<TArgs&&>(args)...);
-        });
+            return &static_cast<ComponentPool<TComponent>*>(pool)->Push(std::forward<TArgs&&>(args)...);
+        }));
     }
 
     template <typename TComponent>
     TComponent& EcsManager::AddComponent(const EntityId entity, TComponent&& value)
     {
-        return DoAddComponent<TComponent>(entity, [&](ComponentPool<TComponent>* pool)
+        return *static_cast<TComponent*>(AddComponentCore(
+            entity,
+            ComponentRegistry::GetComponentId<TComponent>(),
+            [&](PoolBase* pool)
         {
-            return &pool->Push(std::forward<TComponent>(value));
-        });
+            return &static_cast<ComponentPool<TComponent>*>(pool)->Push(std::forward<TComponent>(value));
+        }));
     }
 
     template <typename TComponent>
@@ -335,13 +312,7 @@ namespace atlas::scene
     template <typename TComponent>
     bool EcsManager::DoesEntityHaveComponent(const EntityId entity) const
     {
-        const auto [_, oldArchetypeIndex] = m_EntityIndices.GetCopy(entity.m_Value);
-        assert(oldArchetypeIndex.m_ArchetypeIndex >= 0);
-
-        const ArchetypePool& pool = GetPool(oldArchetypeIndex);
-
-        const uint64_t targetMask = ComponentRegistry::GetComponentMask<TComponent>();
-        return pool.m_ArchetypeComponentMask & targetMask;
+        return DoesEntityHaveComponent(entity, ComponentRegistry::GetComponentId<TComponent>());
     }
 
     template <typename TComponent, typename ... TOtherComponents>
@@ -375,25 +346,13 @@ namespace atlas::scene
     template <typename TComponent>
     TComponent& EcsManager::GetComponent(const EntityId entityId)
     {
-        const auto [entityIndex, oldArchetypeIndex] = m_EntityIndices.GetCopy(entityId.m_Value);
-        assert(oldArchetypeIndex.m_ArchetypeIndex >= 0);
-
-        auto& archetypePool = GetPool(oldArchetypeIndex);
-        auto& componentPool = archetypePool.GetComponentPool(ComponentRegistry::GetComponentMask<TComponent>());
-        ComponentPool<TComponent>* pTypedPool = static_cast<ComponentPool<TComponent>*>(componentPool.m_Pool);
-        return pTypedPool->GetReference(entityIndex);
+        return *static_cast<TComponent*>(GetComponent(entityId, ComponentRegistry::GetComponentId<TComponent>()));
     }
 
     template <typename TComponent>
     const TComponent& EcsManager::GetComponent(const EntityId entityId) const
     {
-        const auto [_, oldArchetypeIndex] = m_EntityIndices.GetCopy(entityId.m_Value);
-        assert(oldArchetypeIndex.m_ArchetypeIndex >= 0);
-
-        const auto& archetypePool = GetPool(oldArchetypeIndex);
-        const auto& componentPool = archetypePool.GetComponentPool(ComponentRegistry::GetComponentMask<TComponent>());
-        ComponentPool<TComponent>* pTypedPool = static_cast<ComponentPool<TComponent>*>(componentPool.m_Pool);
-        return pTypedPool->GetReference(m_EntityIndices.GetCopy(entityId.m_Value).m_EntityIndex);
+        return *static_cast<TComponent*>(GetComponent(entityId, ComponentRegistry::GetComponentId<TComponent>()));
     }
 
     template <typename ... TComponent>

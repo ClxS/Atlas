@@ -17,9 +17,14 @@ namespace atlas::scene
         [[nodiscard]] virtual int32_t Size() const = 0;
         virtual void Remove(int32_t uiIndex) = 0;
         virtual void SwapAndPop(int32_t uiRemovedIndex) = 0;
+        virtual void* PushEmpty() = 0;
         virtual void Pop() = 0;
+        [[nodiscard]] virtual void* Get(int32_t index) = 0;
+        [[nodiscard]] virtual const void* Get(int32_t index) const = 0;
 
         virtual void ClaimFromOtherPool(PoolBase* pOther, int32_t otherIndex) = 0;
+
+        virtual void Clear() = 0;
     };
 
     template <typename TDataType, bool TIsSparse, uint32_t TInitialSize>
@@ -33,16 +38,26 @@ namespace atlas::scene
 
         ~Pool() override = default;
 
-        [[nodiscard]] TDataType& GetReference(int32_t uiIndex)
+        [[nodiscard]] void* Get(int32_t index) override
         {
-            assert(uiIndex >= 0 && uiIndex < m_Data.size());
-            return m_Data[uiIndex];
+            assert(index >= 0 && index < m_Data.size());
+            return &m_Data[index];
         }
 
-        [[nodiscard]] const TDataType& GetReference(int32_t uiIndex) const
+        [[nodiscard]] const void* Get(int32_t index) const override
         {
-            assert(uiIndex >= 0 && uiIndex < m_Data.size());
-            return m_Data[uiIndex];
+            assert(index >= 0 && index < m_Data.size());
+            return &m_Data[index];
+        }
+
+        [[nodiscard]] TDataType& GetReference(const int32_t uiIndex)
+        {
+            return *static_cast<TDataType*>(Get(uiIndex));
+        }
+
+        [[nodiscard]] const TDataType& GetReference(const int32_t uiIndex) const
+        {
+            return *static_cast<TDataType*>(Get(uiIndex));
         }
 
         [[nodiscard]] TDataType MoveOut(int32_t uiIndex)
@@ -52,10 +67,14 @@ namespace atlas::scene
             return value;
         }
 
-        [[nodiscard]] TDataType GetCopy(int32_t uiIndex) const
+        [[nodiscard]] TDataType GetCopy(const int32_t uiIndex) const
         {
-            assert(uiIndex >= 0 && uiIndex < m_Data.size());
-            return m_Data[uiIndex];
+            return *static_cast<const TDataType*>(Get(uiIndex));
+        }
+
+        void* PushEmpty() override
+        {
+            return &m_Data.emplace_back();
         }
 
         TDataType& Push(TDataType&& data)
@@ -132,6 +151,11 @@ namespace atlas::scene
         }
 
         [[nodiscard]] const std::vector<TDataType>& GetData() const { return m_Data; }
+
+        void Clear() override
+        {
+            m_Data.clear();
+        }
 
     private:
         std::vector<TDataType> m_Data;
