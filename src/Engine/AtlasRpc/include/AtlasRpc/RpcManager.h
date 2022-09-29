@@ -42,10 +42,10 @@ namespace atlas::rpc
 
         void RegisterService(std::unique_ptr<IAsyncEndpoint>&& service);
 
-        template<typename TService>
-        void RegisterService()
+        template<typename TService, typename... TArgs >
+        void RegisterService(TArgs&& ... args)
         {
-            RegisterService(std::move(std::make_unique<TService>()));
+            RegisterService(std::move(std::make_unique<TService>(std::forward<TArgs>(args)...)));
         }
 
     private:
