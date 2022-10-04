@@ -6,14 +6,20 @@
 #include "AtlasRender/Debug/DebugDraw.h"
 #include "AtlasScene/ECS/Components/EcsManager.h"
 
+atlas::game::scene::systems::debug::DebugAxisRenderSystem::DebugAxisRenderSystem(bgfx::ViewId view): m_View{view}
+{
+}
+
 void atlas::game::scene::systems::debug::DebugAxisRenderSystem::Initialise(atlas::scene::EcsManager& ecsManager)
 {
     SystemBase::Initialise(ecsManager);
 }
 
-void atlas::game::scene::systems::debug::DebugAxisRenderSystem::Update(atlas::scene::EcsManager& ecs)
+void atlas::game::scene::systems::debug::DebugAxisRenderSystem::Render(atlas::scene::EcsManager& ecs)
 {
-    for(auto [_, debugAxis] : ecs.IterateEntityComponents<DebugAxisComponent>())
+    render::debug::debug_draw::begin(m_View);
+
+    for(auto [_, debugAxis] : ecs.IterateEntityComponents<components::debug::DebugAxisComponent>())
     {
         render::debug::debug_draw::setColor(debugAxis.m_XAxisColour);
         render::debug::debug_draw::drawAxis(1.0f, 0.0f, 0.0f, 15, 1);
@@ -24,4 +30,6 @@ void atlas::game::scene::systems::debug::DebugAxisRenderSystem::Update(atlas::sc
         render::debug::debug_draw::setColor(debugAxis.m_ZAxisColour);
         render::debug::debug_draw::drawAxis(0.0f, 0.0f, 1.0f, 15, 1);
     }
+
+    render::debug::debug_draw::end();
 }

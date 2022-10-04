@@ -1,0 +1,6 @@
+<Components SubNamespace="rendering">
+    <Model>
+        <Model Type="ModelAsset" />
+        <RenderMask Type="byte" />
+    </Model>
+</Components>

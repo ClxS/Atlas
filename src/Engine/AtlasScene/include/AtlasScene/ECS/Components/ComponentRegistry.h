@@ -30,6 +30,7 @@ namespace atlas::scene
             ComponentInfoId m_UniqueId;
             std::string_view m_ComponentName;
 
+            std::vector<ComponentInfoId> m_RequiredComponents;
             std::vector<ComponentFieldInfo> m_Fields;
 
             const ComponentFieldInfo& GetFieldInfo(const ComponentFieldInfoId& fieldId) const
@@ -49,7 +50,7 @@ namespace atlas::scene
 #endif
         };
 
-        using PoolFactory = PoolBase* (*)(void);
+        using PoolFactory = PoolBase* (*)();
 
         ComponentRegistry() = delete;
         ~ComponentRegistry() = delete;
@@ -74,7 +75,7 @@ namespace atlas::scene
             registration.ValidateFieldOffsets();
 #endif
 
-            // Check out assumption that the UniqueId maps with the registration index
+            // Check the assumption that the UniqueId maps with the registration index
             assert(m_ComponentRegistrations.size() == registration.m_UniqueId.m_Value);
             m_ComponentRegistrations.emplace_back(registration);
             m_ComponentPoolFactory.push_back([] { return static_cast<PoolBase*>(new ComponentPool<TComponent>()); });
@@ -87,7 +88,7 @@ namespace atlas::scene
 
         static const PoolFactory& GetFactoryForPoolWithMask(const uint64_t mask)
         {
-            auto index = std::countr_zero(mask);
+            const auto index = std::countr_zero(mask);
             return m_ComponentPoolFactory[index];
         }
 

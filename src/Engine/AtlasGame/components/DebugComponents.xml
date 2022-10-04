@@ -1,4 +1,4 @@
-<Components>
+<Components SubNamespace="debug">
     <DebugAxis>
         <XAxisColour Type="Colour32" Default="0xff0000ff_argb" />
         <YAxisColour Type="Colour32" Default="0xff00ff00_argb" />

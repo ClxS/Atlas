@@ -1,4 +1,4 @@
-<Components>
+<Components SubNamespace="lighting">
     <DirectionalLight>
         <Direction Type="Vector3f" Default="0.0f, 0.0f, 1.0f" />
         <Colour Type="Colour32" Default="0xffffffff_argb" />

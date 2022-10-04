@@ -1,5 +1,11 @@
 <Components>
-    <Position>
+    <Attachment>
+        <EntityId Type="EntityId" />
+    </Attachment>
+
+    <Transform Requires="Attachment">
         <Position Type="Vector3f" />
-    </Position>
+        <Scale Type="Vector3f" />
+        <Orientation Type="Quaternionf" />
+    </Transform>
 </Components>

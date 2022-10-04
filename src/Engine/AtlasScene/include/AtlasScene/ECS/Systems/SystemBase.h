@@ -10,13 +10,15 @@ namespace atlas::scene
     public:
         virtual ~SystemBase() = default;
 
-        virtual std::string_view GetName() const = 0;
+        [[nodiscard]] virtual std::string_view GetName() const = 0;
 
         virtual void Initialise(EcsManager&)
         {
         }
 
-        virtual void Update(EcsManager&) = 0;
+        virtual void Update(EcsManager&)
+        {
+        }
 
         virtual void Render(EcsManager&)
         {

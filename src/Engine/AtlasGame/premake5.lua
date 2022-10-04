@@ -16,4 +16,4 @@ lib "AtlasGame"
         }
     }
 
-    generateComponents("engine", "atlas::game");
+    generateComponents("engine", "atlas::game::components");

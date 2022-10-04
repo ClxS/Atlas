@@ -72,6 +72,8 @@ atlas::render::RenderTaskHandle atlas::render::addToFrameGraph_oneOff(std::strin
 
 void atlas::render::sync()
 {
+    bgfx::setState(BGFX_STATE_DEFAULT);
+
     for(auto& task : m_RenderMethods)
     {
         if (task.m_Callback)

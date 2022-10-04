@@ -1,6 +1,7 @@
 ﻿#include "AtlasSceneEditorPCH.h"
 #include "SceneEditorState.h"
 
+#include "Constants.h"
 #include "AtlasGame/Components/DebugAxisComponent.h"
 #include "AtlasGame/Components/DirectionalLightComponent.h"
 #include "AtlasGame/Components/LookAtCameraComponent.h"
@@ -11,7 +12,7 @@ namespace
     void addCameras(atlas::scene::EcsManager& ecs)
     {
         const auto cameraEntity = ecs.AddEntity();
-        auto& camera2 = ecs.AddComponent<atlas::game::LookAtCameraComponent>(cameraEntity);
+        auto& camera2 = ecs.AddComponent<atlas::game::components::cameras::LookAtCameraComponent>(cameraEntity);
         camera2.m_IsRenderActive = false;
         camera2.m_IsControlActive = false;
         camera2.m_Distance = 25.0f;
@@ -23,7 +24,7 @@ namespace
     void addLights(atlas::scene::EcsManager& ecs)
     {
         const auto lightEntity = ecs.AddEntity();
-        auto& light = ecs.AddComponent<atlas::game::DirectionalLightComponent>(lightEntity);
+        auto& light = ecs.AddComponent<atlas::game::components::lighting::DirectionalLightComponent>(lightEntity);
         light.m_Direction = {0.08f, -0.5, -0.70f };
         light.m_Colour = 0xffffffff_argb;
 
@@ -33,7 +34,7 @@ namespace
     void addDebugRenderingComponents(atlas::scene::EcsManager& ecs)
     {
         const auto axisEntity = ecs.AddEntity();
-        ecs.AddComponent<atlas::game::DebugAxisComponent>(axisEntity);
+        ecs.AddComponent<atlas::game::components::debug::DebugAxisComponent>(axisEntity);
     }
 }
 
@@ -48,7 +49,7 @@ void atlas::scene_editor::SceneEditorState::ConstructSystems(scene::SystemsBuild
 {
     simBuilder.RegisterSystem<game::scene::systems::debug::DebugAxisInputSystem>();
 
-    frameBuilder.RegisterSystem<game::scene::systems::debug::DebugAxisRenderSystem>();
+    frameBuilder.RegisterSystem<game::scene::systems::debug::DebugAxisRenderSystem>(constants::render_views::c_geometry);
 }
 
 void atlas::scene_editor::SceneEditorState::ClearScene()

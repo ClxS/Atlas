@@ -17,7 +17,7 @@ namespace
     constexpr float c_keyboardMoveScaling = 0.1f;
 
     std::tuple<Eigen::Vector3f, Eigen::Vector3f> getForwardAndRight(
-        const atlas::game::LookAtCameraComponent& camera,
+        const atlas::game::components::cameras::LookAtCameraComponent& camera,
         const Eigen::Vector3f& up = { 0.0f, 1.0f, 0.0f })
     {
         Eigen::Matrix3f cameraRotation;
@@ -47,7 +47,7 @@ namespace
         }
     }
 
-    void moveCamera(atlas::game::SphericalLookAtCameraComponent& camera, float forwardMovement, float rightMovement)
+    void moveCamera(atlas::game::components::cameras::SphericalLookAtCameraComponent& camera, float forwardMovement, float rightMovement)
     {
         Eigen::Vector3f cameraForwardVector;
         Eigen::Vector3f cameraRightVector;
@@ -77,7 +77,7 @@ namespace
     }
 
 
-    bool updateControls(atlas::game::LookAtCameraComponent& camera)
+    bool updateControls(atlas::game::components::cameras::LookAtCameraComponent& camera)
     {
         // TODO These should be moved into AtlasInput as non-statics once it exists
         static int previousMouseX = 0;
@@ -140,7 +140,7 @@ namespace
         return true;
     }
 
-    bool updateControls(atlas::game::SphericalLookAtCameraComponent& camera)
+    bool updateControls(atlas::game::components::cameras::SphericalLookAtCameraComponent& camera)
     {
         // TODO These should be moved into AtlasInput as non-statics once it exists
         static int previousMouseX = 0;
@@ -196,7 +196,7 @@ void atlas::game::scene::systems::cameras::CameraControllerSystem::Update(atlas:
         return;
     }
 
-    for(auto [entity, camera] : ecs.IterateEntityComponents<LookAtCameraComponent>())
+    for(auto [entity, camera] : ecs.IterateEntityComponents<components::cameras::LookAtCameraComponent>())
     {
         if (!camera.m_IsControlActive)
         {
@@ -206,7 +206,7 @@ void atlas::game::scene::systems::cameras::CameraControllerSystem::Update(atlas:
         updateControls(camera);
     }
 
-    for(auto [entity, camera] : ecs.IterateEntityComponents<SphericalLookAtCameraComponent>())
+    for(auto [entity, camera] : ecs.IterateEntityComponents<components::cameras::SphericalLookAtCameraComponent>())
     {
         if (!camera.m_IsControlActive)
         {

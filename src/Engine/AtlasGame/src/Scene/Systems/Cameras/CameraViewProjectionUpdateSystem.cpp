@@ -14,7 +14,7 @@
 
 namespace
 {
-    void updateViewProjectMatrix(const bgfx::ViewId viewId, const atlas::game::LookAtCameraComponent& camera)
+    void updateViewProjectMatrix(const bgfx::ViewId viewId, const atlas::game::components::cameras::LookAtCameraComponent& camera)
     {
         Eigen::Matrix3f cameraRotation;
         cameraRotation =
@@ -40,7 +40,11 @@ namespace
         }
     }
 
-    void updateViewProjectMatrix(const bgfx::ViewId viewId, const atlas::game::SphericalLookAtCameraComponent& camera, atlas::game::SphericalLookAtCameraComponent_Private& cameraPrivate, bool bAddDebugRendering)
+    void updateViewProjectMatrix(
+        const bgfx::ViewId viewId,
+        const atlas::game::components::cameras::SphericalLookAtCameraComponent& camera,
+        atlas::game::components::cameras::SphericalLookAtCameraComponent_Private& cameraPrivate,
+        const bool bAddDebugRendering)
     {
         Eigen::Vector3f upVector;
         Eigen::Vector3f forwardVector;
@@ -171,16 +175,16 @@ void atlas::game::scene::systems::cameras::CameraViewProjectionUpdateSystem::Ini
 void atlas::game::scene::systems::cameras::CameraViewProjectionUpdateSystem::Update(atlas::scene::EcsManager& ecs)
 {
     using namespace atlas::scene;
-    using namespace atlas::render::debug;
+    using namespace render::debug;
 
     debug_draw::drawGrid({ 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, 100);
 
-    for(auto [entity, camera, cameraPrivate] : ecs.IterateEntityComponents<SphericalLookAtCameraComponent, SphericalLookAtCameraComponent_Private>())
+    for(auto [entity, camera, cameraPrivate] : ecs.IterateEntityComponents<components::cameras::SphericalLookAtCameraComponent, components::cameras::SphericalLookAtCameraComponent_Private>())
     {
         updateViewProjectMatrix(m_ViewId, camera, cameraPrivate, m_bDebugRenderingEnabled);
     }
 
-    for(auto [entity, camera] : ecs.IterateEntityComponents<LookAtCameraComponent>())
+    for(auto [entity, camera] : ecs.IterateEntityComponents<components::cameras::LookAtCameraComponent>())
     {
         if (!camera.m_IsRenderActive)
         {

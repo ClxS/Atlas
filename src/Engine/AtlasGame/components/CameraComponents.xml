@@ -1,4 +1,4 @@
-<Components>
+<Components SubNamespace="cameras">
     <BaseCamera>
         <ViewMatrix Type="Matrix4f" />
         <ProjectionMatrix Type="Matrix4f" />
@@ -7,10 +7,7 @@
         <IsControlActive Type="bool" />
     </BaseCamera>
 
-    <FreeCamera Inherits="BaseCamera">
-        <CameraPosition Type="Vector3f" />
-        <Orientation Type="Quaternionf" />
-    </FreeCamera>
+    <FreeCamera Inherits="BaseCamera" Requires="Transform" />
 
     <LookAtCamera Inherits="BaseCamera">
         <Up Type="Vector3f" Default="0.0f, 1.0f, 0.0f" />

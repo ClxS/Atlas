@@ -47,8 +47,8 @@ namespace atlas::scene
             {
                 m_RenderTaskHandles.emplace_back(render::addToFrameGraph(
                     system->GetName(),
-                    [this, system]() { system->Initialise(m_EcsManager); },
-                    [this, system]() { system->Render(m_EcsManager); }));
+                    [this, system] { system->Initialise(m_EcsManager); },
+                    [this, system] { system->Render(m_EcsManager); }));
             }
         }
 

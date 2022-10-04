@@ -115,6 +115,5 @@ grpc::Status atlas::scene_editor::rpc::SceneEditingServiceImpl::AddComponents(gr
         }
     }
 
-    AT_ERROR(AtlasRpc, "Not implemented");
-    return grpc::Status{grpc::StatusCode::UNIMPLEMENTED, ""};
+    return grpc::Status::OK;
 }
