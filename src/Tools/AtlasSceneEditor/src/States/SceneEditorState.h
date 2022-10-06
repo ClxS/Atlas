@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "AtlasGame/Scene/Systems/Debug/DebugAxisRenderSystem.h"
+#include "AtlasRender/Types/FrameBuffer.h"
 #include "AtlasScene/Scene.h"
 
 namespace atlas::ui
@@ -25,5 +26,10 @@ namespace atlas::scene_editor
         scene::EntityId CreateEntity();
         void DeleteEntity(scene::EntityId id);
 
+    private:
+        struct
+        {
+            render::FrameBuffer m_GBuffer;
+        } m_Rendering;
     };
 }

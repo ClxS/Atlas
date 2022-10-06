@@ -172,12 +172,10 @@ void atlas::game::scene::systems::cameras::CameraViewProjectionUpdateSystem::Ini
     atlas::render::debug::initialise();
 }
 
-void atlas::game::scene::systems::cameras::CameraViewProjectionUpdateSystem::Update(atlas::scene::EcsManager& ecs)
+void atlas::game::scene::systems::cameras::CameraViewProjectionUpdateSystem::Render(atlas::scene::EcsManager& ecs)
 {
     using namespace atlas::scene;
     using namespace render::debug;
-
-    debug_draw::drawGrid({ 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, 100);
 
     for(auto [entity, camera, cameraPrivate] : ecs.IterateEntityComponents<components::cameras::SphericalLookAtCameraComponent, components::cameras::SphericalLookAtCameraComponent_Private>())
     {

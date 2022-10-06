@@ -2,10 +2,13 @@
 #include "SceneEditorState.h"
 
 #include "Constants.h"
+#include "AtlasAppHost/Application.h"
 #include "AtlasGame/Components/DebugAxisComponent.h"
 #include "AtlasGame/Components/DirectionalLightComponent.h"
 #include "AtlasGame/Components/LookAtCameraComponent.h"
+#include "AtlasGame/Scene/Systems/Cameras/CameraViewProjectionUpdateSystem.h"
 #include "AtlasGame/Scene/Systems/Debug/DebugAxisInputSystem.h"
+#include "AtlasGame/Scene/Systems/Rendering/PostProcessSystem.h"
 
 namespace
 {
@@ -13,8 +16,8 @@ namespace
     {
         const auto cameraEntity = ecs.AddEntity();
         auto& camera2 = ecs.AddComponent<atlas::game::components::cameras::LookAtCameraComponent>(cameraEntity);
-        camera2.m_IsRenderActive = false;
-        camera2.m_IsControlActive = false;
+        camera2.m_IsRenderActive = true;
+        camera2.m_IsControlActive = true;
         camera2.m_Distance = 25.0f;
         camera2.m_LookAtPoint = {0.0f, 0.0f, 0.0f};
         camera2.m_Pitch = 30.0_degrees;
@@ -49,7 +52,19 @@ void atlas::scene_editor::SceneEditorState::ConstructSystems(scene::SystemsBuild
 {
     simBuilder.RegisterSystem<game::scene::systems::debug::DebugAxisInputSystem>();
 
+    const auto [width, height] = app_host::Application::Get().GetAppDimensions();
+    m_Rendering.m_GBuffer.Initialise(width, height);
+    setViewRect(constants::render_views::c_geometry, 0, 0, bgfx::BackbufferRatio::Equal);
+    setViewFrameBuffer(constants::render_views::c_geometry, m_Rendering.m_GBuffer.GetHandle());
+
+    render::addToFrameGraph("BufferPrep", [this]
+    {
+        const auto [newWidth, newHeight] = app_host::Application::Get().GetAppDimensions();
+        m_Rendering.m_GBuffer.EnsureSize(newWidth, newHeight);
+    });
+    frameBuilder.RegisterSystem<game::scene::systems::cameras::CameraViewProjectionUpdateSystem>(constants::render_views::c_geometry);
     frameBuilder.RegisterSystem<game::scene::systems::debug::DebugAxisRenderSystem>(constants::render_views::c_geometry);
+    frameBuilder.RegisterSystem<game::scene::systems::rendering::PostProcessSystem>(constants::render_views::c_postProcess, m_Rendering.m_GBuffer);
 }
 
 void atlas::scene_editor::SceneEditorState::ClearScene()
