@@ -15,7 +15,7 @@ namespace
     constexpr float c_rotationScaling = 0.01f;
     constexpr float c_moveScaling = 0.003f;
     constexpr float c_zoomScaling = 0.05f;
-    constexpr float c_keyboardMoveScaling = 0.1f;
+    constexpr float c_keyboardMoveScaling = 0.02f;
 
     std::tuple<Eigen::Vector3f, Eigen::Vector3f> getForwardAndRight(
         const atlas::game::components::cameras::LookAtCameraComponent& camera,
@@ -101,13 +101,21 @@ namespace
         {
             const int deltaX = mouseX - previousMouseX;
             const int deltaY = mouseY - previousMouseY;
+            const bool isVerticalPan = keyboardState[SDL_SCANCODE_LSHIFT] || keyboardState[SDL_SCANCODE_RSHIFT];
 
-            auto [forward, right] = getForwardAndRight(camera);
-            forward *= static_cast<float>(deltaY) * c_moveScaling * speedFactor;
-            right *= static_cast<float>(-deltaX) * c_moveScaling * speedFactor;
+            if(isVerticalPan)
+            {
+                camera.m_LookAtPoint += Eigen::Vector3f { 0.0f, 1.0f, 0.0f } * static_cast<float>(deltaY) * c_moveScaling * speedFactor;
+            }
+            else
+            {
+                auto [forward, right] = getForwardAndRight(camera);
+                forward *= static_cast<float>(deltaY) * c_moveScaling * speedFactor;
+                right *= static_cast<float>(-deltaX) * c_moveScaling * speedFactor;
 
-            camera.m_LookAtPoint += forward;
-            camera.m_LookAtPoint += right;
+                camera.m_LookAtPoint += forward;
+                camera.m_LookAtPoint += right;
+            }
         }
 
         float wheelX, wheelY;
