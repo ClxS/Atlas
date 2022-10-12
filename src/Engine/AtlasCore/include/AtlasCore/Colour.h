@@ -3,12 +3,6 @@
 
 namespace atlas::core
 {
-    enum class Colours : uint32_t
-    {
-        Black = 0xFF000000,
-        White = 0xFFFFFFFF,
-    };
-
     class Colour32
     {
     public:
@@ -20,7 +14,7 @@ namespace atlas::core
         {
         }
 
-        explicit Colour32(const uint32_t colour)
+        constexpr explicit Colour32(const uint32_t colour)
             : m_R((colour & 0xFF0000) >> 16)
             , m_G((colour & 0xFF00) >> 8)
             , m_B(colour & 0xFF)
@@ -57,4 +51,13 @@ namespace atlas::core
 inline atlas::core::Colour32 operator ""_argb(const unsigned long long int value)
 {
     return atlas::core::Colour32 { static_cast<uint32_t>(value) };
+}
+
+namespace atlas::core::colours
+{
+    constexpr Colour32 c_black { 0xFF000000 };
+    constexpr Colour32 c_white { 0xFFFFFFFF };
+    constexpr Colour32 c_red { 0xFFFF0000 };
+    constexpr Colour32 c_green { 0xFF00FF00 };
+    constexpr Colour32 c_blue { 0xFF0000FF };
 }

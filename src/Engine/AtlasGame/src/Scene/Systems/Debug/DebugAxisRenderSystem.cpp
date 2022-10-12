@@ -31,6 +31,7 @@ void atlas::game::scene::systems::debug::DebugAxisRenderSystem::Render(atlas::sc
         render::debug::debug_draw::drawAxis(0.0f, 0.0f, 1.0f, 15, 1);
     }
 
+    render::debug::debug_draw::setColor(core::colours::c_white);
     render::debug::debug_draw::drawGrid({ 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, 100);
     render::debug::debug_draw::end();
 }
