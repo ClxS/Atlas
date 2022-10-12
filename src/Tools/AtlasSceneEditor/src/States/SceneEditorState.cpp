@@ -19,7 +19,7 @@ namespace
         auto& camera2 = ecs.AddComponent<atlas::game::components::cameras::LookAtCameraComponent>(cameraEntity);
         camera2.m_IsRenderActive = true;
         camera2.m_IsControlActive = true;
-        camera2.m_Distance = 25.0f;
+        camera2.m_Distance = 5.0f;
         camera2.m_LookAtPoint = {0.0f, 0.0f, 0.0f};
         camera2.m_Pitch = 30.0_degrees;
         camera2.m_Yaw = -135.0_degrees;
