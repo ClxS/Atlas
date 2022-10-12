@@ -13,7 +13,7 @@
 namespace
 {
     constexpr float c_rotationScaling = 0.01f;
-    constexpr float c_moveScaling = 0.01f;
+    constexpr float c_moveScaling = 0.003f;
     constexpr float c_zoomScaling = 0.05f;
     constexpr float c_keyboardMoveScaling = 0.1f;
 
