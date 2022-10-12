@@ -66,6 +66,7 @@ int gameMain(int argc, char* argv[])
             {
                 "Scene Editor",
                 atlas::scene_editor::constants::render_views::c_ui,
+                atlas::scene_editor::constants::render_views::c_debugui,
                 60
             }};
     return game.Run();

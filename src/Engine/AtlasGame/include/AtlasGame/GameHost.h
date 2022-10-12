@@ -15,7 +15,9 @@
 #include "AtlasRender/AssetTypes/ModelAsset.h"
 #include "AtlasTrace/Logging.h"
 #include "AtlasUI/Rml/RmlConfig.h"
+#include "backends/imgui_impl_sdl.h"
 #include "Utility/FrameLimiter.h"
+#include "Utility/ImguiBgfx/ImguiBgfxImpl.h"
 
 namespace atlas::game
 {
@@ -51,12 +53,14 @@ namespace atlas::game
             ReturnCode_RendererFailed = -2,
             ReturnCode_ResourceSystemFailed = -3,
             ReturnCode_UIFailed = -4,
+            ReturnCode_ImGuiFailed = -5,
         };
 
         struct Args
         {
             std::string m_GameName;
             bgfx::ViewId m_UIView = 0;
+            bgfx::ViewId m_DebugUIView = 0;
             int m_FrameRateCap = 60;
         };
 
@@ -101,6 +105,16 @@ namespace atlas::game
 #endif
 
             init(args);
+            return true;
+        }
+
+        [[nodiscard]] static bool InitialiseImgui(const bgfx::ViewId uiView)
+        {
+            AT_INFO(AtlasGame, "Initialising IMGUI");
+            app_host::platform::PlatformApplication& platform = app_host::Application::Get().GetPlatform();
+            ImGui_ImplSDL2_InitForSDLRenderer(platform.GetSDLContext().m_Window);
+            ImGui_Implbgfx_Init(uiView);
+
             return true;
         }
 
@@ -151,6 +165,11 @@ namespace atlas::game
             if (!InitialiseUI(m_GameArguments.m_UIView))
             {
                 return static_cast<int>(ReturnCode::ReturnCode_UIFailed);
+            }
+
+            if (!InitialiseImgui(m_GameArguments.m_DebugUIView))
+            {
+                return static_cast<int>(ReturnCode::ReturnCode_ImGuiFailed);
             }
 
             m_Game.OnStartup();
