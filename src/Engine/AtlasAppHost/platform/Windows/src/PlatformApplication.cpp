@@ -1,10 +1,32 @@
 #include "AtlasAppHostPCH.h"
+#include "AtlasAppHost/Application.h"
 #include "AtlasAppHost/PlatformApplication.h"
 
 #include "SDL.h"
 #include "backends/imgui_impl_sdl.h"
 
 #define WINDOWED 1
+
+namespace
+{
+    bool g_wheelScrolled = false;
+    float g_wheelX = 0.0f;
+    float g_wheelY = 0.0f;
+}
+
+bool atlas::app_host::SDL_GetMouseWheel(float* x, float* y)
+{
+    if (!g_wheelScrolled)
+    {
+        *x = 0.0f;
+        *y = 0.0f;
+        return false;
+    }
+
+    *x = g_wheelX;
+    *y = g_wheelY;
+    return true;
+}
 
 bool atlas::app_host::platform::PlatformApplication::Initialise(std::string_view applicationName)
 {
@@ -49,6 +71,8 @@ std::tuple<int, int> atlas::app_host::platform::PlatformApplication::GetAppDimen
 
 void atlas::app_host::platform::PlatformApplication::Update()
 {
+    g_wheelScrolled = false;
+
     SDL_Event currentEvent;
     while(SDL_PollEvent(&currentEvent) != 0)
     {
@@ -57,6 +81,11 @@ void atlas::app_host::platform::PlatformApplication::Update()
         {
         case SDL_QUIT:
             exit(0);
+            break;
+        case SDL_MOUSEWHEEL:
+            g_wheelScrolled = true;
+            g_wheelX = currentEvent.wheel.preciseX;
+            g_wheelY = currentEvent.wheel.preciseY;
             break;
         default:
             break;

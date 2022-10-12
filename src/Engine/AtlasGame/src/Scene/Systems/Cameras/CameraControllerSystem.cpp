@@ -14,6 +14,7 @@ namespace
 {
     constexpr float c_rotationScaling = 0.01f;
     constexpr float c_moveScaling = 0.01f;
+    constexpr float c_zoomScaling = 0.05f;
     constexpr float c_keyboardMoveScaling = 0.1f;
 
     std::tuple<Eigen::Vector3f, Eigen::Vector3f> getForwardAndRight(
@@ -107,6 +108,12 @@ namespace
 
             camera.m_LookAtPoint += forward;
             camera.m_LookAtPoint += right;
+        }
+
+        float wheelX, wheelY;
+        if (atlas::app_host::SDL_GetMouseWheel(&wheelX, &wheelY))
+        {
+            camera.m_Distance -= wheelY * c_zoomScaling * speedFactor;
         }
 
         if(keyboardState[SDL_SCANCODE_W])

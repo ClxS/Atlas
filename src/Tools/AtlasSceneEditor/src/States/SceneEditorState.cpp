@@ -6,6 +6,7 @@
 #include "AtlasGame/Components/DebugAxisComponent.h"
 #include "AtlasGame/Components/DirectionalLightComponent.h"
 #include "AtlasGame/Components/LookAtCameraComponent.h"
+#include "AtlasGame/Scene/Systems/Cameras/CameraControllerSystem.h"
 #include "AtlasGame/Scene/Systems/Cameras/CameraViewProjectionUpdateSystem.h"
 #include "AtlasGame/Scene/Systems/Debug/DebugAxisInputSystem.h"
 #include "AtlasGame/Scene/Systems/Rendering/PostProcessSystem.h"
@@ -50,21 +51,28 @@ void atlas::scene_editor::SceneEditorState::OnEntered(scene::SceneManager& scene
 
 void atlas::scene_editor::SceneEditorState::ConstructSystems(scene::SystemsBuilder& simBuilder, scene::SystemsBuilder& frameBuilder)
 {
-    simBuilder.RegisterSystem<game::scene::systems::debug::DebugAxisInputSystem>();
-
-    const auto [width, height] = app_host::Application::Get().GetAppDimensions();
-    m_Rendering.m_GBuffer.Initialise(width, height);
-    setViewRect(constants::render_views::c_geometry, 0, 0, bgfx::BackbufferRatio::Equal);
-    setViewFrameBuffer(constants::render_views::c_geometry, m_Rendering.m_GBuffer.GetHandle());
-
-    render::addToFrameGraph("BufferPrep", [this]
+    // Game
     {
-        const auto [newWidth, newHeight] = app_host::Application::Get().GetAppDimensions();
-        m_Rendering.m_GBuffer.EnsureSize(newWidth, newHeight);
-    });
-    frameBuilder.RegisterSystem<game::scene::systems::cameras::CameraViewProjectionUpdateSystem>(constants::render_views::c_geometry);
-    frameBuilder.RegisterSystem<game::scene::systems::debug::DebugAxisRenderSystem>(constants::render_views::c_geometry);
-    frameBuilder.RegisterSystem<game::scene::systems::rendering::PostProcessSystem>(constants::render_views::c_postProcess, m_Rendering.m_GBuffer);
+        simBuilder.RegisterSystem<game::scene::systems::debug::DebugAxisInputSystem>();
+        simBuilder.RegisterSystem<game::scene::systems::cameras::CameraControllerSystem>();
+    }
+
+    // Rendering
+    {
+        const auto [width, height] = app_host::Application::Get().GetAppDimensions();
+        m_Rendering.m_GBuffer.Initialise(width, height);
+        setViewRect(constants::render_views::c_geometry, 0, 0, bgfx::BackbufferRatio::Equal);
+        setViewFrameBuffer(constants::render_views::c_geometry, m_Rendering.m_GBuffer.GetHandle());
+
+        render::addToFrameGraph("BufferPrep", [this]
+        {
+            const auto [newWidth, newHeight] = app_host::Application::Get().GetAppDimensions();
+            m_Rendering.m_GBuffer.EnsureSize(newWidth, newHeight);
+        });
+        frameBuilder.RegisterSystem<game::scene::systems::cameras::CameraViewProjectionUpdateSystem>(constants::render_views::c_geometry);
+        frameBuilder.RegisterSystem<game::scene::systems::debug::DebugAxisRenderSystem>(constants::render_views::c_geometry);
+        frameBuilder.RegisterSystem<game::scene::systems::rendering::PostProcessSystem>(constants::render_views::c_postProcess, m_Rendering.m_GBuffer);
+    }
 }
 
 void atlas::scene_editor::SceneEditorState::ClearScene()
