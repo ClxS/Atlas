@@ -32,6 +32,7 @@ namespace atlas::game
         GameImplementation operator=(const GameImplementation&&) = delete;
 
         virtual void OnStartup() {}
+        virtual void OnInitialised() {}
         virtual void Tick()
         {
             m_SceneManager.Update();
@@ -176,6 +177,7 @@ namespace atlas::game
             m_Game.RegisterRpc(m_RpcServer);
             m_RpcServer.Initialise();
 
+            m_Game.OnInitialised();
             auto& app = app_host::Application::Get();
             while(true)
             {

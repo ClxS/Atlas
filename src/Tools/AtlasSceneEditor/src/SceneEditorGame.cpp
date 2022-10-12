@@ -49,14 +49,29 @@ namespace
             m_EditorState = &m_SceneManager.TransitionTo<atlas::scene_editor::SceneEditorState>();
         }
 
+        void OnInitialised() override
+        {
+            grpc::ServerContext* context{nullptr};
+            Unit unit{};
+            Result result{};
+            Entity entity{};
+
+            m_EditorRpc->CreateNewScene(context, &unit, &result);
+
+            m_EditorRpc->CreateEntity(context, &unit, &entity);
+#error continue
+        }
+
         void RegisterRpc(atlas::rpc::RpcServer& server) override
         {
             server.RegisterService<atlas::scene_editor::rpc::InstanceInteractionServiceImpl>();
-            server.RegisterService<atlas::scene_editor::rpc::SceneEditingServiceImpl>(m_EditorState);
+            m_EditorRpc = server.RegisterService<atlas::scene_editor::rpc::SceneEditingServiceImpl>(m_EditorState);
         }
 
     private:
         atlas::scene_editor::SceneEditorState* m_EditorState{nullptr};
+
+        atlas::scene_editor::rpc::SceneEditingServiceImpl* m_EditorRpc{nullptr};
     };
 }
 
