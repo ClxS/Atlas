@@ -48,8 +48,11 @@ grpc::Status atlas::scene_editor::rpc::SceneEditingServiceImpl::ClearScene(grpc:
 grpc::Status atlas::scene_editor::rpc::SceneEditingServiceImpl::CreateEntity(grpc::ServerContext* serverContext,
     const Unit* unit, Entity* entity)
 {
-    AT_ERROR(AtlasRpc, "Not implemented");
-    return grpc::Status{grpc::StatusCode::UNIMPLEMENTED, ""};
+    AT_INFO(AtlasRpc, "CreateEntity");
+
+    scene::EcsManager& ecs = m_EditorState->GetEcsManager();
+    entity->set_id(ecs.AddEntity().m_Value);
+    return grpc::Status::OK;
 }
 
 grpc::Status atlas::scene_editor::rpc::SceneEditingServiceImpl::DeleteEntity(grpc::ServerContext*, const Entity* entity,
