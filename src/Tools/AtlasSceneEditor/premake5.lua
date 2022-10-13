@@ -2,7 +2,7 @@ if not toolsDirectory then
     error("Solution must set toolsDirectory variable")
 end
 
-app "AtlasSceneEditor"
+lib "AtlasSceneEditor"
     links {
         "AtlasAppHost",
         "AtlasGame",

@@ -9,7 +9,7 @@
 atlas::ui::rml::RmlRenderInterface::RmlRenderInterface(bgfx::ViewId viewId)
     : m_Params{viewId}
 {
-    using namespace resources::registry;
+    using namespace resources;
     m_RmlVertexLayout
         .begin()
         .add(bgfx::Attrib::Position, 2, bgfx::AttribType::Float)

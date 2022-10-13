@@ -1,8 +1,8 @@
 ﻿#include "AtlasGamePCH.h"
 #include "AtlasGame/Scene/Systems/Rendering/PostProcessSystem.h"
 
-#include "PostProcess_AssetRegistry.h"
 #include "AtlasAppHost/Application.h"
+#include "AtlasRender/AssetRegistry.h"
 #include "AtlasResource/ResourceLoader.h"
 
 namespace
@@ -107,8 +107,6 @@ atlas::game::scene::systems::rendering::PostProcessSystem::PostProcessSystem(con
 
 void atlas::game::scene::systems::rendering::PostProcessSystem::Initialise(atlas::scene::EcsManager& ecsManager)
 {
-    resource::ResourceLoader::RegisterBundle<resources::post_process::registry::CoreBundle>();
-
     static_assert(sizeof(VertexLayout) == sizeof(float) * 3 + sizeof(float) * 2);
     m_PostProcessLayout
         .begin()
@@ -119,15 +117,15 @@ void atlas::game::scene::systems::rendering::PostProcessSystem::Initialise(atlas
     const bgfx::RendererType::Enum renderer = bgfx::getRendererType();
     m_TexelHalf = bgfx::RendererType::Direct3D9 == renderer ? 0.5f : 0.0f;
 
-    m_Programs.m_Copy = resource::ResourceLoader::LoadAsset<resources::post_process::registry::CoreBundle,
+    m_Programs.m_Copy = resource::ResourceLoader::LoadAsset<render::resources::CoreBundle,
                                                             render::ShaderProgram>(
-        resources::post_process::registry::core_bundle::shaders::postprocess::c_copy);
-    m_Programs.m_Fxaa = resource::ResourceLoader::LoadAsset<resources::post_process::registry::CoreBundle,
+        render::resources::core_bundle::shaders::postprocess::c_copy);
+    m_Programs.m_Fxaa = resource::ResourceLoader::LoadAsset<render::resources::CoreBundle,
                                                             render::ShaderProgram>(
-        resources::post_process::registry::core_bundle::shaders::postprocess::c_fxaa);
-    m_Programs.m_Vignette = resource::ResourceLoader::LoadAsset<resources::post_process::registry::CoreBundle,
+        render::resources::core_bundle::shaders::postprocess::c_fxaa);
+    m_Programs.m_Vignette = resource::ResourceLoader::LoadAsset<render::resources::CoreBundle,
                                                                 render::ShaderProgram>(
-        resources::post_process::registry::core_bundle::shaders::postprocess::c_vignette);
+        render::resources::core_bundle::shaders::postprocess::c_vignette);
 
     m_Samplers.m_Color = createUniform("s_texColor", bgfx::UniformType::Sampler);
     m_Uniforms.m_FrameBufferSize = createUniform("frameBufferSize", bgfx::UniformType::Vec4);

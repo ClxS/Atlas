@@ -1,6 +1,6 @@
 [shaderProgram]
-vertex = "basicUntextured/vert.metadata"
-fragment = "basicUntextured/frag.metadata"
+vertex = "engine/shaders/basicUntextured/vert"
+fragment = "engine/shaders/basicUntextured/frag"
 textureSlotCount = 1
 
 [[shaderProgram.textureSlotInfo]]

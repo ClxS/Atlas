@@ -163,6 +163,8 @@ namespace atlas::game
                 return static_cast<int>(ReturnCode::ReturnCode_ResourceSystemFailed);
             }
 
+            m_Game.OnStartup();
+
             if (!InitialiseUI(m_GameArguments.m_UIView))
             {
                 return static_cast<int>(ReturnCode::ReturnCode_UIFailed);
@@ -173,7 +175,6 @@ namespace atlas::game
                 return static_cast<int>(ReturnCode::ReturnCode_ImGuiFailed);
             }
 
-            m_Game.OnStartup();
             m_Game.RegisterRpc(m_RpcServer);
             m_RpcServer.Initialise();
 

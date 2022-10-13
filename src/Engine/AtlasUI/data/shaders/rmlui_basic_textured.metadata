@@ -1,4 +1,4 @@
 [shaderProgram]
-vertex = "rmlui_basic/vert.metadata"
-fragment = "rmlui_basic/textured_frag.metadata"
+vertex = "engine/shaders/rmlui_basic/vert"
+fragment = "engine/shaders/rmlui_basic/textured_frag"
 textureSlotCount = 1

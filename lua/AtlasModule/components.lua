@@ -25,7 +25,8 @@ function generateComponents(group, namespace)
                     p.api.scope.project.name,
                     namespace)
 
-    print("Generating components for " .. p.api.scope.project.name .. "(" .. command .. ")")
+    print("Generating components for " .. p.api.scope.project.name)
+    --print("Generating components for " .. p.api.scope.project.name .. "(" .. command .. ")")
     os.execute(command)
 
     files {
@@ -90,7 +91,8 @@ function buildRegistries()
                     v.namespace,
                     groupString)
 
-        print("Generating component registry " .. v.project .. '(' .. command .. ')')
+        print("Generating component registry " .. v.project)
+        --print("Generating component registry " .. v.project .. '(' .. command .. ')')
         os.execute(command)
     end
 end

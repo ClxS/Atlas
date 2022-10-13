@@ -1,4 +1,4 @@
 [shaderProgram]
-vertex = "vignette/vert.metadata"
-fragment = "vignette/frag.metadata"
+vertex = "engine/shaders/postprocess/vignette/vert"
+fragment = "engine/shaders/postprocess/vignette/frag"
 textureSlotCount = 1

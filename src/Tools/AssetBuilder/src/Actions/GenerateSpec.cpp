@@ -99,25 +99,25 @@ namespace
         outStream << std::string(depth * 4, ' ') << "}\n";
     }
 
-    void writeAssets(std::stringstream& outStream, const AssetTree::TreeNode& node, const int depth, int& index)
+    void writeAssets(std::stringstream& outStream, const AssetTree::TreeNode& node, const int depth, int& index, const std::string_view outputGroup)
     {
         for(auto& group : node.m_ChildNodes)
         {
-            writeAssets(outStream, *group, depth, index);
+            writeAssets(outStream, *group, depth, index, outputGroup);
         }
 
         for(const auto& asset : node.m_Assets)
         {
             assert(asset.m_pAssociatedHandler);
             outStream << std::string((depth + 1) * 4, ' ') << "atlas::resource::AssetRegistryEntry(std::filesystem::path(R\"("
-                << asset.m_pAssociatedHandler->GetAssetRelativeOutputPath(asset).string()
+                << (std::filesystem::path{outputGroup} / asset.m_pAssociatedHandler->GetAssetRelativeOutputPath(asset)).string()
                 << ")\"),"
-                << "\"" << asset_builder::actions::getAssetRelativeName(asset.m_RelativePath) << "\""
+                << "\"" << asset_builder::actions::getAssetRelativeName(outputGroup, asset.m_RelativePath) << "\""
                 << "),\n";
         }
     }
 
-    std::string generateFileFromTree(const AssetTree& tree, const std::string& fileNamespace)
+    std::string generateFileFromTree(const AssetTree& tree, const std::string_view outputGroup, const std::string& fileNamespace)
     {
         std::stringstream outFile;
         outFile << "#pragma once\n";
@@ -137,7 +137,7 @@ namespace
         outFile << std::string(2 * 4, ' ') << "const std::array c_Files = {\n";
         for(auto& group : tree.GetRoot().m_ChildNodes)
         {
-            writeAssets(outFile, *group, 2, index);
+            writeAssets(outFile, *group, 2, index, outputGroup);
         }
         outFile << std::string(2 * 4, ' ') << "};\n";
         outFile << std::string(1 * 4, ' ') << "};\n";
@@ -162,9 +162,17 @@ namespace
     }
 }
 
-std::string asset_builder::actions::getAssetRelativeName(std::filesystem::path relativePath)
+std::string asset_builder::actions::getAssetRelativeName(const std::string_view outputGroup, std::filesystem::path relativePath)
 {
-    relativePath = relativePath.replace_extension();
+    if (outputGroup.empty())
+    {
+        relativePath = relativePath.replace_extension();
+    }
+    else
+    {
+        relativePath = std::filesystem::path{outputGroup} / relativePath.replace_extension();
+    }
+
     std::string namespaceName = relativePath.string();
     namespaceName = replaceAll(namespaceName, "\\", "::");
     namespaceName = replaceAll(namespaceName, "/", "::");
@@ -183,7 +191,7 @@ ExitCode asset_builder::actions::generateSpec(const Arguments& args)
     namespace fs = std::filesystem;
 
     const AssetTree tree = AssetTree::CreateFromFileStructure(args.m_DataRoot.m_Value, args.m_Platform.m_Value);
-    const std::string outputFileText = generateFileFromTree(tree, args.m_Namespace.m_Value);
+    const std::string outputFileText = generateFileFromTree(tree, args.m_Group.m_Value, args.m_Namespace.m_Value);
 
     const fs::path outputPath = args.m_OutputFile.m_Value;
     if (doesFileContentsMatch(outputPath, outputFileText))
@@ -192,7 +200,7 @@ ExitCode asset_builder::actions::generateSpec(const Arguments& args)
         return ExitCode::Success;
     }
 
-    fs::create_directory(outputPath.parent_path());
+    fs::create_directories(outputPath.parent_path());
     std::ofstream out(outputPath);
     out << outputFileText;
     out.close();

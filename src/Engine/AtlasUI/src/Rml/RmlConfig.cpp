@@ -50,8 +50,6 @@ namespace
 
 bool atlas::ui::rml::config::initialiseRmlUi(bgfx::ViewId uiViewId)
 {
-    resource::ResourceLoader::RegisterBundle<resources::registry::CoreBundle>();
-
     resource::ResourceLoader::RegisterTypeHandler<asset_types::RmlRawDataAsset>(rawRmlDataLoader);
     resource::ResourceLoader::RegisterTypeHandler<asset_types::RmlUiPage>(rmlUiPageLoader);
     resource::ResourceLoader::RegisterTypeHandler<asset_types::RmlUiCss>(rmlUiCssLoader);
@@ -69,10 +67,10 @@ bool atlas::ui::rml::config::initialiseRmlUi(bgfx::ViewId uiViewId)
 
     Rml::Debugger::SetVisible(true);
 
-    g_mainFont = resource::ResourceLoader::LoadAsset<resources::registry::CoreBundle, asset_types::RmlUiFont>(
-        resources::registry::core_bundle::fonts::c_LatoLatin_Regular);
-    g_backupFont = resource::ResourceLoader::LoadAsset<resources::registry::CoreBundle, asset_types::RmlUiFont>(
-        resources::registry::core_bundle::fonts::c_NotoEmoji_Regular);
+    g_mainFont = resource::ResourceLoader::LoadAsset<resources::CoreBundle, asset_types::RmlUiFont>(
+        resources::core_bundle::fonts::c_LatoLatin_Regular);
+    g_backupFont = resource::ResourceLoader::LoadAsset<resources::CoreBundle, asset_types::RmlUiFont>(
+        resources::core_bundle::fonts::c_NotoEmoji_Regular);
 
     if (!g_mainFont || !Rml::LoadFontFace(
         g_mainFont->GetData(),
@@ -82,8 +80,8 @@ bool atlas::ui::rml::config::initialiseRmlUi(bgfx::ViewId uiViewId)
         Rml::Style::FontWeight::Normal))
     {
         AT_ERROR(AtlasUI, "Failed to load main font. AssetBundleId: {}:{}",
-            resources::registry::CoreBundle::GetStringId(),
-            resources::registry::core_bundle::fonts::c_LatoLatin_Regular.m_Value);
+            resources::CoreBundle::GetStringId(),
+            resources::core_bundle::fonts::c_LatoLatin_Regular.m_Value);
         return false;
     }
 
@@ -95,8 +93,8 @@ bool atlas::ui::rml::config::initialiseRmlUi(bgfx::ViewId uiViewId)
        Rml::Style::FontWeight::Normal))
     {
         AT_ERROR(AtlasUI, "Failed to load backup font. AssetBundleId: {}:{}",
-            resources::registry::CoreBundle::GetStringId(),
-            resources::registry::core_bundle::fonts::c_NotoEmoji_Regular.m_Value);
+            resources::CoreBundle::GetStringId(),
+            resources::core_bundle::fonts::c_NotoEmoji_Regular.m_Value);
         return false;
     }
 

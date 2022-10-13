@@ -40,8 +40,8 @@ namespace
         const auto shaderInfo = table->getTable("shaderProgram");
 
         ShaderProgramMetadata metadata;
-        metadata.m_Vertex = (relativePath.parent_path() / shaderInfo->getString("vertex").second);
-        metadata.m_Fragment = (relativePath.parent_path() / shaderInfo->getString("fragment").second);
+        metadata.m_Vertex = shaderInfo->getString("vertex").second;
+        metadata.m_Fragment = shaderInfo->getString("fragment").second;
         metadata.m_TextureSlotCount = static_cast<uint8_t>(shaderInfo->getInt("textureSlotCount").second);
 
         const auto infoArray = shaderInfo->getArray("textureSlotInfo");
@@ -97,8 +97,8 @@ std::variant<std::vector<OutputArtifact>, ErrorString> ShaderProgramAssetHandler
     const auto metadata = std::get<0>(metadataResult);
     const std::vector shaderKeys =
     {
-        asset_builder::actions::getAssetRelativeName(metadata.m_Vertex),
-        asset_builder::actions::getAssetRelativeName(metadata.m_Fragment),
+        asset_builder::actions::getAssetRelativeName({}, metadata.m_Vertex),
+        asset_builder::actions::getAssetRelativeName({}, metadata.m_Fragment),
     };
 
     asset_builder::utility::file_utility::StructuredFileWriter writer;

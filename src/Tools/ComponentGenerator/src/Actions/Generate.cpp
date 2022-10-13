@@ -27,7 +27,7 @@ namespace
         {"Matrix4f", "Eigen::Matrix4f", { "Eigen/Core" }},
         {"Vector2f", "Eigen::Vector2f", { "Eigen/Core" }},
         {"Vector3f", "Eigen::Vector3f", { "Eigen/Core" }},
-        {"Quaternionf", "Eigen::Quaternionf", { "Eigen/Core" }},
+        {"Quaternionf", "Eigen::Quaternionf", { "Eigen/Geometry" }},
         {"Angle", "atlas::maths_helpers::Angle", { "AtlasCore/MathsHelpers.h" }},
         {"Colour32", "atlas::core::Colour32", { "AtlasCore/Colour.h" }},
         {"EntityId", "atlas::scene::EntityId", { "AtlasScene/ECS/Entity.h" }},

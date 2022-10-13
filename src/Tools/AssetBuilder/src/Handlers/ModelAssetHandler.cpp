@@ -41,13 +41,13 @@ namespace
         const auto shaderInfo = table->getTable("model");
 
         ModelMetadata metadata;
-        metadata.m_Mesh = relativePath.parent_path() / shaderInfo->getString("mesh").second;
+        metadata.m_Mesh = shaderInfo->getString("mesh").second;
 
         const auto material = shaderInfo->getTable("material");
         if (material)
         {
             ModelMetadata::Material materialMetadata;
-            materialMetadata.m_Program = relativePath.parent_path() / material->getString("program").second;
+            materialMetadata.m_Program = material->getString("program").second;
             materialMetadata.m_Program = materialMetadata.m_Program.lexically_normal();
 
             const auto textures = material->getArray("texture");
@@ -57,7 +57,7 @@ namespace
                 {
                     const auto texture = textures->getTable(i);
 
-                    auto texturePath = relativePath.parent_path() / texture->getString("texture").second;
+                    std::filesystem::path texturePath = texture->getString("texture").second;
                     texturePath = texturePath.lexically_normal();
 
                     materialMetadata.m_Bindings.push_back({
@@ -106,14 +106,14 @@ std::variant<std::vector<OutputArtifact>, ErrorString> ModelAssetHandler::Cook(c
         writer.AddDoubleSizedFixup(std::format("texture_{}", i));
     }
 
-    writer.AddKeyedData("mesh", asset_builder::actions::getAssetRelativeName(metadata.m_Mesh));
+    writer.AddKeyedData("mesh", asset_builder::actions::getAssetRelativeName({}, metadata.m_Mesh));
     if (metadata.m_Material.has_value())
     {
-        writer.AddKeyedData("program", asset_builder::actions::getAssetRelativeName(metadata.m_Material.value().m_Program));
+        writer.AddKeyedData("program", asset_builder::actions::getAssetRelativeName({}, metadata.m_Material.value().m_Program));
         for(int i = 0; i < textureCount; i++)
         {
             writer.AddKeyedData(std::format("sampler_{}", i), metadata.m_Material.value().m_Bindings[i].m_Sampler);
-            writer.AddKeyedData(std::format("texture_{}", i), asset_builder::actions::getAssetRelativeName(metadata.m_Material.value().m_Bindings[i].m_Texture));
+            writer.AddKeyedData(std::format("texture_{}", i), asset_builder::actions::getAssetRelativeName({}, metadata.m_Material.value().m_Bindings[i].m_Texture));
         }
     }
 
