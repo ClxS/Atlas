@@ -155,6 +155,19 @@ void* atlas::scene::EcsManager::AddComponentCore(const EntityId entity, const Co
     }
 
     assert(returnValue);
+
+    const auto& info = ComponentRegistry::GetComponentInfo(componentId);
+    if (!info.m_RequiredComponents.empty())
+    {
+        for(auto& requiredComponent : info.m_RequiredComponents)
+        {
+            if (!DoesEntityHaveComponent(entity, requiredComponent))
+            {
+                AddComponent(entity, requiredComponent);
+            }
+        }
+    }
+
     return returnValue;
 }
 

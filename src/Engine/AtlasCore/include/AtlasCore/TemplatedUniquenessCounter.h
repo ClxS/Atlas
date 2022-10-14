@@ -24,16 +24,16 @@ namespace atlas::core
     public:
         static int32_t Ensure()
         {
+            return GetTypeValue();
+        }
+
+        [[nodiscard]] static int32_t GetTypeValue()
+        {
             if (ms_Index == -1)
             {
                 ms_Index = ContextBasedIncrementer<TContext>::GetAndIncrement();
             }
 
-            return ms_Index;
-        }
-
-        [[nodiscard]] static int32_t GetTypeValue()
-        {
             return ms_Index;
         }
 

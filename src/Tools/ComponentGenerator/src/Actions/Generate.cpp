@@ -110,8 +110,9 @@ namespace
         if (requiresAttribute)
         {
             component.m_RequiredComponents = std::vector<std::string>{};
-            auto separatedRequires = std::views::split(std::string(requiresAttribute->Value()), ";");
-            for(const auto& import : separatedRequires)
+
+            std::string strValue = std::string(requiresAttribute->Value());
+            for(const auto& import : std::views::split(strValue, ';'))
             {
                 component.m_RequiredComponents->emplace_back(import);
             }
@@ -206,10 +207,9 @@ namespace
                         : "")
             : "";
 
-        return std::format("{}{}Component{}",
+        return std::format("{}{}Component",
             componentNamespace,
-            component.m_Name,
-            component.m_IsPrivate ? "_Private" : "");
+            component.m_Name);
     }
 
     std::string getComponentFinalName(const std::string_view& componentName, const std::vector<Component>& components, const Arguments& args, bool includeNamespace)
@@ -396,7 +396,9 @@ namespace
                 std::stringstream componentRegistration;
                 componentRegistration << std::format(
                     "{{\n\t\t{},\n\t\t\"{}\",\n\t\t{{ {} }},\n\t\t{{\n{} }} }}",
-                    "atlas::scene::ComponentInfoId::Invalid()",
+                    std::format(
+                        "atlas::scene::ComponentRegistry::GetComponentId<{}>()",
+                        fullComponentName),
                     component.m_Name,
                     requiredComponents.str(),
                     fieldRegistrations.str());

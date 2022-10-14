@@ -2,10 +2,13 @@
     <Attachment>
         <EntityId Type="EntityId" />
     </Attachment>
-
-    <Transform Requires="Attachment">
+    <TransformPrivate Private="True">
+        <Transform Type="Matrix4f" />
+    </TransformPrivate>
+    <Transform Requires="Attachment;TransformPrivate">
         <Position Type="Vector3f" />
         <Scale Type="Vector3f" />
         <Orientation Type="Quaternionf" />
     </Transform>
+
 </Components>

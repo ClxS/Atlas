@@ -4,9 +4,11 @@
 #include <memory>
 #include <mutex>
 #include <unordered_map>
+#include <array>
 
 #include "Pools.h"
 #include "AtlasCore/TemplatedUniquenessCounter.h"
+#include <span>
 
 namespace atlas::scene
 {
@@ -16,6 +18,8 @@ namespace atlas::scene
     class ComponentRegistry
     {
     public:
+        static constexpr int c_maxComponents = 256;
+
         struct ComponentFieldInfo
         {
             std::string_view m_Name;
@@ -75,15 +79,15 @@ namespace atlas::scene
             registration.ValidateFieldOffsets();
 #endif
 
-            // Check the assumption that the UniqueId maps with the registration index
-            assert(m_ComponentRegistrations.size() == registration.m_UniqueId.m_Value);
-            m_ComponentRegistrations.emplace_back(registration);
-            m_ComponentPoolFactory.push_back([] { return static_cast<PoolBase*>(new ComponentPool<TComponent>()); });
+            const auto idx = registration.m_UniqueId.m_Value;
+            assert(idx < c_maxComponents);
+            m_ComponentRegistrations[idx] = registration;
+            m_ComponentPoolFactory[idx] = ([] { return static_cast<PoolBase*>(new ComponentPool<TComponent>()); });
         }
 
-        static const std::vector<PoolFactory>& GetComponentPoolFactories()
+        static const std::span<PoolFactory> GetComponentPoolFactories()
         {
-            return m_ComponentPoolFactory;
+            return { m_ComponentPoolFactory };
         }
 
         static const PoolFactory& GetFactoryForPoolWithMask(const uint64_t mask)
@@ -115,14 +119,14 @@ namespace atlas::scene
             return m_ComponentRegistrationMutex;
         }
 
-        static const std::vector<ComponentInfo>& GetComponentRegistrations()
+        static const std::span<ComponentInfo> GetComponentRegistrations()
         {
-            return m_ComponentRegistrations;
+            return { m_ComponentRegistrations };
         }
 
     private:
         inline static std::mutex m_ComponentRegistrationMutex;
-        inline static std::vector<ComponentInfo> m_ComponentRegistrations;
-        inline static std::vector<PoolFactory> m_ComponentPoolFactory;
+        inline static std::array<ComponentInfo, c_maxComponents> m_ComponentRegistrations;
+        inline static std::array<PoolFactory, c_maxComponents> m_ComponentPoolFactory;
     };
 }

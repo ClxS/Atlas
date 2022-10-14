@@ -40,7 +40,7 @@ ExitCode component_generator::actions::registry(const Arguments& args)
         outFile << std::format("#include \"{}PCH.h\"\n\n", args.m_ProjectName.m_Value);
         outFile << std::format("#include \"Registry.h\"\n\n", args.m_ProjectName.m_Value);
 
-        auto groups = std::views::split(args.m_Groups.m_Value, ";");
+        auto groups = std::views::split(args.m_Groups.m_Value, ';');
         for(const auto& group : groups)
         {
             outFile << std::format("namespace {} {{ void registerComponents(); }}\n", std::string(group));

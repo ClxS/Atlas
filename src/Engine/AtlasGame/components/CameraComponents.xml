@@ -17,7 +17,7 @@
         <Distance Type="float" Default="1.0f" />
     </LookAtCamera>
 
-    <SphericalLookAtCamera Inherits="BaseCamera">
+    <SphericalLookAtCamera Inherits="BaseCamera" Implies="SphericalLookAtCameraPrivate">
         <SphericalCentre Type="Vector3f" />
         <SphericalCentreDistance Type="float" Default="1.0f" />
         <LookAtYaw Type="Angle" />
@@ -27,10 +27,10 @@
         <Distance Type="float" Default="1.0f" />
     </SphericalLookAtCamera>
 
-    <SphericalLookAtCamera Private="true">
+    <SphericalLookAtCameraPrivate Private="true">
         <LookAt Type="Vector3f" />
         <Camera Type="Vector3f" />
         <View Type="Matrix4f" />
         <Projection Type="Matrix4f" />
-    </SphericalLookAtCamera>
+    </SphericalLookAtCameraPrivate>
 </Components>
