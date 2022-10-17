@@ -13,7 +13,7 @@ namespace
 
     atlas::render::ShadowCaster getShadowCaster(const uint8_t shadowIndex)
     {
-        if (g_shadowMaps.size() >= shadowIndex)
+        if (g_shadowMaps.size() > shadowIndex)
         {
             return g_shadowMaps[shadowIndex];
         }

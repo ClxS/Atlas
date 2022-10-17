@@ -6,10 +6,16 @@
 #include "AtlasGame/Components/DebugAxisComponent.h"
 #include "AtlasGame/Components/DirectionalLightComponent.h"
 #include "AtlasGame/Components/LookAtCameraComponent.h"
+#include "AtlasGame/Scene/Systems/TransformUpdateSystem.h"
 #include "AtlasGame/Scene/Systems/Cameras/CameraControllerSystem.h"
 #include "AtlasGame/Scene/Systems/Cameras/CameraViewProjectionUpdateSystem.h"
 #include "AtlasGame/Scene/Systems/Debug/DebugAxisInputSystem.h"
+#include "AtlasGame/Scene/Systems/Rendering/LightingSystem.h"
+#include "AtlasGame/Scene/Systems/Rendering/ModelRenderSystem.h"
 #include "AtlasGame/Scene/Systems/Rendering/PostProcessSystem.h"
+#include "AtlasGame/Scene/Systems/Rendering/ShadowMappingSystem.h"
+#include "AtlasRender/AssetRegistry.h"
+#include "AtlasResource/ResourceLoader.h"
 
 namespace
 {
@@ -55,6 +61,7 @@ void atlas::scene_editor::SceneEditorState::ConstructSystems(scene::SystemsBuild
     {
         simBuilder.RegisterSystem<game::scene::systems::debug::DebugAxisInputSystem>();
         simBuilder.RegisterSystem<game::scene::systems::cameras::CameraControllerSystem>();
+        simBuilder.RegisterSystem<game::scene::systems::TransformUpdateSystem>();
     }
 
     // Rendering
@@ -70,6 +77,18 @@ void atlas::scene_editor::SceneEditorState::ConstructSystems(scene::SystemsBuild
             m_Rendering.m_GBuffer.EnsureSize(newWidth, newHeight);
         });
         frameBuilder.RegisterSystem<game::scene::systems::cameras::CameraViewProjectionUpdateSystem>(constants::render_views::c_geometry);
+        frameBuilder.RegisterSystem<game::scene::systems::rendering::ShadowMappingSystem>(constants::render_views::c_shadowPass, constants::render_masks::c_shadowCaster);
+        frameBuilder.RegisterSystem<game::scene::systems::rendering::LightingSystem>();
+        frameBuilder.RegisterSystem<game::scene::systems::rendering::ModelRenderSystem>(
+            constants::render_views::c_geometry,
+            std::vector<game::scene::systems::rendering::ModelRenderSystem::Pass> {
+                {
+                    constants::render_views::c_geometry,
+                    constants::render_masks::c_generalGeometry,
+                    BGFX_STATE_DEFAULT,
+                    nullptr
+                }
+            });
         frameBuilder.RegisterSystem<game::scene::systems::debug::DebugAxisRenderSystem>(constants::render_views::c_geometry);
         frameBuilder.RegisterSystem<game::scene::systems::rendering::PostProcessSystem>(constants::render_views::c_postProcess, m_Rendering.m_GBuffer);
     }

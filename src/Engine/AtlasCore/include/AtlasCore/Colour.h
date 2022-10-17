@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <cstdint>
+#include <Eigen/Core>
 
 namespace atlas::core
 {
@@ -38,6 +39,16 @@ namespace atlas::core
                 static_cast<uint32_t>(m_B) << 16 |
                 static_cast<uint32_t>(m_G) << 8 |
                 static_cast<uint32_t>(m_R) << 0;
+        }
+
+        [[nodiscard]] Eigen::Vector4f GetVector4f() const
+        {
+            return {
+                static_cast<float>(m_R) / 255.0f,
+                static_cast<float>(m_G) / 255.0f,
+                static_cast<float>(m_B) / 255.0f,
+                static_cast<float>(m_A) / 255.0f,
+            };
         }
 
     private:
