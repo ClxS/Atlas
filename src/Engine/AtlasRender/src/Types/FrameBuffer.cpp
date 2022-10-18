@@ -8,36 +8,44 @@ atlas::render::FrameBuffer::FrameBuffer()
 
 atlas::render::FrameBuffer::~FrameBuffer()
 {
-    bgfx::destroy(m_Handle);
+    destroy(m_Handle);
 }
 
-void atlas::render::FrameBuffer::Initialise(const uint32_t width, const uint32_t height, bool includeDepth)
+void atlas::render::FrameBuffer::Initialise(
+    const uint32_t width,
+    const uint32_t height,
+    const bool includeDepth,
+    const bgfx::TextureFormat::Enum format,
+    const uint64_t flags)
 {
     m_Width = width;
     m_Height = height;
+    m_IncludeDepth = includeDepth;
+    m_Format = format;
+    m_Flags = flags;
 
     if (isValid(m_Handle))
     {
         destroy(m_Handle);
     }
 
-    const auto colour = bgfx::createTexture2D(
+    const auto colour = createTexture2D(
         static_cast<uint16_t>(m_Width),
         static_cast<uint16_t>(m_Height),
         false,
         1,
-        bgfx::TextureFormat::RGBA32F,
-        BGFX_TEXTURE_RT);
+        format,
+        flags);
 
     if (includeDepth)
     {
         const bgfx::TextureFormat::Enum depthFormat =
-              bgfx::isTextureValid(0, false, 1, bgfx::TextureFormat::D16,   BGFX_TEXTURE_RT_WRITE_ONLY) ? bgfx::TextureFormat::D16
-            : bgfx::isTextureValid(0, false, 1, bgfx::TextureFormat::D24S8, BGFX_TEXTURE_RT_WRITE_ONLY) ? bgfx::TextureFormat::D24S8
+              isTextureValid(0, false, 1, bgfx::TextureFormat::D16,   BGFX_TEXTURE_RT_WRITE_ONLY) ? bgfx::TextureFormat::D16
+            : isTextureValid(0, false, 1, bgfx::TextureFormat::D24S8, BGFX_TEXTURE_RT_WRITE_ONLY) ? bgfx::TextureFormat::D24S8
             : bgfx::TextureFormat::D32
             ;
 
-        const auto depth = bgfx::createTexture2D(
+        const auto depth = createTexture2D(
             static_cast<uint16_t>(m_Width),
             static_cast<uint16_t>(m_Height),
             false,
@@ -51,7 +59,7 @@ void atlas::render::FrameBuffer::Initialise(const uint32_t width, const uint32_t
             depth
         };
 
-        m_Handle = bgfx::createFrameBuffer(BX_COUNTOF(handles), handles, true);
+        m_Handle = createFrameBuffer(BX_COUNTOF(handles), handles, true);
     }
     else
     {
@@ -60,7 +68,7 @@ void atlas::render::FrameBuffer::Initialise(const uint32_t width, const uint32_t
             colour,
         };
 
-        m_Handle = bgfx::createFrameBuffer(BX_COUNTOF(handles), handles, true);
+        m_Handle = createFrameBuffer(BX_COUNTOF(handles), handles, true);
     }
 }
 
@@ -68,6 +76,6 @@ void atlas::render::FrameBuffer::EnsureSize(const uint32_t width, const uint32_t
 {
     if (width != m_Width || height != m_Height)
     {
-        Initialise(width, height);
+        Initialise(width, height, m_IncludeDepth, m_Format, m_Flags);
     }
 }

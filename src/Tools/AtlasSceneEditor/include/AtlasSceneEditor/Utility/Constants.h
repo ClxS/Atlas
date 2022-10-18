@@ -11,7 +11,8 @@ namespace atlas::scene_editor::constants
         constexpr bgfx::ViewId c_ui = 90;
         constexpr bgfx::ViewId c_debugui = 91;
         constexpr bgfx::ViewId c_picking = 92;
-        constexpr bgfx::ViewId c_debugVisualizerCopy = 93;
+        constexpr bgfx::ViewId c_pickingBlit = 93;
+        constexpr bgfx::ViewId c_debugVisualizerCopy = 94;
     }
 
     namespace render_masks

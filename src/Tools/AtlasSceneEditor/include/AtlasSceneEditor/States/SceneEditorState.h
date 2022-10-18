@@ -36,7 +36,7 @@ namespace atlas::scene_editor
         struct
         {
             render::FrameBuffer m_GBuffer;
-            DisplayState m_DisplayState{ DisplayState::DisplayPickingBuffer };
+            DisplayState m_DisplayState{ DisplayState::DisplayNormal };
         } m_Rendering;
     };
 }

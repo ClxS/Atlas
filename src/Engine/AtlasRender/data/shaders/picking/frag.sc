@@ -1,7 +1,8 @@
 #include "common.sh"
-uniform vec4 u_id;
+uniform vec4 u_entityId;
 
 void main()
 {
-	gl_FragColor = u_id;
+	gl_FragColor.xyz = u_entityId.xyz;
+	gl_FragColor.w = 1.0;
 }

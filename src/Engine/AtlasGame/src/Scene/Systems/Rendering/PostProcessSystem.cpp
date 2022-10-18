@@ -154,6 +154,9 @@ void atlas::game::scene::systems::rendering::PostProcessSystem::Initialise(atlas
     }
 
     m_FullScreenQuad = createFullscreenQuadVertexBuffer(bgfx::getCaps()->originBottomLeft);
+
+    auto [width, height] = app_host::Application::Get().GetAppDimensions();
+    m_Interstitials.m_FrameBuffer.Initialise(width, height);
 }
 
 void atlas::game::scene::systems::rendering::PostProcessSystem::Render(atlas::scene::EcsManager& ecs)

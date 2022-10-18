@@ -12,10 +12,9 @@
 #include "AtlasGame/Scene/Systems/Debug/DebugAxisInputSystem.h"
 #include "AtlasGame/Scene/Systems/Rendering/LightingSystem.h"
 #include "AtlasGame/Scene/Systems/Rendering/ModelRenderSystem.h"
-#include "AtlasGame/Scene/Systems/Rendering/PickingSystem.h"
 #include "AtlasGame/Scene/Systems/Rendering/PostProcessSystem.h"
 #include "AtlasGame/Scene/Systems/Rendering/ShadowMappingSystem.h"
-#include "AtlasRender/AssetRegistry.h"
+#include "AtlasGame/Scene/Systems/Interactivity/PickingSystem.h"
 #include "AtlasResource/ResourceLoader.h"
 
 namespace
@@ -104,8 +103,9 @@ void atlas::scene_editor::SceneEditorState::ConstructSystems(scene::SystemsBuild
             });
         frameBuilder.RegisterSystem<game::scene::systems::debug::DebugAxisRenderSystem>(constants::render_views::c_geometry);
         const auto postProcess = frameBuilder.RegisterSystem<game::scene::systems::rendering::PostProcessSystem>(constants::render_views::c_postProcess, m_Rendering.m_GBuffer);
-        const auto picking = frameBuilder.RegisterSystem<game::scene::systems::rendering::PickingSystem>(
+        const auto picking = frameBuilder.RegisterSystem<game::scene::systems::interacivity::PickingSystem>(
             constants::render_views::c_picking,
+            constants::render_views::c_pickingBlit,
             constants::render_masks::c_pickable);
 
         frameBuilder.RegisterLambda("DebugRenderingDisplay",

@@ -227,25 +227,29 @@ namespace atlas::scene
     template <typename TComponent, typename ... TArgs>
     TComponent& EcsManager::AddComponent(const EntityId entity, TArgs&&... args)
     {
-        return *static_cast<TComponent*>(AddComponentCore(
+        AddComponentCore(
             entity,
             ComponentRegistry::GetComponentId<TComponent>(),
             [&](PoolBase* pool)
         {
             return &static_cast<ComponentPool<TComponent>*>(pool)->Push(std::forward<TArgs&&>(args)...);
-        }));
+        });
+
+        return GetComponent<TComponent>(entity);
     }
 
     template <typename TComponent>
     TComponent& EcsManager::AddComponent(const EntityId entity, TComponent&& value)
     {
-        return *static_cast<TComponent*>(AddComponentCore(
+        AddComponentCore(
             entity,
             ComponentRegistry::GetComponentId<TComponent>(),
             [&](PoolBase* pool)
         {
             return &static_cast<ComponentPool<TComponent>*>(pool)->Push(std::forward<TComponent>(value));
-        }));
+        });
+
+        return GetComponent<TComponent>(entity);
     }
 
     template <typename TComponent>
