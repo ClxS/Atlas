@@ -28,14 +28,12 @@ namespace atlas::game::scene::systems::interactivity
             bool m_IsComplete{false};
         };
 
-        void ConsumePick(PickRequest& value);
+        void ConsumePick(atlas::scene::EcsManager& ecs, PickRequest& value);
 
         PickingSystem& m_PickingSystem;
         bool m_IsMouseDown{false};
         uint32_t m_MouseDownTime{0};
 
         std::vector<PickRequest> m_PickRequests;
-        std::vector<atlas::scene::EntityId> m_SelectedEntities;
-
     };
 }

@@ -4,6 +4,8 @@
 #include "SDL_keyboard.h"
 #include "SDL_mouse.h"
 #include "SDL_timer.h"
+#include "SelectionComponent.h"
+#include "AtlasScene/ECS/Components/EcsManager.h"
 
 namespace
 {
@@ -47,7 +49,7 @@ void atlas::game::scene::systems::interactivity::SelectionSystem::Update(atlas::
             continue;
         }
 
-        ConsumePick(request);
+        ConsumePick(ecs, request);
         request.m_IsComplete = true;
     }
 
@@ -59,17 +61,20 @@ void atlas::game::scene::systems::interactivity::SelectionSystem::Update(atlas::
         });
 }
 
-void atlas::game::scene::systems::interactivity::SelectionSystem::ConsumePick(PickRequest& value)
+void atlas::game::scene::systems::interactivity::SelectionSystem::ConsumePick(atlas::scene::EcsManager& ecs, PickRequest& value)
 {
     const Uint8* keyboardState = SDL_GetKeyboardState(nullptr);
     if(!keyboardState[SDL_SCANCODE_LCTRL] && !keyboardState[SDL_SCANCODE_RCTRL])
     {
-        m_SelectedEntities.clear();
+        for(auto [entity, _] : ecs.IterateEntityComponents<components::interaction::SelectionComponent>())
+        {
+            ecs.RemoveComponent<components::interaction::SelectionComponent>(entity);
+        }
     }
 
     const atlas::scene::EntityId pickedEntity = value.m_Request.get();
     if (pickedEntity.IsValid())
     {
-        m_SelectedEntities.push_back(pickedEntity);
+        ecs.AddComponent<components::interaction::SelectionComponent>(pickedEntity);
     }
 }
