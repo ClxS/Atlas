@@ -14,7 +14,7 @@ namespace atlas::game::scene::systems::rendering
     class ModelRenderSystem;
 }
 
-namespace atlas::game::scene::systems::interacivity
+namespace atlas::game::scene::systems::interactivity
 {
     constexpr uint16_t c_defaultPickingBufferSize = 32;
 

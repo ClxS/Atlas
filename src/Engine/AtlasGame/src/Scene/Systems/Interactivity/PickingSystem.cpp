@@ -37,7 +37,7 @@ namespace
     }
 }
 
-atlas::game::scene::systems::interacivity::PickingSystem::PickingSystem(
+atlas::game::scene::systems::interactivity::PickingSystem::PickingSystem(
     const bgfx::ViewId pickingBufferView,
     const bgfx::ViewId pickingBlitView,
     const uint8_t pickableRenderMask,
@@ -51,7 +51,7 @@ atlas::game::scene::systems::interacivity::PickingSystem::PickingSystem(
 {
 }
 
-void atlas::game::scene::systems::interacivity::PickingSystem::Initialise(atlas::scene::EcsManager& ecs)
+void atlas::game::scene::systems::interactivity::PickingSystem::Initialise(atlas::scene::EcsManager& ecs)
 {
     m_Programs.m_PickingObjectShader = resource::ResourceLoader::LoadAsset<
         render::resources::CoreBundle,
@@ -109,11 +109,11 @@ void atlas::game::scene::systems::interacivity::PickingSystem::Initialise(atlas:
     m_PickingFrameData.resize(m_PickFrameWidth * m_PickFrameHeight * 4);
 }
 
-void atlas::game::scene::systems::interacivity::PickingSystem::Update(atlas::scene::EcsManager& ecs)
+void atlas::game::scene::systems::interactivity::PickingSystem::Update(atlas::scene::EcsManager& ecs)
 {
 }
 
-auto atlas::game::scene::systems::interacivity::PickingSystem::Render(atlas::scene::EcsManager& ecs) -> void
+auto atlas::game::scene::systems::interactivity::PickingSystem::Render(atlas::scene::EcsManager& ecs) -> void
 {
     m_ModelRenderSystem->Render(ecs);
 
