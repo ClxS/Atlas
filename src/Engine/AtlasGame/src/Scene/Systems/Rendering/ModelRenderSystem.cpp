@@ -8,9 +8,15 @@
 #include "AtlasRender/Renderer.h"
 #include "AtlasScene/ECS/Components/EcsManager.h"
 
-atlas::game::scene::systems::rendering::ModelRenderSystem::ModelRenderSystem(const bgfx::ViewId view, std::vector<Pass>&& passes)
+atlas::game::scene::systems::rendering::ModelRenderSystem::ModelRenderSystem(
+    const bgfx::ViewId view,
+    std::vector<Pass>&& passes,
+    const bool useInstancedRendering,
+    std::function<void(atlas::scene::EntityId)> preRenderCallback)
     : m_View{view}
     , m_Passes{std::move(passes)}
+    , m_UseInstancedRendering{useInstancedRendering}
+    , m_PreRenderCallback{preRenderCallback}
 {
 }
 
@@ -49,12 +55,30 @@ void atlas::game::scene::systems::rendering::ModelRenderSystem::Render(atlas::sc
             }
 
             bgfx::setState(pass.m_State);
-            drawInstanced(
-                pass.m_ViewId,
-                model.m_Model,
-                pass.m_bOverrideProgram ? pass.m_bOverrideProgram : model.m_Model->GetProgram(),
-                { position.m_Transform },
-                BGFX_DISCARD_ALL);
+
+            if (m_PreRenderCallback)
+            {
+                m_PreRenderCallback(entity);
+            }
+
+            if (m_UseInstancedRendering)
+            {
+                drawInstanced(
+                    pass.m_ViewId,
+                    model.m_Model,
+                    pass.m_bOverrideProgram ? pass.m_bOverrideProgram : model.m_Model->GetProgram(),
+                    { position.m_Transform },
+                    BGFX_DISCARD_ALL);
+            }
+            else
+            {
+                draw(
+                    pass.m_ViewId,
+                    model.m_Model,
+                    pass.m_bOverrideProgram ? pass.m_bOverrideProgram : model.m_Model->GetProgram(),
+                    position.m_Transform,
+                    BGFX_DISCARD_ALL);
+            }
         }
     }
 }

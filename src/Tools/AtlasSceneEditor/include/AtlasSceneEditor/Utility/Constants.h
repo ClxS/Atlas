@@ -10,6 +10,8 @@ namespace atlas::scene_editor::constants
         constexpr bgfx::ViewId c_postProcess = 2;
         constexpr bgfx::ViewId c_ui = 90;
         constexpr bgfx::ViewId c_debugui = 91;
+        constexpr bgfx::ViewId c_picking = 92;
+        constexpr bgfx::ViewId c_debugVisualizerCopy = 93;
     }
 
     namespace render_masks
@@ -18,5 +20,6 @@ namespace atlas::scene_editor::constants
         constexpr uint8_t c_surfaceClippedGeometry  = 1 << 1;
         constexpr uint8_t c_clipCasterGeometry      = 1 << 2;
         constexpr uint8_t c_shadowCaster            = 1 << 3;
+        constexpr uint8_t c_pickable                = 1 << 4;
     }
 }

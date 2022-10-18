@@ -12,6 +12,7 @@
 #include "AtlasGame/Scene/Systems/Debug/DebugAxisInputSystem.h"
 #include "AtlasGame/Scene/Systems/Rendering/LightingSystem.h"
 #include "AtlasGame/Scene/Systems/Rendering/ModelRenderSystem.h"
+#include "AtlasGame/Scene/Systems/Rendering/PickingSystem.h"
 #include "AtlasGame/Scene/Systems/Rendering/PostProcessSystem.h"
 #include "AtlasGame/Scene/Systems/Rendering/ShadowMappingSystem.h"
 #include "AtlasRender/AssetRegistry.h"
@@ -66,6 +67,14 @@ void atlas::scene_editor::SceneEditorState::ConstructSystems(scene::SystemsBuild
 
     // Rendering
     {
+        bgfx::setViewName(constants::render_views::c_shadowPass, "Shadow");
+        bgfx::setViewName(constants::render_views::c_geometry, "Geometry");
+        bgfx::setViewName(constants::render_views::c_postProcess, "PostProcess");
+        bgfx::setViewName(constants::render_views::c_ui, "UI");
+        bgfx::setViewName(constants::render_views::c_debugui, "DebugUI");
+        bgfx::setViewName(constants::render_views::c_picking, "Picking");
+        bgfx::setViewName(constants::render_views::c_debugVisualizerCopy, "DebugVisualizerCopy");
+
         const auto [width, height] = app_host::Application::Get().GetAppDimensions();
         m_Rendering.m_GBuffer.Initialise(width, height);
         setViewRect(constants::render_views::c_geometry, 0, 0, bgfx::BackbufferRatio::Equal);
@@ -76,7 +85,11 @@ void atlas::scene_editor::SceneEditorState::ConstructSystems(scene::SystemsBuild
             const auto [newWidth, newHeight] = app_host::Application::Get().GetAppDimensions();
             m_Rendering.m_GBuffer.EnsureSize(newWidth, newHeight);
         });
-        frameBuilder.RegisterSystem<game::scene::systems::cameras::CameraViewProjectionUpdateSystem>(constants::render_views::c_geometry);
+        frameBuilder.RegisterSystem<game::scene::systems::cameras::CameraViewProjectionUpdateSystem>(
+            std::vector {
+                constants::render_views::c_geometry,
+                constants::render_views::c_picking
+            });
         frameBuilder.RegisterSystem<game::scene::systems::rendering::ShadowMappingSystem>(constants::render_views::c_shadowPass, constants::render_masks::c_shadowCaster);
         frameBuilder.RegisterSystem<game::scene::systems::rendering::LightingSystem>();
         frameBuilder.RegisterSystem<game::scene::systems::rendering::ModelRenderSystem>(
@@ -90,7 +103,31 @@ void atlas::scene_editor::SceneEditorState::ConstructSystems(scene::SystemsBuild
                 }
             });
         frameBuilder.RegisterSystem<game::scene::systems::debug::DebugAxisRenderSystem>(constants::render_views::c_geometry);
-        frameBuilder.RegisterSystem<game::scene::systems::rendering::PostProcessSystem>(constants::render_views::c_postProcess, m_Rendering.m_GBuffer);
+        const auto postProcess = frameBuilder.RegisterSystem<game::scene::systems::rendering::PostProcessSystem>(constants::render_views::c_postProcess, m_Rendering.m_GBuffer);
+        const auto picking = frameBuilder.RegisterSystem<game::scene::systems::rendering::PickingSystem>(
+            constants::render_views::c_picking,
+            constants::render_masks::c_pickable);
+
+        frameBuilder.RegisterLambda("DebugRenderingDisplay",
+            []
+            {
+                bgfx::setViewClear(constants::render_views::c_debugVisualizerCopy, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0xFFFFFFFF);
+                setViewMode(constants::render_views::c_debugVisualizerCopy, bgfx::ViewMode::Sequential);
+                setViewRect(constants::render_views::c_debugVisualizerCopy, 0, 0, bgfx::BackbufferRatio::Half);
+            },
+            [this, postProcess, picking]
+            {
+                switch(m_Rendering.m_DisplayState)
+                {
+                case DisplayState::DisplayNormal: /* Do Nothing */ break;
+                case DisplayState::DisplayPickingBuffer:
+                    postProcess->PerformCopy(
+                        constants::render_views::c_debugVisualizerCopy,
+                        getTexture(picking->GetPickingFrameBuffer()),
+                        BGFX_INVALID_HANDLE);
+                    break;
+                }
+            });
     }
 }
 

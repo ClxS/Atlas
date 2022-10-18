@@ -9,13 +9,13 @@ namespace atlas::game::scene::systems::cameras
     public:
         [[nodiscard]] std::string_view GetName() const override { return "CameraViewProjectionUpdateSystem"; }
 
-        explicit CameraViewProjectionUpdateSystem(const bgfx::ViewId viewId) : m_ViewId{viewId} {}
+        explicit CameraViewProjectionUpdateSystem(std::vector<bgfx::ViewId>&& viewIds) : m_ViewIds{viewIds} {}
         void Initialise(atlas::scene::EcsManager&) override;
         void Render(atlas::scene::EcsManager& ecs) override;
 
         void SetDebugRenderingEnabled(bool bEnabled);
     private:
-        bgfx::ViewId m_ViewId;
+        std::vector<bgfx::ViewId> m_ViewIds;
         bool m_bDebugRenderingEnabled{true};
     };
 }

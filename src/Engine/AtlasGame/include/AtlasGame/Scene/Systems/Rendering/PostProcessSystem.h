@@ -16,6 +16,8 @@ namespace atlas::game::scene::systems::rendering
         void Initialise(atlas::scene::EcsManager&) override;
         void Render(atlas::scene::EcsManager& ecs) override;
 
+        void PerformCopy(bgfx::ViewId viewId, bgfx::TextureHandle source, bgfx::FrameBufferHandle target) const;
+
     private:
         enum class Scope
         {

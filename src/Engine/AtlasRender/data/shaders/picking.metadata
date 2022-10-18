@@ -1,0 +1,4 @@
+[shaderProgram]
+vertex = "engine/shaders/picking/vert"
+fragment = "engine/shaders/picking/frag"
+textureSlotCount = 0

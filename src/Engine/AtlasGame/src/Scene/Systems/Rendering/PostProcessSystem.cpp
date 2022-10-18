@@ -230,9 +230,17 @@ void atlas::game::scene::systems::rendering::PostProcessSystem::DoVignette(const
 
 void atlas::game::scene::systems::rendering::PostProcessSystem::DoCopy(const bgfx::ViewId viewId, const Scope source, const Scope target) const
 {
+    PerformCopy(viewId, GetInputAsTexture(source), GetTargetFrameBuffer(target));
+}
+
+void atlas::game::scene::systems::rendering::PostProcessSystem::PerformCopy(
+    const bgfx::ViewId viewId,
+    bgfx::TextureHandle source,
+    bgfx::FrameBufferHandle target) const
+{
     setVertexBuffer(0, m_FullScreenQuad);
     bgfx::setState(BGFX_STATE_WRITE_RGB | BGFX_STATE_MSAA);
-    setViewFrameBuffer(viewId, GetTargetFrameBuffer(target));
-    setTexture(0, m_Samplers.m_Color, GetInputAsTexture(source));
+    setViewFrameBuffer(viewId, target);
+    setTexture(0, m_Samplers.m_Color, source);
     submit(viewId, m_Programs.m_Copy->GetHandle());
 }

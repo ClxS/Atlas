@@ -27,9 +27,16 @@ namespace atlas::scene_editor
         void DeleteEntity(scene::EntityId id);
 
     private:
+        enum class DisplayState
+        {
+            DisplayNormal,
+            DisplayPickingBuffer
+        };
+
         struct
         {
             render::FrameBuffer m_GBuffer;
+            DisplayState m_DisplayState{ DisplayState::DisplayPickingBuffer };
         } m_Rendering;
     };
 }
