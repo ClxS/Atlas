@@ -15,6 +15,7 @@
 #include "AtlasGame/Scene/Systems/Rendering/PostProcessSystem.h"
 #include "AtlasGame/Scene/Systems/Rendering/ShadowMappingSystem.h"
 #include "AtlasGame/Scene/Systems/Interactivity/PickingSystem.h"
+#include "AtlasGame/Scene/Systems/Interactivity/SelectionSystem.h"
 #include "AtlasResource/ResourceLoader.h"
 
 namespace
@@ -65,6 +66,7 @@ void atlas::scene_editor::SceneEditorState::ConstructSystems(scene::SystemsBuild
     }
 
     // Rendering
+    game::scene::systems::interactivity::PickingSystem* pickingSystem;
     {
         bgfx::setViewName(constants::render_views::c_shadowPass, "Shadow");
         bgfx::setViewName(constants::render_views::c_geometry, "Geometry");
@@ -103,7 +105,7 @@ void atlas::scene_editor::SceneEditorState::ConstructSystems(scene::SystemsBuild
             });
         frameBuilder.RegisterSystem<game::scene::systems::debug::DebugAxisRenderSystem>(constants::render_views::c_geometry);
         const auto postProcess = frameBuilder.RegisterSystem<game::scene::systems::rendering::PostProcessSystem>(constants::render_views::c_postProcess, m_Rendering.m_GBuffer);
-        const auto picking = frameBuilder.RegisterSystem<game::scene::systems::interactivity::PickingSystem>(
+        pickingSystem = frameBuilder.RegisterSystem<game::scene::systems::interactivity::PickingSystem>(
             constants::render_views::c_picking,
             constants::render_views::c_pickingBlit,
             constants::render_masks::c_pickable);
@@ -115,7 +117,7 @@ void atlas::scene_editor::SceneEditorState::ConstructSystems(scene::SystemsBuild
                 setViewMode(constants::render_views::c_debugVisualizerCopy, bgfx::ViewMode::Sequential);
                 setViewRect(constants::render_views::c_debugVisualizerCopy, 0, 0, bgfx::BackbufferRatio::Half);
             },
-            [this, postProcess, picking]
+            [this, postProcess, pickingSystem]
             {
                 switch(m_Rendering.m_DisplayState)
                 {
@@ -123,11 +125,16 @@ void atlas::scene_editor::SceneEditorState::ConstructSystems(scene::SystemsBuild
                 case DisplayState::DisplayPickingBuffer:
                     postProcess->PerformCopy(
                         constants::render_views::c_debugVisualizerCopy,
-                        getTexture(picking->GetPickingFrameBuffer()),
+                        getTexture(pickingSystem->GetPickingFrameBuffer()),
                         BGFX_INVALID_HANDLE);
                     break;
                 }
             });
+    }
+
+    // Sim Extended
+    {
+        simBuilder.RegisterSystem<game::scene::systems::interactivity::SelectionSystem>(*pickingSystem);
     }
 }
 

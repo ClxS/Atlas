@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <future>
 #include <bgfx/bgfx.h>
 
 #include "AtlasRender/AssetTypes/ShaderAsset.h"
@@ -36,9 +37,18 @@ namespace atlas::game::scene::systems::interactivity
 
         bgfx::FrameBufferHandle GetPickingFrameBuffer() const { return m_PickingFrame.GetHandle(); }
 
-        atlas::scene::EntityId GetHoveredEntity() const { return m_HoveredEntity; }
+        std::future<atlas::scene::EntityId> RequestPick(int32_t x, int32_t y, std::vector<atlas::scene::EntityId> exclusions = {});
 
     private:
+        struct PickRequest
+        {
+            int32_t m_X;
+            int32_t m_Y;
+            std::promise<atlas::scene::EntityId> m_Result;
+            std::vector<atlas::scene::EntityId> m_Exclusions;
+            bool m_IsComplete = false;
+        };
+
         bgfx::ViewId m_PickingBufferView;
         bgfx::ViewId m_PickingBlitView;
 
@@ -64,6 +74,6 @@ namespace atlas::game::scene::systems::interactivity
 
         std::vector<uint8_t> m_PickingFrameData;
 
-        atlas::scene::EntityId m_HoveredEntity{atlas::scene::EntityId::Invalid()};
+        std::vector<std::unique_ptr<PickRequest>> m_PickRequests;
     };
 }

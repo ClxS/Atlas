@@ -1,6 +1,7 @@
 ﻿#include "AtlasGamePCH.h"
 #include "PickingSystem.h"
 
+#include <memory>
 #include <bgfx/bgfx.h>
 #include "AtlasRender/AssetRegistry.h"
 #include "AtlasResource/ResourceLoader.h"
@@ -122,20 +123,45 @@ auto atlas::game::scene::systems::interactivity::PickingSystem::Render(atlas::sc
     readTexture(blitTexture, m_PickingFrameData.data());
 
     auto [appWidth, appHeight] = app_host::Application::Get().GetAppDimensions();
-    int mouseX, mouseY;
-    SDL_GetMouseState(&mouseX, &mouseY);
-
-    float xfrac = static_cast<float>(mouseX) / appWidth;
-    float yfrac = static_cast<float>(mouseY) / appHeight;
-    int dataPixelX = static_cast<int>(xfrac * m_PickFrameWidth);
-    int dataPixelY = static_cast<int>(yfrac * m_PickFrameHeight);
-
-    if (dataPixelX >= 0 && dataPixelY >= 0 && dataPixelX < m_PickFrameWidth && dataPixelY < m_PickFrameHeight)
+    for(const auto& request : m_PickRequests)
     {
-        auto pixelData = (dataPixelY * m_PickFrameWidth + dataPixelX) * 4;
-        const atlas::scene::EntityId entity = compose(
-            m_PickingFrameData[pixelData + 0],
-            m_PickingFrameData[pixelData + 1],
-            m_PickingFrameData[pixelData + 2]);
+        float xfrac = static_cast<float>(request->m_X) / appWidth;
+        float yfrac = static_cast<float>(request->m_Y) / appHeight;
+        int dataPixelX = static_cast<int>(xfrac * m_PickFrameWidth);
+        int dataPixelY = static_cast<int>(yfrac * m_PickFrameHeight);
+
+        if (dataPixelX >= 0 && dataPixelY >= 0 && dataPixelX < m_PickFrameWidth && dataPixelY < m_PickFrameHeight)
+        {
+            auto pixelData = (dataPixelY * m_PickFrameWidth + dataPixelX) * 4;
+            request->m_Result.set_value(compose(
+                m_PickingFrameData[pixelData + 0],
+                m_PickingFrameData[pixelData + 1],
+                m_PickingFrameData[pixelData + 2]));
+        }
+        else
+        {
+            request->m_Result.set_value(atlas::scene::EntityId::Invalid());
+        }
+
+        request->m_IsComplete = true;
     }
+
+    std::erase_if(
+        m_PickRequests,
+        [](std::unique_ptr<PickRequest> const& task)
+        {
+            return task->m_IsComplete;
+        });
+}
+
+std::future<atlas::scene::EntityId> atlas::game::scene::systems::interactivity::PickingSystem::RequestPick(
+    int32_t x,
+    int32_t y,
+    std::vector<atlas::scene::EntityId> exclusions)
+{
+    auto request = std::make_unique<PickRequest>(x, y, std::promise<atlas::scene::EntityId> {}, exclusions);
+    const auto requestPtr = request.get();
+
+    m_PickRequests.push_back(std::move(request));
+    return requestPtr->m_Result.get_future();
 }
