@@ -22,7 +22,7 @@ void atlas::game::scene::systems::rendering::LightingSystem::Initialise(atlas::s
 void atlas::game::scene::systems::rendering::LightingSystem::Render(atlas::scene::EcsManager& ecs)
 {
     Eigen::Vector4f ambient = { 0.5f, 0.5f, 0.5f, 1.0f };
-    setUniform(m_Uniforms.m_AmbientColour, ambient.data());
+    setUniform(m_Uniforms.m_AmbientColour.Get(), ambient.data());
 
     uint8_t lightIndex = 0;
     for(auto [entity, light] : ecs.IterateEntityComponents<components::lighting::DirectionalLightComponent>())
@@ -32,8 +32,8 @@ void atlas::game::scene::systems::rendering::LightingSystem::Render(atlas::scene
             break;
         }
 
-        bgfx::setUniform(m_Uniforms.m_LightDirections[lightIndex], light.m_Direction.data());
-        bgfx::setUniform(m_Uniforms.m_LightColours[lightIndex], light.m_Colour.GetVector4f().data());
+        setUniform(m_Uniforms.m_LightDirections[lightIndex].Get(), light.m_Direction.data());
+        setUniform(m_Uniforms.m_LightColours[lightIndex].Get(), light.m_Colour.GetVector4f().data());
         lightIndex++;
     }
 }

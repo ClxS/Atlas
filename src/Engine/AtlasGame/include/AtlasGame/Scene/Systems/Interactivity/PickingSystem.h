@@ -2,6 +2,7 @@
 #include <future>
 #include <bgfx/bgfx.h>
 
+#include "AtlasRender/BgfxHandle.h"
 #include "AtlasRender/AssetTypes/ShaderAsset.h"
 #include "AtlasRender/Types/FrameBuffer.h"
 #include "AtlasRender/Types/Texture.h"
@@ -61,7 +62,7 @@ namespace atlas::game::scene::systems::interactivity
 
         struct
         {
-            bgfx::UniformHandle m_ObjectId{BGFX_INVALID_HANDLE};
+            render::BgfxHandle<bgfx::UniformHandle> m_ObjectId{BGFX_INVALID_HANDLE};
         } m_Uniforms;
 
         struct

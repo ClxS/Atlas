@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "AtlasRender/BgfxHandle.h"
 #include "AtlasRender/AssetTypes/ShaderAsset.h"
 #include "AtlasRender/Types/FrameBuffer.h"
 #include "AtlasResource/AssetPtr.h"
@@ -9,7 +10,8 @@ namespace atlas::game::scene::systems::rendering
     class PostProcessSystem final : public atlas::scene::SystemBase
     {
     public:
-        explicit PostProcessSystem(bgfx::ViewId view, render::FrameBuffer& gbuffer);
+        explicit PostProcessSystem(bgfx::ViewId view, bgfx::FrameBufferHandle gbuffer);
+        ~PostProcessSystem() override;
 
         [[nodiscard]] std::string_view GetName() const override { return "PostProcessSystem"; }
 
@@ -27,7 +29,7 @@ namespace atlas::game::scene::systems::rendering
         };
 
         bgfx::ViewId m_View;
-        render::FrameBuffer& m_GBuffer;
+        bgfx::FrameBufferHandle m_GBuffer;
 
         struct
         {
@@ -38,12 +40,12 @@ namespace atlas::game::scene::systems::rendering
 
         struct
         {
-            bgfx::UniformHandle m_Color{BGFX_INVALID_HANDLE};
+            render::BgfxHandle<bgfx::UniformHandle> m_Color{BGFX_INVALID_HANDLE};
         } m_Samplers;
 
         struct
         {
-            bgfx::UniformHandle m_FrameBufferSize{BGFX_INVALID_HANDLE};
+            render::BgfxHandle<bgfx::UniformHandle> m_FrameBufferSize{BGFX_INVALID_HANDLE};
         } m_Uniforms;
 
         struct
@@ -52,7 +54,8 @@ namespace atlas::game::scene::systems::rendering
         } m_Interstitials;
 
         bgfx::VertexLayout m_PostProcessLayout{};
-        bgfx::VertexBufferHandle m_FullScreenQuad{};
+        render::BgfxHandle<bgfx::VertexBufferHandle> m_FullScreenQuad{};
+
         float m_TexelHalf{};
 
         [[nodiscard]] bgfx::TextureHandle GetInputAsTexture(Scope target) const;

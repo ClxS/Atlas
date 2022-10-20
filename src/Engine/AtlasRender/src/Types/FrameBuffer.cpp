@@ -1,6 +1,8 @@
 #include "AtlasRenderPCH.h"
 #include "Types/FrameBuffer.h"
 
+#include <cassert>
+
 atlas::render::FrameBuffer::FrameBuffer()
 {
 
@@ -15,12 +17,14 @@ void atlas::render::FrameBuffer::Initialise(
     const uint32_t width,
     const uint32_t height,
     const bool includeDepth,
+    const bool wantsStencil,
     const bgfx::TextureFormat::Enum format,
     const uint64_t flags)
 {
     m_Width = width;
     m_Height = height;
     m_IncludeDepth = includeDepth;
+    m_WantsStencil = wantsStencil;
     m_Format = format;
     m_Flags = flags;
 
@@ -39,11 +43,19 @@ void atlas::render::FrameBuffer::Initialise(
 
     if (includeDepth)
     {
-        const bgfx::TextureFormat::Enum depthFormat =
-              isTextureValid(0, false, 1, bgfx::TextureFormat::D16,   BGFX_TEXTURE_RT_WRITE_ONLY) ? bgfx::TextureFormat::D16
-            : isTextureValid(0, false, 1, bgfx::TextureFormat::D24S8, BGFX_TEXTURE_RT_WRITE_ONLY) ? bgfx::TextureFormat::D24S8
-            : bgfx::TextureFormat::D32
-            ;
+        bgfx::TextureFormat::Enum depthFormat;
+        if (wantsStencil)
+        {
+            assert(isTextureValid(0, false, 1, bgfx::TextureFormat::D24S8, BGFX_TEXTURE_RT_WRITE_ONLY));
+            depthFormat = bgfx::TextureFormat::D24S8;
+        }
+        else
+        {
+            depthFormat =
+                  isTextureValid(0, false, 1, bgfx::TextureFormat::D16,   BGFX_TEXTURE_RT_WRITE_ONLY) ? bgfx::TextureFormat::D16
+                : isTextureValid(0, false, 1, bgfx::TextureFormat::D24S8, BGFX_TEXTURE_RT_WRITE_ONLY) ? bgfx::TextureFormat::D24S8
+                : bgfx::TextureFormat::D32;
+        }
 
         const auto depth = createTexture2D(
             static_cast<uint16_t>(m_Width),
@@ -76,6 +88,6 @@ void atlas::render::FrameBuffer::EnsureSize(const uint32_t width, const uint32_t
 {
     if (width != m_Width || height != m_Height)
     {
-        Initialise(width, height, m_IncludeDepth, m_Format, m_Flags);
+        Initialise(width, height, m_IncludeDepth, m_WantsStencil, m_Format, m_Flags);
     }
 }

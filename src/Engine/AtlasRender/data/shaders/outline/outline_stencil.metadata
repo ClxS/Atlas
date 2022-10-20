@@ -1,0 +1,4 @@
+[shaderProgram]
+vertex = "engine/shaders/outline/stencil/vert"
+fragment = "engine/shaders/outline/stencil/frag"
+textureSlotCount = 0

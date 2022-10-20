@@ -13,31 +13,6 @@ namespace
         Eigen::Vector2f m_Uv;
     };
 
-    struct RenderTarget
-    {
-        ~RenderTarget()
-        {
-            destroy(m_Buffer);
-        }
-
-        void Initialize(const uint32_t width, const uint32_t height, const bgfx::TextureFormat::Enum format, const uint64_t flags)
-        {
-            m_Width = width;
-            m_Height = height;
-            m_Format = format;
-            m_Flags = flags;
-            m_Texture = createTexture2D(static_cast<uint16_t>(m_Width), static_cast<uint16_t>(m_Height), false, 1, m_Format, m_Flags);
-            m_Buffer = createFrameBuffer(1, &m_Texture, true);
-        }
-
-        uint32_t m_Width{};
-        uint32_t m_Height{};
-        bgfx::TextureFormat::Enum m_Format{};
-        uint64_t m_Flags{};
-        bgfx::TextureHandle m_Texture{};
-        bgfx::FrameBufferHandle m_Buffer{};
-    };
-
     [[nodiscard]] bgfx::VertexBufferHandle createFullscreenQuadVertexBuffer(
         const bool originBottomLeft,
         const float width = 1.0f,
@@ -67,13 +42,7 @@ namespace
             std::swap(minV, maxV);
         }
 
-        struct Vertex
-        {
-            Eigen::Vector3f m_Position;
-            Eigen::Vector2f m_Uv;
-        };
-
-        Vertex vertices[6];
+        VertexLayout vertices[6];
         vertices[0].m_Position = { minX, minY, z };
         vertices[0].m_Uv = { minU, minV };
 
@@ -92,16 +61,20 @@ namespace
         vertices[5].m_Position = { minX, maxy, z };
         vertices[5].m_Uv = { minU, maxV };
 
-        static_assert(sizeof(vertices) == sizeof(Vertex) * 6);
+        static_assert(sizeof(vertices) == sizeof(VertexLayout) * 6);
         const bgfx::Memory* vertexMemory = bgfx::alloc(vertexLayout.getSize(6));
         std::memcpy(vertexMemory->data, vertices, vertexLayout.getSize(6));
         return createVertexBuffer(vertexMemory, vertexLayout);
     }
 }
 
-atlas::game::scene::systems::rendering::PostProcessSystem::PostProcessSystem(const bgfx::ViewId view, render::FrameBuffer& gbuffer)
+atlas::game::scene::systems::rendering::PostProcessSystem::PostProcessSystem(const bgfx::ViewId view, bgfx::FrameBufferHandle gbuffer)
     : m_View{view}
     , m_GBuffer{gbuffer}
+{
+}
+
+atlas::game::scene::systems::rendering::PostProcessSystem::~PostProcessSystem()
 {
 }
 
@@ -133,7 +106,7 @@ void atlas::game::scene::systems::rendering::PostProcessSystem::Initialise(atlas
     struct Target
     {
         std::string m_ViewName;
-        bgfx::FrameBufferHandle m_FrameBuffer;
+        render::BgfxHandle<bgfx::FrameBufferHandle> m_FrameBuffer;
     };
 
     const std::array<std::string, 3> targets =
@@ -176,7 +149,7 @@ bgfx::TextureHandle atlas::game::scene::systems::rendering::PostProcessSystem::G
     case Scope::Interstitial:
         return getTexture(m_Interstitials.m_FrameBuffer.GetHandle());
     case Scope::InputBuffer:
-        return getTexture(m_GBuffer.GetHandle());
+        return getTexture(m_GBuffer);
     case Scope::OutputBuffer:
         break;
     }
@@ -192,7 +165,7 @@ bgfx::FrameBufferHandle atlas::game::scene::systems::rendering::PostProcessSyste
     case Scope::Interstitial:
         return m_Interstitials.m_FrameBuffer.GetHandle();
     case Scope::InputBuffer:
-        return m_GBuffer.GetHandle();
+        return m_GBuffer;
     case Scope::OutputBuffer:
         return BGFX_INVALID_HANDLE;
     }
@@ -208,26 +181,26 @@ void atlas::game::scene::systems::rendering::PostProcessSystem::PrepareFrame()
 
     auto [width, height] = app_host::Application::Get().GetAppDimensions();
     Eigen::Vector4f frameBufferSizeForUniform = { static_cast<float>(width), static_cast<float>(height), 0.0f, 0.0f };
-    setUniform(m_Uniforms.m_FrameBufferSize, frameBufferSizeForUniform.data());
+    setUniform(m_Uniforms.m_FrameBufferSize.Get(), frameBufferSizeForUniform.data());
 
     m_Interstitials.m_FrameBuffer.EnsureSize(width, height);
 }
 
 void atlas::game::scene::systems::rendering::PostProcessSystem::DoFxaa(const bgfx::ViewId viewId, const Scope source, const Scope target) const
 {
-    setVertexBuffer(0, m_FullScreenQuad);
+    setVertexBuffer(0, m_FullScreenQuad.Get());
     bgfx::setState(BGFX_STATE_WRITE_RGB | BGFX_STATE_MSAA);
     setViewFrameBuffer(viewId, GetTargetFrameBuffer(target));
-    setTexture(0, m_Samplers.m_Color, GetInputAsTexture(source));
+    setTexture(0, m_Samplers.m_Color.Get(), GetInputAsTexture(source));
     submit(viewId, m_Programs.m_Fxaa->GetHandle());
 }
 
 void atlas::game::scene::systems::rendering::PostProcessSystem::DoVignette(const bgfx::ViewId viewId, const Scope source, const Scope target) const
 {
-    setVertexBuffer(0, m_FullScreenQuad);
+    setVertexBuffer(0, m_FullScreenQuad.Get());
     bgfx::setState(BGFX_STATE_WRITE_RGB | BGFX_STATE_MSAA);
     setViewFrameBuffer(viewId, GetTargetFrameBuffer(target));
-    setTexture(0, m_Samplers.m_Color, GetInputAsTexture(source));
+    setTexture(0, m_Samplers.m_Color.Get(), GetInputAsTexture(source));
     submit(viewId, m_Programs.m_Vignette->GetHandle());
 }
 
@@ -241,9 +214,9 @@ void atlas::game::scene::systems::rendering::PostProcessSystem::PerformCopy(
     bgfx::TextureHandle source,
     bgfx::FrameBufferHandle target) const
 {
-    setVertexBuffer(0, m_FullScreenQuad);
+    setVertexBuffer(0, m_FullScreenQuad.Get());
     bgfx::setState(BGFX_STATE_WRITE_RGB | BGFX_STATE_MSAA);
     setViewFrameBuffer(viewId, target);
-    setTexture(0, m_Samplers.m_Color, source);
+    setTexture(0, m_Samplers.m_Color.Get(), source);
     submit(viewId, m_Programs.m_Copy->GetHandle());
 }

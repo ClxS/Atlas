@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include <bgfx/bgfx.h>
+
+#include "AtlasRender/BgfxHandle.h"
 #include "AtlasScene/ECS/Systems/SystemBase.h"
 
 namespace atlas::game::scene::systems::rendering
@@ -17,9 +19,9 @@ namespace atlas::game::scene::systems::rendering
     private:
         struct
         {
-            std::array<bgfx::UniformHandle, c_MaxDirectionalLights> m_LightDirections;
-            std::array<bgfx::UniformHandle, c_MaxDirectionalLights> m_LightColours;
-            bgfx::UniformHandle m_AmbientColour{BGFX_INVALID_HANDLE};
+            std::array<render::BgfxHandle<bgfx::UniformHandle>, c_MaxDirectionalLights> m_LightDirections;
+            std::array<render::BgfxHandle<bgfx::UniformHandle>, c_MaxDirectionalLights> m_LightColours;
+            render::BgfxHandle<bgfx::UniformHandle> m_AmbientColour{BGFX_INVALID_HANDLE};
         } m_Uniforms{};
     };
 }

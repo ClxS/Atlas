@@ -7,12 +7,15 @@ namespace atlas::scene_editor::constants
     {
         constexpr bgfx::ViewId c_shadowPass = 0;
         constexpr bgfx::ViewId c_geometry = 1;
-        constexpr bgfx::ViewId c_postProcess = 2;
+        constexpr bgfx::ViewId c_selectionOverlay_StencilSet = 2;
+        constexpr bgfx::ViewId c_selectionOverlay = 3;
+        constexpr bgfx::ViewId c_selectionBlit = 4;
+        constexpr bgfx::ViewId c_postProcess = 10;
         constexpr bgfx::ViewId c_ui = 90;
         constexpr bgfx::ViewId c_debugui = 91;
         constexpr bgfx::ViewId c_picking = 92;
         constexpr bgfx::ViewId c_pickingBlit = 93;
-        constexpr bgfx::ViewId c_debugVisualizerCopy = 94;
+        constexpr bgfx::ViewId c_debugVisualizerCopy = 128;
     }
 
     namespace render_masks

@@ -63,6 +63,7 @@ void atlas::game::scene::systems::interactivity::PickingSystem::Initialise(atlas
         m_PickFrameWidth,
         m_PickFrameHeight,
         true,
+        false,
         bgfx::TextureFormat::RGBA8,
         0
             | BGFX_TEXTURE_RT
@@ -104,7 +105,7 @@ void atlas::game::scene::systems::interactivity::PickingSystem::Initialise(atlas
         [this](atlas::scene::EntityId entity)
         {
             Eigen::Vector4f decomposedValue = decompose(entity);
-            setUniform(m_Uniforms.m_ObjectId, decomposedValue.data());
+            setUniform(m_Uniforms.m_ObjectId.Get(), decomposedValue.data());
         });
 
     m_PickingFrameData.resize(m_PickFrameWidth * m_PickFrameHeight * 4);
