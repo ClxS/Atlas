@@ -3,10 +3,14 @@
 
 #include "imgui.h"
 #include "LookAtCameraComponent.h"
+#include "ModelComponent.h"
 #include "AtlasScene/ECS/Components/EcsManager.h"
 #include "SDL_mouse.h"
 #include "SDL_keyboard.h"
+#include "SelectionComponent.h"
 #include "SphericalLookAtCameraComponent.h"
+#include "TransformComponent.h"
+#include "TransformPrivateComponent.h"
 #include "AtlasAppHost/Application.h"
 #include "bx/math.h"
 
@@ -77,8 +81,100 @@ namespace
         camera.m_LookAtPitch = finalPitch;
     }
 
+    bool isEqual(const bx::Vec3& a, const bx::Vec3& b)
+    {
+        return bx::isEqual(a.x, b.x, 0.0001f) &&
+                bx::isEqual(a.y, b.y, 0.00001f) &&
+                bx::isEqual(a.z, b.z, 0.0001f);
+    }
 
-    bool updateControls(atlas::game::components::cameras::LookAtCameraComponent& camera)
+    bx::Vec3 fromEigen(const Eigen::Vector3f& other)
+    {
+        return { other.x(), other.y(), other.z() };
+    }
+
+    Eigen::Vector3f toEigen(const bx::Vec3& other)
+    {
+        return { other.x, other.y, other.z };
+    }
+
+    void focusCamera(atlas::scene::EcsManager& ecs, atlas::game::components::cameras::LookAtCameraComponent& camera)
+    {
+        const bx::Aabb c_default
+        {
+            bx::init::Zero,
+            bx::init::Zero
+        };
+        bx::Aabb objectSpaceAabb
+        {
+            bx::init::Zero,
+            bx::init::Zero,
+        };
+        bx::Aabb worldSpaceAabb
+        {
+            bx::init::Zero,
+            bx::init::Zero,
+        };
+
+        bool hasSelection{false};
+        for(auto [entity, model, transform, _] : ecs.IterateEntityComponents<
+                atlas::game::components::rendering::ModelComponent,
+                atlas::game::components::TransformComponent,
+                atlas::game::components::interaction::SelectionComponent>())
+        {
+            if (!model.m_Model || !model.m_Model->GetMesh())
+            {
+                continue;
+            }
+
+            for(const auto& segment : model.m_Model->GetMesh()->GetSegments())
+            {
+                hasSelection = true;
+
+                bx::Vec3 ownPosition = fromEigen(transform.m_Position);
+                if (isEqual(objectSpaceAabb.min, c_default.min) && isEqual(objectSpaceAabb.max, c_default.max))
+                {
+                    objectSpaceAabb = segment.m_Bounds.m_Aabb;
+                    worldSpaceAabb =
+                    {
+                        add(ownPosition, segment.m_Bounds.m_Aabb.min),
+                        add(ownPosition, segment.m_Bounds.m_Aabb.max),
+                    };
+                }
+                else
+                {
+                    objectSpaceAabb =
+                    {
+                        min(objectSpaceAabb.min, segment.m_Bounds.m_Aabb.min),
+                        max(objectSpaceAabb.max, segment.m_Bounds.m_Aabb.max),
+                    };
+                    worldSpaceAabb =
+                    {
+                        min(worldSpaceAabb.min, add(ownPosition, segment.m_Bounds.m_Aabb.min)),
+                        max(worldSpaceAabb.max, add(ownPosition, segment.m_Bounds.m_Aabb.max))
+                    };
+                }
+            }
+        }
+
+        if (!hasSelection)
+        {
+            return;
+        }
+
+        float objectSpaceExtent = length(sub(objectSpaceAabb.max, objectSpaceAabb.min)) / 2.0f;
+        if (objectSpaceExtent > 0.0f)
+        {
+            const float c_fov = atlas::maths_helpers::Angle::FromDegrees(60).AsRadians();
+            constexpr float c_marginPercentage = 1.1f;
+            float minDistance = (objectSpaceExtent * c_marginPercentage) / bx::sin(c_fov / 2.0f);
+            camera.m_Distance = minDistance;
+        }
+
+        camera.m_LookAtPoint = toEigen(lerp(worldSpaceAabb.min, worldSpaceAabb.max, 0.5f));
+    }
+
+    bool updateControls(atlas::scene::EcsManager& ecs, atlas::game::components::cameras::LookAtCameraComponent& camera)
     {
         // TODO These should be moved into AtlasInput as non-statics once it exists
         static int previousMouseX = 0;
@@ -150,6 +246,11 @@ namespace
             camera.m_LookAtPoint += right;
         }
 
+        if(keyboardState[SDL_SCANCODE_F])
+        {
+            focusCamera(ecs, camera);
+        }
+
         previousMouseX = mouseX;
         previousMouseY = mouseY;
         return true;
@@ -218,7 +319,7 @@ void atlas::game::scene::systems::cameras::CameraControllerSystem::Update(atlas:
             continue;
         }
 
-        updateControls(camera);
+        updateControls(ecs, camera);
     }
 
     for(auto [entity, camera] : ecs.IterateEntityComponents<components::cameras::SphericalLookAtCameraComponent>())
