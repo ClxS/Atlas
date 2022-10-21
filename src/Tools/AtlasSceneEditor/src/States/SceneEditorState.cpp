@@ -153,7 +153,7 @@ void atlas::scene_editor::SceneEditorState::ClearScene()
 
     addCameras(ecs);
     addLights(ecs);
-    //addDebugRenderingComponents(ecs);
+    addDebugRenderingComponents(ecs);
 }
 
 atlas::scene::EntityId atlas::scene_editor::SceneEditorState::CreateEntity()

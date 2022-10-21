@@ -1,9 +1,6 @@
 <Components SubNamespace="debug">
     <DebugAxis>
-        <XAxisColour Type="Colour32" Default="0xff0000ff_argb" />
-        <YAxisColour Type="Colour32" Default="0xff00ff00_argb" />
-        <ZAxisColour Type="Colour32" Default="0xffff0000_argb" />
-        <Length Type="int" Default="15" />
-        <Thickness Type="int" Default="1" />
+        <Length Type="float" Default="1" />
+        <Thickness Type="float" Default="0.05f" />
     </DebugAxis>
 </Components>
