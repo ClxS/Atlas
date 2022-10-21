@@ -1,11 +1,11 @@
 #include "AtlasRenderPCH.h"
 #include "Renderer.h"
 
-#include <algorithm>
-
 #include "bgfx/platform.h"
 
 #include <functional>
+
+#include "DebugDraw.h"
 
 namespace
 {
@@ -16,7 +16,8 @@ namespace
         bool m_IsOneOff;
     };
 
-    static std::vector<Task> m_RenderMethods;
+    std::vector<Task> g_RenderMethods;
+    bgfx::ViewId g_DebugGeometryView;
 }
 
 void initDrawingData();
@@ -40,6 +41,9 @@ void atlas::render::init(const RendererInitArgs& args)
     bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x6495EDFF, 1.0f, 0);
     bgfx::setViewRect(0, 0, 0, args.m_Width, args.m_Height);
 
+    g_DebugGeometryView = args.m_DebugGeometryView;
+    debug::initialise();
+
     initDrawingData();
 }
 
@@ -49,8 +53,8 @@ atlas::render::RenderTaskHandle atlas::render::addToFrameGraph(
     std::function<void()> callback,
     std::vector<RenderTaskHandle> dependentTasks)
 {
-    m_RenderMethods.emplace_back(std::string(name), initiailize, true);
-    m_RenderMethods.emplace_back(std::string(name), callback, false);
+    g_RenderMethods.emplace_back(std::string(name), initiailize, true);
+    g_RenderMethods.emplace_back(std::string(name), callback, false);
     return {-1};
 }
 
@@ -59,14 +63,14 @@ atlas::render::RenderTaskHandle atlas::render::addToFrameGraph(
     std::function<void()> callback,
     std::vector<RenderTaskHandle> dependentTasks)
 {
-    m_RenderMethods.emplace_back(std::string(name), callback, false);
+    g_RenderMethods.emplace_back(std::string(name), callback, false);
     return {-1};
 }
 
 atlas::render::RenderTaskHandle atlas::render::addToFrameGraph_oneOff(std::string_view name, std::function<void()> callback,
     std::vector<RenderTaskHandle> dependentTasks)
 {
-    m_RenderMethods.emplace_back(std::string(name), callback, true);
+    g_RenderMethods.emplace_back(std::string(name), callback, true);
     return {-1};
 }
 
@@ -74,7 +78,8 @@ void atlas::render::sync()
 {
     bgfx::setState(BGFX_STATE_DEFAULT);
 
-    for(auto& task : m_RenderMethods)
+    debug::debug_draw::begin(g_DebugGeometryView);
+    for(auto& task : g_RenderMethods)
     {
         if (task.m_Callback)
         {
@@ -83,7 +88,8 @@ void atlas::render::sync()
             bgfx::setMarker((task.m_Name + "_End").c_str());
         }
     }
+    debug::debug_draw::end();
 
     bgfx::frame();
-    std::erase_if(m_RenderMethods, [](const Task& t) { return t.m_IsOneOff; });
+    std::erase_if(g_RenderMethods, [](const Task& t) { return t.m_IsOneOff; });
 }

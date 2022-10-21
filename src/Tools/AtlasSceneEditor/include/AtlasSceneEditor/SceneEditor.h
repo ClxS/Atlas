@@ -35,6 +35,7 @@ namespace atlas::scene_editor
                     "Scene Editor",
                     constants::render_views::c_ui,
                     constants::render_views::c_debugui,
+                    constants::render_views::c_debugGeometry,
                     60
                 }};
         return game.Run();

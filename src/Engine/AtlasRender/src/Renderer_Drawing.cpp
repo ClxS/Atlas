@@ -63,8 +63,8 @@ void initDrawingData()
     for(int i = 0; i < c_maxShadows; ++i)
     {
         assert(i < 1); // TODO Add support for extended maps
-        g_shadowMapSampler[i] = bgfx::createUniform("s_shadowMap", bgfx::UniformType::Sampler);
-        g_lightMtx[i] = bgfx::createUniform("u_lightMtx", bgfx::UniformType::Mat4);
+        g_shadowMapSampler[i] = createUniform("s_shadowMap", bgfx::UniformType::Sampler);
+        g_lightMtx[i] = createUniform("u_lightMtx", bgfx::UniformType::Mat4);
     }
 }
 
@@ -79,7 +79,7 @@ void atlas::render::draw(
     setIntrinsicTextureSlots(program);
 
     bgfx::setTransform(transform.data());
-    bgfx::setVertexBuffer(0, vertexBuffer);
+    setVertexBuffer(0, vertexBuffer);
     submit(viewId, program->GetHandle(), flags);
 }
 
@@ -94,8 +94,8 @@ void atlas::render::draw(
     setIntrinsicTextureSlots(program);
 
     bgfx::setTransform(transform.data());
-    bgfx::setVertexBuffer(0, vertexBuffer);
-    bgfx::setIndexBuffer(indexBuffer);
+    setVertexBuffer(0, vertexBuffer);
+    setIndexBuffer(indexBuffer);
     submit(viewId, program->GetHandle(), flags);
 }
 
@@ -104,15 +104,21 @@ void atlas::render::draw(
     const resource::AssetPtr<ModelAsset>& model,
     const resource::AssetPtr<ShaderProgram>& program,
     const Eigen::Matrix4f& transform,
+    const uint64_t state,
+    const uint32_t fstencil,
+    const uint32_t bstencil,
     const uint8_t flags)
 {
+    using namespace bgfx;
     for(const auto& segment : model->GetMesh()->GetSegments())
     {
         setIntrinsicTextureSlots(program);
 
-        bgfx::setTransform(transform.data());
+        setTransform(transform.data());
         setVertexBuffer(0, segment.m_VertexBuffer);
         setIndexBuffer(segment.m_IndexBuffer);
+        setState(state);
+        setStencil(fstencil, bstencil);
 
         uint8_t textureIndex = 0;
         for(const auto& texture : model->GetTextures())
@@ -133,15 +139,22 @@ void atlas::render::drawInstanced(
     const resource::AssetPtr<ModelAsset>& model,
     const resource::AssetPtr<ShaderProgram>& program,
     const std::vector<Eigen::Matrix4f>& transforms,
+    const uint64_t state,
+    const uint32_t fstencil,
+    const uint32_t bstencil,
     const uint8_t flags)
 {
+    using namespace bgfx;
+
+    assert(0 != (BGFX_CAPS_INSTANCING & bgfx::getCaps()->supported));
+
     constexpr uint16_t instanceStride = sizeof(Eigen::Matrix4f);
 
     const auto totalPositions = static_cast<uint32_t>(transforms.size());
-    const uint32_t numDrawableInstances = bgfx::getAvailInstanceDataBuffer(totalPositions, instanceStride);
+    const uint32_t numDrawableInstances = getAvailInstanceDataBuffer(totalPositions, instanceStride);
 
-    bgfx::InstanceDataBuffer idb{};
-    bgfx::allocInstanceDataBuffer(&idb, numDrawableInstances, instanceStride);
+    InstanceDataBuffer idb{};
+    allocInstanceDataBuffer(&idb, numDrawableInstances, instanceStride);
 
     // TODO Log how many entities couldn't be drawn
     for (uint32_t i = 0; i < numDrawableInstances; ++i)
@@ -164,6 +177,8 @@ void atlas::render::drawInstanced(
             }
         }
 
+        setState(state);
+        setStencil(fstencil, bstencil);
         setVertexBuffer(0, segment.m_VertexBuffer);
         setIndexBuffer(segment.m_IndexBuffer);
         setInstanceDataBuffer(&idb);

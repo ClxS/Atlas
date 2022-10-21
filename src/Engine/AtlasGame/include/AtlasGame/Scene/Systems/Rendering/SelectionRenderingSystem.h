@@ -15,13 +15,12 @@ namespace atlas::game::scene::systems::rendering
     {
     public:
         SelectionRenderingSystem(
-            const bgfx::ViewId stencilRenderView,
-            const bgfx::ViewId outlineRenderView,
-            const bgfx::ViewId outlineBlitView,
+            const std::array<bgfx::ViewId, 4>& viewIds,
             bgfx::FrameBufferHandle targetFrameBuffer)
-            : m_SilhoutteView{stencilRenderView}
-            , m_BlurredView{outlineRenderView}
-            , m_OutlineBlitView{outlineBlitView}
+            : m_SilhouetteView{viewIds[0]}
+            , m_BlurredView{viewIds[1]}
+            , m_OutlineFormationView{viewIds[2]}
+            , m_OutlineBlitView{viewIds[3]}
             , m_TargetFrameBuffer{targetFrameBuffer}
         {
         }
@@ -38,8 +37,9 @@ namespace atlas::game::scene::systems::rendering
         void RenderOutline() const;
         void ApplyOutline();
 
-        bgfx::ViewId m_SilhoutteView;
+        bgfx::ViewId m_SilhouetteView;
         bgfx::ViewId m_BlurredView;
+        bgfx::ViewId m_OutlineFormationView;
         bgfx::ViewId m_OutlineBlitView;
         bgfx::FrameBufferHandle m_TargetFrameBuffer;
 

@@ -70,19 +70,18 @@ void atlas::scene_editor::SceneEditorState::ConstructSystems(scene::SystemsBuild
     {
         bgfx::setViewName(constants::render_views::c_shadowPass, "Shadow");
         bgfx::setViewName(constants::render_views::c_geometry, "Geometry");
+        bgfx::setViewName(constants::render_views::c_debugGeometry, "DebugGeometry");
         bgfx::setViewName(constants::render_views::c_postProcess, "PostProcess");
         bgfx::setViewName(constants::render_views::c_ui, "UI");
         bgfx::setViewName(constants::render_views::c_debugui, "DebugUI");
-        bgfx::setViewName(constants::render_views::c_picking, "Picking");
-        bgfx::setViewName(constants::render_views::c_pickingBlit, "PickingBlit");
-        bgfx::setViewName(constants::render_views::c_selectionOverlay_StencilSet, "SelectionOverlay_StencilSet");
-        bgfx::setViewName(constants::render_views::c_selectionOverlay, "SelectionOverlay");
         bgfx::setViewName(constants::render_views::c_debugVisualizerCopy, "DebugVisualizerCopy");
 
         const auto [width, height] = app_host::Application::Get().GetAppDimensions();
         m_Rendering.m_GBuffer.Initialise(width, height);
         setViewRect(constants::render_views::c_geometry, 0, 0, bgfx::BackbufferRatio::Equal);
+        setViewRect(constants::render_views::c_debugGeometry, 0, 0, bgfx::BackbufferRatio::Equal);
         setViewFrameBuffer(constants::render_views::c_geometry, m_Rendering.m_GBuffer.GetHandle());
+        setViewFrameBuffer(constants::render_views::c_debugGeometry, m_Rendering.m_GBuffer.GetHandle());
 
         render::addToFrameGraph("BufferPrep", [this]
         {
@@ -92,8 +91,9 @@ void atlas::scene_editor::SceneEditorState::ConstructSystems(scene::SystemsBuild
         frameBuilder.RegisterSystem<game::scene::systems::cameras::CameraViewProjectionUpdateSystem>(
             std::vector {
                 constants::render_views::c_geometry,
-                constants::render_views::c_picking,
-                constants::render_views::c_selectionOverlay_StencilSet
+                constants::render_views::c_debugGeometry,
+                constants::render_views::c_pickingViews[0],
+                constants::render_views::c_selectionViews[0]
             });
         frameBuilder.RegisterSystem<game::scene::systems::rendering::ShadowMappingSystem>(constants::render_views::c_shadowPass, constants::render_masks::c_shadowCaster);
         frameBuilder.RegisterSystem<game::scene::systems::rendering::LightingSystem>();
@@ -108,17 +108,14 @@ void atlas::scene_editor::SceneEditorState::ConstructSystems(scene::SystemsBuild
                 }
             });
         frameBuilder.RegisterSystem<game::scene::systems::rendering::SelectionRenderingSystem>(
-            constants::render_views::c_selectionOverlay_StencilSet,
-            constants::render_views::c_selectionOverlay,
-            constants::render_views::c_selectionBlit,
+            constants::render_views::c_selectionViews,
             m_Rendering.m_GBuffer.GetHandle());
 
         frameBuilder.RegisterSystem<game::scene::systems::debug::DebugAxisRenderSystem>(constants::render_views::c_geometry);
 
         const auto postProcess = frameBuilder.RegisterSystem<game::scene::systems::rendering::PostProcessSystem>(constants::render_views::c_postProcess, m_Rendering.m_GBuffer.GetHandle());
         pickingSystem = frameBuilder.RegisterSystem<game::scene::systems::interactivity::PickingSystem>(
-            constants::render_views::c_picking,
-            constants::render_views::c_pickingBlit,
+            constants::render_views::c_pickingViews,
             constants::render_masks::c_pickable);
 
         frameBuilder.RegisterLambda("DebugRenderingDisplay",

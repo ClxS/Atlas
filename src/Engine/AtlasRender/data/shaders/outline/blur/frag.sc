@@ -32,4 +32,12 @@ void main()
 	vec4 horizontal = sumH / samples;
 
 	gl_FragColor = vertical + horizontal;
+	if (gl_FragColor.r < 0.8)
+	{
+		gl_FragColor.a = 0.0;
+	}
+	else
+	{
+		gl_FragColor.a = 1.0;
+	}
 }

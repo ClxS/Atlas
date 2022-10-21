@@ -20,6 +20,8 @@ namespace atlas::render
 
         int16_t m_Width;
         int16_t m_Height;
+
+        bgfx::ViewId m_DebugGeometryView;
     };
 
     struct RenderTaskHandle
@@ -67,6 +69,9 @@ namespace atlas::render
         const resource::AssetPtr<ModelAsset>& model,
         const resource::AssetPtr<ShaderProgram>& program,
         const Eigen::Matrix4f& transform,
+        uint64_t state,
+        uint32_t fstencil,
+        uint32_t bstencil,
         uint8_t flags = BGFX_DISCARD_ALL);
 
     void drawInstanced(
@@ -74,6 +79,9 @@ namespace atlas::render
         const resource::AssetPtr<ModelAsset>& model,
         const resource::AssetPtr<ShaderProgram>& program,
         const std::vector<Eigen::Matrix4f>& transforms,
+        uint64_t state = BGFX_STATE_DEFAULT,
+        uint32_t fstencil = BGFX_STENCIL_NONE,
+        uint32_t bstencil = BGFX_STENCIL_NONE,
         uint8_t flags = BGFX_DISCARD_ALL);
 
     void sync();

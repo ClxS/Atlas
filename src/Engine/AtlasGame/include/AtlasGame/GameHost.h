@@ -62,6 +62,7 @@ namespace atlas::game
             std::string m_GameName;
             bgfx::ViewId m_UIView = 0;
             bgfx::ViewId m_DebugUIView = 0;
+            bgfx::ViewId m_DebugGeometryView = 0;
             int m_FrameRateCap = 60;
         };
 
@@ -104,6 +105,8 @@ namespace atlas::game
 #elif BX_PLATFORM_EMSCRIPTEN
             args.m_WindowHandle = (void*)"#canvas";
 #endif
+
+            args.m_DebugGeometryView = m_GameArguments.m_DebugGeometryView;
 
             init(args);
             return true;

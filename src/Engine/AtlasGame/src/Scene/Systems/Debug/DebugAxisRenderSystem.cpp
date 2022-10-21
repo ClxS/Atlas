@@ -17,8 +17,6 @@ void atlas::game::scene::systems::debug::DebugAxisRenderSystem::Initialise(atlas
 
 void atlas::game::scene::systems::debug::DebugAxisRenderSystem::Render(atlas::scene::EcsManager& ecs)
 {
-    render::debug::debug_draw::begin(m_View);
-
     for(auto [_, debugAxis] : ecs.IterateEntityComponents<components::debug::DebugAxisComponent>())
     {
         render::debug::debug_draw::setColor(debugAxis.m_XAxisColour);
@@ -33,5 +31,4 @@ void atlas::game::scene::systems::debug::DebugAxisRenderSystem::Render(atlas::sc
 
     render::debug::debug_draw::setColor(core::colours::c_white);
     render::debug::debug_draw::drawGrid({ 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, 100);
-    render::debug::debug_draw::end();
 }

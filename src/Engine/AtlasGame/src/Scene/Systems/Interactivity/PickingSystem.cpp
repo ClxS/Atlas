@@ -39,13 +39,12 @@ namespace
 }
 
 atlas::game::scene::systems::interactivity::PickingSystem::PickingSystem(
-    const bgfx::ViewId pickingBufferView,
-    const bgfx::ViewId pickingBlitView,
+    const std::array<bgfx::ViewId, 2>& pickingViews,
     const uint8_t pickableRenderMask,
     const uint16_t pickFrameWidth,
     const uint16_t pickFrameHeight)
-    : m_PickingBufferView{pickingBufferView}
-    , m_PickingBlitView{pickingBlitView}
+    : m_PickingBufferView{pickingViews[0]}
+    , m_PickingBlitView{pickingViews[1]}
     , m_PickableRenderMask{pickableRenderMask}
     , m_PickFrameWidth{pickFrameWidth}
     , m_PickFrameHeight{pickFrameHeight}
@@ -54,6 +53,9 @@ atlas::game::scene::systems::interactivity::PickingSystem::PickingSystem(
 
 void atlas::game::scene::systems::interactivity::PickingSystem::Initialise(atlas::scene::EcsManager& ecs)
 {
+    bgfx::setViewName(m_PickingBufferView, "Picking");
+    bgfx::setViewName(m_PickingBlitView, "PickingBlit");
+
     m_Programs.m_PickingObjectShader = resource::ResourceLoader::LoadAsset<
         render::resources::CoreBundle,
         render::ShaderProgram>(

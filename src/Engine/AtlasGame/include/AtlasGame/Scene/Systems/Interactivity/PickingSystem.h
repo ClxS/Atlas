@@ -24,8 +24,7 @@ namespace atlas::game::scene::systems::interactivity
     {
     public:
         explicit PickingSystem(
-            bgfx::ViewId pickingBufferView,
-            bgfx::ViewId pickingBlitView,
+            const std::array<bgfx::ViewId, 2>& pickingViews,
             uint8_t pickableRenderMask,
             uint16_t pickFrameWidth = c_defaultPickingBufferSize,
             uint16_t pickFrameHeight = c_defaultPickingBufferSize);

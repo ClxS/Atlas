@@ -175,7 +175,6 @@ namespace
 void atlas::game::scene::systems::cameras::CameraViewProjectionUpdateSystem::Initialise(atlas::scene::EcsManager& ecsManager)
 {
     SystemBase::Initialise(ecsManager);
-    render::debug::initialise();
 }
 
 void atlas::game::scene::systems::cameras::CameraViewProjectionUpdateSystem::Render(atlas::scene::EcsManager& ecs)

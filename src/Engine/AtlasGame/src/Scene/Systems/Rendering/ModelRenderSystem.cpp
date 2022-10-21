@@ -54,8 +54,6 @@ void atlas::game::scene::systems::rendering::ModelRenderSystem::Render(atlas::sc
                 continue;
             }
 
-            bgfx::setState(pass.m_State);
-
             if (m_PreRenderCallback)
             {
                 m_PreRenderCallback(entity);
@@ -68,6 +66,9 @@ void atlas::game::scene::systems::rendering::ModelRenderSystem::Render(atlas::sc
                     model.m_Model,
                     pass.m_bOverrideProgram ? pass.m_bOverrideProgram : model.m_Model->GetProgram(),
                     { position.m_Transform },
+                    pass.m_State,
+                    BGFX_STENCIL_NONE,
+                    BGFX_STENCIL_NONE,
                     BGFX_DISCARD_ALL);
             }
             else
@@ -77,6 +78,9 @@ void atlas::game::scene::systems::rendering::ModelRenderSystem::Render(atlas::sc
                     model.m_Model,
                     pass.m_bOverrideProgram ? pass.m_bOverrideProgram : model.m_Model->GetProgram(),
                     position.m_Transform,
+                    pass.m_State,
+                    BGFX_STENCIL_NONE,
+                    BGFX_STENCIL_NONE,
                     BGFX_DISCARD_ALL);
             }
         }
