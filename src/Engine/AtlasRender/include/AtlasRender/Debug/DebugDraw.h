@@ -29,6 +29,8 @@ namespace atlas::render::debug
 
         void pop();
 
+        void setDepthTestAlways();
+
         void setDepthTestLess(bool depthTestLess);
 
         void setState(bool depthTest, bool depthWrite, bool clockwise);

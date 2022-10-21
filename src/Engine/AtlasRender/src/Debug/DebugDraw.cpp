@@ -1238,7 +1238,7 @@ static DebugDrawShared s_dds;
 struct DebugDrawEncoderImpl
 {
     DebugDrawEncoderImpl()
-        : m_DepthTestLess(true)
+        : m_DepthTest(DepthTest::Less)
           , m_State(State::Count)
           , m_DefaultEncoder(nullptr)
     {
@@ -1262,7 +1262,7 @@ struct DebugDrawEncoderImpl
         m_Encoder = _encoder == nullptr ? m_DefaultEncoder : _encoder;
         m_State = State::None;
         m_Stack = 0;
-        m_DepthTestLess = _depthTestLess;
+        m_DepthTest = _depthTestLess ? DepthTest::Less : DepthTest::Greater;
 
         m_Pos = 0;
         m_IndexPos = 0;
@@ -1272,9 +1272,10 @@ struct DebugDrawEncoderImpl
         Attrib& attrib = m_Attrib[0];
         attrib.m_state = 0
             | BGFX_STATE_WRITE_RGB
-            | (m_DepthTestLess ? BGFX_STATE_DEPTH_TEST_LESS : BGFX_STATE_DEPTH_TEST_GREATER)
+            | getDepthTestStateValue()
             | BGFX_STATE_CULL_CW
             | BGFX_STATE_WRITE_Z;
+
         attrib.m_scale = 1.0f;
         attrib.m_spin = 0.0f;
         attrib.m_offset = 0.0f;
@@ -1318,19 +1319,45 @@ struct DebugDrawEncoderImpl
         --m_Stack;
     }
 
+    uint64_t getDepthTestStateValue()
+    {
+        switch(m_DepthTest)
+        {
+        case DepthTest::Less:
+            return BGFX_STATE_DEPTH_TEST_LESS;
+        case DepthTest::Greater:
+            return BGFX_STATE_DEPTH_TEST_GREATER;
+        case DepthTest::Always:
+            return BGFX_STATE_DEPTH_TEST_ALWAYS;
+        default: BX_ASSERT(false, "Invalid case"); break;
+        }
+        return 0;
+    }
+
     void setDepthTestLess(bool _depthTestLess)
     {
         BX_ASSERT(State::Count != m_State, "");
-        if (m_DepthTestLess != _depthTestLess)
+        m_DepthTest = _depthTestLess ? DepthTest::Less : DepthTest::Greater;
+
+        Attrib& attrib = m_Attrib[m_Stack];
+        if (attrib.m_state & BGFX_STATE_DEPTH_TEST_MASK)
         {
-            m_DepthTestLess = _depthTestLess;
-            Attrib& attrib = m_Attrib[m_Stack];
-            if (attrib.m_state & BGFX_STATE_DEPTH_TEST_MASK)
-            {
-                flush();
-                attrib.m_state &= ~BGFX_STATE_DEPTH_TEST_MASK;
-                attrib.m_state |= _depthTestLess ? BGFX_STATE_DEPTH_TEST_LESS : BGFX_STATE_DEPTH_TEST_GREATER;
-            }
+            flush();
+            attrib.m_state &= ~BGFX_STATE_DEPTH_TEST_MASK;
+            attrib.m_state |= getDepthTestStateValue();
+        }
+    }
+
+    void setDepthTestAlways()
+    {
+        BX_ASSERT(State::Count != m_State, "");
+        m_DepthTest = DepthTest::Always;
+        Attrib& attrib = m_Attrib[m_Stack];
+        if (attrib.m_state & BGFX_STATE_DEPTH_TEST_MASK)
+        {
+            flush();
+            attrib.m_state &= ~BGFX_STATE_DEPTH_TEST_MASK;
+            attrib.m_state |= getDepthTestStateValue();
         }
     }
 
@@ -1425,9 +1452,7 @@ struct DebugDrawEncoderImpl
 
     void setState(bool _depthTest, bool _depthWrite, bool _clockwise)
     {
-        const uint64_t depthTest = m_DepthTestLess
-                                       ? BGFX_STATE_DEPTH_TEST_LESS
-                                       : BGFX_STATE_DEPTH_TEST_GREATER;
+        const uint64_t depthTest = getDepthTestStateValue();
 
         uint64_t state = m_Attrib[m_Stack].m_state & ~(0
             | BGFX_STATE_DEPTH_TEST_MASK
@@ -2489,11 +2514,18 @@ struct DebugDrawEncoderImpl
         float* m_Data;
     };
 
+    enum class DepthTest
+    {
+        Less,
+        Greater,
+        Always
+    };
+
     MatrixStack m_MtxStack[32];
 
     bgfx::ViewId m_ViewId;
     uint8_t m_Stack;
-    bool m_DepthTestLess;
+    DepthTest m_DepthTest;
 
     Attrib m_Attrib[c_kStackSize];
 
@@ -2560,6 +2592,11 @@ void atlas::render::debug::debug_draw::push()
 void atlas::render::debug::debug_draw::pop()
 {
     s_dde.pop();
+}
+
+void atlas::render::debug::debug_draw::setDepthTestAlways()
+{
+    s_dde.setDepthTestAlways();
 }
 
 void atlas::render::debug::debug_draw::setDepthTestLess(const bool depthTestLess)
