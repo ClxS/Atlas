@@ -60,3 +60,6 @@
 [submodule "src/ThirdParty/tinyxml2"]
 	path = src/ThirdParty/tinyxml2
 	url = https://github.com/ClxS/tinyxml2
+[submodule "src/ThirdParty/ImGuizmo"]
+	path = src/ThirdParty/ImGuizmo
+	url = https://github.com/ClxS/ImGuizmo.git
