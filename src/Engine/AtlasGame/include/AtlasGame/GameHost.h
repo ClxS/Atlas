@@ -8,8 +8,9 @@
 #include <AtlasGame/GameHost.h>
 #include <AtlasResource/ResourceLoader.h>
 #include <bgfx/platform.h>
-
-#include "../../../AtlasRpc/include/AtlasRpc/RpcManager.h"
+#include <imgui.h>
+#include <ImGuizmo.h>
+#include "AtlasRpc/RpcManager.h"
 #include "AtlasRender/Renderer.h"
 #include "AtlasRender/AssetTypes/MeshAsset.h"
 #include "AtlasRender/AssetTypes/ModelAsset.h"
@@ -140,65 +141,98 @@ namespace atlas::game
             return true;
         }
 
-        [[nodiscard]] int Run()
+        [[nodiscard]] int Run();
+
+    private:
+        void PrepareImgui()
         {
-            AT_INFO(AtlasGame, "Initialising Game... {}", 3434);
+            atlas::app_host::platform::PlatformApplication& platform = atlas::app_host::Application::Get().GetPlatform();
+            ImGui_ImplSDL2_NewFrame(platform.GetSDLContext().m_Window);
+            ImGui_Implbgfx_NewFrame();
+            ImGui::NewFrame();
+            ImGuizmo::BeginFrame();
+        }
 
-            if (!app_host::Application::Get().Initialise(m_GameArguments.m_GameName))
+        void RenderImgui()
+        {
+            ImGui::EndFrame();
+            ImGui::Render();
+
+            ImDrawData* pDrawData = ImGui::GetDrawData();
+            if (pDrawData)
             {
-                AT_ERROR(AtlasGame, "Failed to initialise application");
-                return static_cast<int>(ReturnCode::ReturnCode_ApplicationFailed);
-            }
-
-            logStartUp();
-            srand(static_cast<unsigned>(time(nullptr)));
-
-            utility::FrameLimiter frameLimiter(m_GameArguments.m_FrameRateCap);
-            frameLimiter.Start();
-
-            if (!InitialiseRenderer())
-            {
-                return static_cast<int>(ReturnCode::ReturnCode_RendererFailed);
-            }
-
-            if (!InitialiseResourceSystem())
-            {
-                return static_cast<int>(ReturnCode::ReturnCode_ResourceSystemFailed);
-            }
-
-            m_Game.OnStartup();
-
-            if (!InitialiseUI(m_GameArguments.m_UIView))
-            {
-                return static_cast<int>(ReturnCode::ReturnCode_UIFailed);
-            }
-
-            if (!InitialiseImgui(m_GameArguments.m_DebugUIView))
-            {
-                return static_cast<int>(ReturnCode::ReturnCode_ImGuiFailed);
-            }
-
-            m_Game.RegisterRpc(m_RpcServer);
-            m_RpcServer.Initialise();
-
-            m_Game.OnInitialised();
-            auto& app = app_host::Application::Get();
-            while(true)
-            {
-                bgfx::touch(0);
-
-                app.Update();
-                m_Game.Tick();
-
-                render::sync();
-                frameLimiter.Limit();
-                frameLimiter.EndFrame();
+                ImGui_Implbgfx_RenderDrawLists(pDrawData);
             }
         }
 
-    private:
         Args m_GameArguments;
         TGameImplementation m_Game;
         rpc::RpcServer m_RpcServer;
     };
+
+    template <typename TGameImplementation>
+    int GameHost<TGameImplementation>::Run()
+    {
+        AT_INFO(AtlasGame, "Initialising Game... {}", 3434);
+
+        if (!app_host::Application::Get().Initialise(m_GameArguments.m_GameName))
+        {
+            AT_ERROR(AtlasGame, "Failed to initialise application");
+            return static_cast<int>(ReturnCode::ReturnCode_ApplicationFailed);
+        }
+
+        logStartUp();
+        srand(static_cast<unsigned>(time(nullptr)));
+
+        utility::FrameLimiter frameLimiter(m_GameArguments.m_FrameRateCap);
+        frameLimiter.Start();
+
+        if (!InitialiseRenderer())
+        {
+            return static_cast<int>(ReturnCode::ReturnCode_RendererFailed);
+        }
+
+        if (!InitialiseResourceSystem())
+        {
+            return static_cast<int>(ReturnCode::ReturnCode_ResourceSystemFailed);
+        }
+
+        m_Game.OnStartup();
+
+        if (!InitialiseUI(m_GameArguments.m_UIView))
+        {
+            return static_cast<int>(ReturnCode::ReturnCode_UIFailed);
+        }
+
+        if (!InitialiseImgui(m_GameArguments.m_DebugUIView))
+        {
+            return static_cast<int>(ReturnCode::ReturnCode_ImGuiFailed);
+        }
+
+        m_Game.RegisterRpc(m_RpcServer);
+        m_RpcServer.Initialise();
+
+        m_Game.OnInitialised();
+        auto& app = app_host::Application::Get();
+        while(true)
+        {
+            bgfx::touch(0);
+
+            app.Update();
+            m_Game.Tick();
+
+            PrepareImgui();
+            render::sync();
+            RenderImgui();
+
+
+
+
+            frameLimiter.Limit();
+            frameLimiter.EndFrame();
+        }
+
+        ImGui_Implbgfx_Shutdown();
+        ImGui::DestroyContext();
+    }
 }

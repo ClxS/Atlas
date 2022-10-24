@@ -6,6 +6,8 @@
 #include <functional>
 
 #include "DebugDraw.h"
+#include <imgui.h>
+#include <ImGuizmo.h>
 
 namespace
 {
@@ -79,6 +81,7 @@ void atlas::render::sync()
     bgfx::setState(BGFX_STATE_DEFAULT);
 
     debug::debug_draw::begin(g_DebugGeometryView);
+
     for(auto& task : g_RenderMethods)
     {
         if (task.m_Callback)
@@ -88,8 +91,8 @@ void atlas::render::sync()
             bgfx::setMarker((task.m_Name + "_End").c_str());
         }
     }
-    debug::debug_draw::end();
 
+    debug::debug_draw::end();
     bgfx::frame();
     std::erase_if(g_RenderMethods, [](const Task& t) { return t.m_IsOneOff; });
 }

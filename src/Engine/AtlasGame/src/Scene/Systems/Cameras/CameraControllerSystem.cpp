@@ -2,6 +2,7 @@
 #include "Scene/Systems/Cameras/CameraControllerSystem.h"
 
 #include "imgui.h"
+#include "ImGuizmo.h"
 #include "LookAtCameraComponent.h"
 #include "ModelComponent.h"
 #include "AtlasScene/ECS/Components/EcsManager.h"
@@ -186,31 +187,36 @@ namespace
 
         const Uint8* keyboardState = SDL_GetKeyboardState(nullptr);
         const int buttons = SDL_GetMouseState(&mouseX, &mouseY);
-        if ((buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0)
-        {
-            const int deltaX = mouseX - previousMouseX;
-            const int deltaY = mouseY- previousMouseY;
-            camera.m_Yaw += atlas::maths_helpers::Angle::FromRadians(static_cast<float>(deltaX) * c_rotationScaling);
-            camera.m_Pitch += atlas::maths_helpers::Angle::FromRadians(static_cast<float>(deltaY) * c_rotationScaling);
-        }
-        else if ((buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0)
-        {
-            const int deltaX = mouseX - previousMouseX;
-            const int deltaY = mouseY - previousMouseY;
-            const bool isVerticalPan = keyboardState[SDL_SCANCODE_LSHIFT] || keyboardState[SDL_SCANCODE_RSHIFT];
 
-            if(isVerticalPan)
+        // TODO: Move this to AtlasInput once contexts are added
+        if (!ImGuizmo::IsUsing())
+        {
+            if ((buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0)
             {
-                camera.m_LookAtPoint += Eigen::Vector3f { 0.0f, 1.0f, 0.0f } * static_cast<float>(deltaY) * c_moveScaling * speedFactor;
+                const int deltaX = mouseX - previousMouseX;
+                const int deltaY = mouseY- previousMouseY;
+                camera.m_Yaw += atlas::maths_helpers::Angle::FromRadians(static_cast<float>(deltaX) * c_rotationScaling);
+                camera.m_Pitch += atlas::maths_helpers::Angle::FromRadians(static_cast<float>(deltaY) * c_rotationScaling);
             }
-            else
+            else if ((buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0)
             {
-                auto [forward, right] = getForwardAndRight(camera);
-                forward *= static_cast<float>(deltaY) * c_moveScaling * speedFactor;
-                right *= static_cast<float>(-deltaX) * c_moveScaling * speedFactor;
+                const int deltaX = mouseX - previousMouseX;
+                const int deltaY = mouseY - previousMouseY;
+                const bool isVerticalPan = keyboardState[SDL_SCANCODE_LSHIFT] || keyboardState[SDL_SCANCODE_RSHIFT];
 
-                camera.m_LookAtPoint += forward;
-                camera.m_LookAtPoint += right;
+                if(isVerticalPan)
+                {
+                    camera.m_LookAtPoint += Eigen::Vector3f { 0.0f, 1.0f, 0.0f } * static_cast<float>(deltaY) * c_moveScaling * speedFactor;
+                }
+                else
+                {
+                    auto [forward, right] = getForwardAndRight(camera);
+                    forward *= static_cast<float>(deltaY) * c_moveScaling * speedFactor;
+                    right *= static_cast<float>(-deltaX) * c_moveScaling * speedFactor;
+
+                    camera.m_LookAtPoint += forward;
+                    camera.m_LookAtPoint += right;
+                }
             }
         }
 
@@ -268,16 +274,19 @@ namespace
 
         const Uint8* keyboardState = SDL_GetKeyboardState(nullptr);
         const int buttons = SDL_GetMouseState(&mouseX, &mouseY);
-        if ((buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0)
+        if (!ImGuizmo::IsUsing())
         {
-            const int deltaX = mouseX - previousMouseX;
-            const int deltaY = mouseY- previousMouseY;
-            camera.m_CameraYaw -= atlas::maths_helpers::Angle::FromRadians(
-                static_cast<float>(deltaX) * c_rotationScaling,
-                atlas::maths_helpers::Angle::WrapMode::None);
-            camera.m_CameraPitch -= atlas::maths_helpers::Angle::FromRadians(
-                static_cast<float>(deltaY) * c_rotationScaling,
-                atlas::maths_helpers::Angle::WrapMode::None);
+            if ((buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0)
+            {
+                const int deltaX = mouseX - previousMouseX;
+                const int deltaY = mouseY- previousMouseY;
+                camera.m_CameraYaw -= atlas::maths_helpers::Angle::FromRadians(
+                    static_cast<float>(deltaX) * c_rotationScaling,
+                    atlas::maths_helpers::Angle::WrapMode::None);
+                camera.m_CameraPitch -= atlas::maths_helpers::Angle::FromRadians(
+                    static_cast<float>(deltaY) * c_rotationScaling,
+                    atlas::maths_helpers::Angle::WrapMode::None);
+            }
         }
 
         if(keyboardState[SDL_SCANCODE_W])

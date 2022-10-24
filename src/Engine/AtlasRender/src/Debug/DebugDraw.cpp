@@ -2223,6 +2223,62 @@ struct DebugDrawEncoderImpl
     }
 
     void drawAxis(float _x, float _y, float _z, float _len, atlas::render::debug::Axis::Enum _highlight,
+                  float xThickness, float yThickness, float zThickness)
+    {
+        push();
+
+        const bx::Vec3 from = {_x, _y, _z};
+        bx::Vec3 mid(bx::init::None);
+        bx::Vec3 to(bx::init::None);
+        if (xThickness > 0.0f)
+        {
+            setColor(atlas::render::debug::Axis::X == _highlight ? 0xff00ffff : 0xff0000ff);
+            mid = {_x + _len - xThickness, _y, _z};
+            to = {_x + _len, _y, _z};
+            drawCylinder(from, mid, xThickness, false);
+            drawCone(mid, to, xThickness);
+        }
+        else
+        {
+            setColor(atlas::render::debug::Axis::X == _highlight ? 0xff00ffff : 0xff0000ff);
+            moveTo(_x, _y, _z);
+            lineTo(_x + _len, _y, _z);
+        }
+
+        if (yThickness > 0.0f)
+        {
+            setColor(atlas::render::debug::Axis::Y == _highlight ? 0xff00ffff : 0xff00ff00);
+            mid = {_x, _y + _len - yThickness, _z};
+            to = {_x, _y + _len, _z};
+            drawCylinder(from, mid, yThickness, false);
+            drawCone(mid, to, yThickness);
+        }
+        else
+        {
+            setColor(atlas::render::debug::Axis::Y == _highlight ? 0xff00ffff : 0xff00ff00);
+            moveTo(_x, _y, _z);
+            lineTo(_x, _y + _len, _z);
+        }
+
+        if (zThickness > 0.0f)
+        {
+            setColor(atlas::render::debug::Axis::Z == _highlight ? 0xff00ffff : 0xffff0000);
+            mid = {_x, _y, _z + _len - zThickness};
+            to = {_x, _y, _z + _len};
+            drawCylinder(from, mid, zThickness, false);
+            drawCone(mid, to, zThickness);
+        }
+        else
+        {
+            setColor(atlas::render::debug::Axis::Z == _highlight ? 0xff00ffff : 0xffff0000);
+            moveTo(_x, _y, _z);
+            lineTo(_x, _y, _z + _len);
+        }
+
+        pop();
+    }
+
+    void drawAxis(float _x, float _y, float _z, float _len, atlas::render::debug::Axis::Enum _highlight,
                   float _thickness)
     {
         push();

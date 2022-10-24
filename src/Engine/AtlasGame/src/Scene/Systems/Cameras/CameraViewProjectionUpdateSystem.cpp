@@ -5,6 +5,7 @@
 #include "LookAtCameraComponent.h"
 #include "SphericalLookAtCameraComponent.h"
 #include "SphericalLookAtCameraComponent_Private.h"
+#include "ViewTransformCache.h"
 #include "AtlasAppHost/Application.h"
 #include "AtlasRender/Debug/DebugDraw.h"
 #include "AtlasScene/ECS/Components/EcsManager.h"
@@ -39,6 +40,7 @@ namespace
             for(const auto viewId : viewIds)
             {
                 bgfx::setViewTransform(viewId, view.data(), projection.data());
+                atlas::game::utility::ViewTransformCache::SetViewTransform(viewId, view, projection);
             }
         }
     }
@@ -93,6 +95,7 @@ namespace
             for(const auto viewId : viewIds)
             {
                 bgfx::setViewTransform(viewId, view.data(), projection.data());
+                atlas::game::utility::ViewTransformCache::SetViewTransform(viewId, view, projection);
             }
         }
 
