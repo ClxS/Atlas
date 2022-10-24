@@ -122,7 +122,7 @@ namespace
                     }
                 case DebugAxisRenderSystem::ManipulatorType::Scale:
                     {
-                        Eigen::Vector3f scaleDelta = newScale - oldScale;
+                        const Eigen::Vector3f scaleDelta = newScale - oldScale;
                         for (const auto entity : manipulatedEntities)
                         {
                             auto& transform = ecs.GetComponent<components::TransformComponent>(entity);
