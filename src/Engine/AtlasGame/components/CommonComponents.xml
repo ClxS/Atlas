@@ -7,8 +7,8 @@
     </TransformPrivate>
     <Transform Requires="Attachment;TransformPrivate">
         <Position Type="Vector3f" />
-        <Scale Type="Vector3f" />
-        <Orientation Type="Quaternionf" />
+        <Scale Type="Vector3f" Default="1.0f, 1.0f, 1.0f" />
+        <Orientation Type="Quaternionf" Default="Eigen::Quaternionf::Identity()" />
     </Transform>
 
 </Components>

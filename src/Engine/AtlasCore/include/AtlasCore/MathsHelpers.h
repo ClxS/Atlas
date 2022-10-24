@@ -175,6 +175,8 @@ namespace atlas::maths_helpers
         bool homogenousDepth,
         bool leftHanded = true);
 
+    Eigen::Matrix4f composeModelMatrix(const Eigen::Vector3f& position, const Eigen::Vector3f& scale, const Eigen::Quaternionf& rotation);
+
     Eigen::Matrix4f getMatrixForSphericalCoordinate(Angle pitch, Angle yaw, float distance);
 
     Eigen::Vector3f sphericalCoordinateToCartesian(Angle pitch, Angle yaw, float distance);

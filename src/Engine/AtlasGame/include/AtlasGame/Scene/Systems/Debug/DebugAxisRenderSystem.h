@@ -7,6 +7,13 @@ namespace atlas::game::scene::systems::debug
     class DebugAxisRenderSystem final : public atlas::scene::SystemBase
     {
     public:
+        enum class ManipulatorType
+        {
+            Translate = 0,
+            Rotation = 1,
+            Scale = 2
+        };
+
         explicit DebugAxisRenderSystem(bgfx::ViewId view);
 
         [[nodiscard]] std::string_view GetName() const override { return "DebugAxisRenderSystem"; }
@@ -16,5 +23,6 @@ namespace atlas::game::scene::systems::debug
 
     private:
         bgfx::ViewId m_View;
+        ManipulatorType m_ManipulatorType;
     };
 }

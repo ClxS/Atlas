@@ -102,6 +102,17 @@ Eigen::Matrix4f atlas::maths_helpers::createOrthographicMatrix(
     return mat;
 }
 
+Eigen::Matrix4f atlas::maths_helpers::composeModelMatrix(const Eigen::Vector3f& position, const Eigen::Vector3f& scale,
+    const Eigen::Quaternionf& rotation)
+{
+    Eigen::Transform<float, 3, Eigen::Affine> const transformMatrix =
+            Eigen::Transform{Eigen::Transform<float, 3, Eigen::Affine>::Identity()}
+                .translate(position)
+                .rotate(rotation)
+                .scale(scale);
+    return transformMatrix.matrix();
+}
+
 Eigen::Matrix4f atlas::maths_helpers::getMatrixForSphericalCoordinate(const Angle pitch, const Angle yaw, const float distance)
 {
     const Eigen::Affine3f translation{Eigen::Translation3f( 0.0f, distance, 0.0f )};

@@ -1,6 +1,7 @@
 ﻿#include "AtlasGamePCH.h"
 #include "SelectionSystem.h"
 
+#include "imgui.h"
 #include "SDL_keyboard.h"
 #include "SDL_mouse.h"
 #include "SDL_timer.h"
@@ -19,6 +20,11 @@ void atlas::game::scene::systems::interactivity::SelectionSystem::Initialise(atl
 
 void atlas::game::scene::systems::interactivity::SelectionSystem::Update(atlas::scene::EcsManager& ecs)
 {
+    if (ImGui::IsAnyItemHovered())
+    {
+        return;
+    }
+
     int mouseX, mouseY;
     const uint32_t buttons = SDL_GetMouseState(&mouseX, &mouseY);
     if ((buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0)
