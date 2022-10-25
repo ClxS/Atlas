@@ -134,7 +134,7 @@ namespace
             {
                 hasSelection = true;
 
-                bx::Vec3 ownPosition = fromEigen(transform.m_Position);
+                const bx::Vec3 ownPosition = fromEigen(transform.m_Position);
                 if (isEqual(objectSpaceAabb.min, c_default.min) && isEqual(objectSpaceAabb.max, c_default.max))
                 {
                     objectSpaceAabb = segment.m_Bounds.m_Aabb;

@@ -2,6 +2,7 @@
 #include "SceneEditorState.h"
 
 #include "Constants.h"
+#include "SceneInteractionSystem.h"
 #include "AtlasAppHost/Application.h"
 #include "AtlasGame/Components/DebugAxisComponent.h"
 #include "AtlasGame/Components/DirectionalLightComponent.h"
@@ -63,6 +64,7 @@ void atlas::scene_editor::SceneEditorState::ConstructSystems(scene::SystemsBuild
         simBuilder.RegisterSystem<game::scene::systems::debug::DebugAxisInputSystem>();
         simBuilder.RegisterSystem<game::scene::systems::cameras::CameraControllerSystem>();
         simBuilder.RegisterSystem<game::scene::systems::TransformUpdateSystem>();
+        simBuilder.RegisterSystem<SceneInteractionSystem>();
     }
 
     // Rendering

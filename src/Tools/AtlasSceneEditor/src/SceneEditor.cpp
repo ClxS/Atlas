@@ -10,6 +10,7 @@
 #include "AtlasInput/ControlSchemes/KeyboardControlScheme.h"
 #include "Utility/Constants.h"
 #include "AtlasGame/Controls/InputId.h"
+#include "Controls/InputId.h"
 
 void atlas::scene_editor::SceneEditorGame::OnStartup()
 {
@@ -62,20 +63,21 @@ void atlas::scene_editor::SceneEditorGame::RegisterControlSchemes()
     using namespace game::controls;
 
     auto keyboard = std::make_unique<KeyboardControlScheme>("Keyboard_Default_1");
-    keyboard->SetMapping(input_id::c_buttonForward, keys::W);
-    keyboard->SetMapping(input_id::c_buttonLeft, keys::A);
-    keyboard->SetMapping(input_id::c_buttonRight, keys::D);
-    keyboard->SetMapping(input_id::c_buttonBack, keys::S);
-    keyboard->SetMapping(input_id::c_buttonFocus, keys::F);
-    keyboard->SetMapping(input_id::c_buttonVerticalPanModifier, keys::LShift);
-    keyboard->SetMapping(input_id::c_buttonExtendSelection, keys::LCtrl);
+    keyboard->SetMapping(game::controls::input_id::c_buttonForward, keys::W);
+    keyboard->SetMapping(game::controls::input_id::c_buttonLeft, keys::A);
+    keyboard->SetMapping(game::controls::input_id::c_buttonRight, keys::D);
+    keyboard->SetMapping(game::controls::input_id::c_buttonBack, keys::S);
+    keyboard->SetMapping(game::controls::input_id::c_buttonFocus, keys::F);
+    keyboard->SetMapping(game::controls::input_id::c_buttonVerticalPanModifier, keys::LShift);
+    keyboard->SetMapping(game::controls::input_id::c_buttonExtendSelection, keys::LCtrl);
+    keyboard->SetMapping(input_id::c_buttonDelete, keys::Delete);
 
     auto mouse = std::make_unique<MouseControlScheme>("Mouse_Default_1");
-    mouse->SetMapping(input_id::c_axisZoom, MouseAxis::Wheel);
-    mouse->SetMapping(input_id::c_axisPitch, MouseAxis::Y);
-    mouse->SetMapping(input_id::c_axisYaw, MouseAxis::X);
-    mouse->SetMapping(input_id::c_buttonPanModifier, MouseButton::Middle);
-    mouse->SetMapping(input_id::c_buttonLeftTouch, MouseButton::Left);
+    mouse->SetMapping(game::controls::input_id::c_axisZoom, MouseAxis::Wheel);
+    mouse->SetMapping(game::controls::input_id::c_axisPitch, MouseAxis::Y);
+    mouse->SetMapping(game::controls::input_id::c_axisYaw, MouseAxis::X);
+    mouse->SetMapping(game::controls::input_id::c_buttonPanModifier, MouseButton::Middle);
+    mouse->SetMapping(game::controls::input_id::c_buttonLeftTouch, MouseButton::Left);
 
     input::UserInputManager::Get().AddControlScheme(std::move(keyboard));
     input::UserInputManager::Get().AddControlScheme(std::move(mouse));
