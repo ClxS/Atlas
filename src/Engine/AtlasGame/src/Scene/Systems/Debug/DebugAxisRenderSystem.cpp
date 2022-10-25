@@ -28,7 +28,9 @@ namespace
     void handleGizmos(
         atlas::scene::EcsManager& ecs,
         const bgfx::ViewId viewId,
-        const atlas::game::scene::systems::debug::DebugAxisRenderSystem::ManipulatorType type)
+        const atlas::game::scene::systems::debug::DebugAxisRenderSystem::ManipulatorType type,
+        const atlas::game::scene::systems::debug::DebugAxisRenderSystem::TransformSpace space
+        )
     {
         using namespace atlas::game;
         using namespace scene::systems::debug;
@@ -79,6 +81,17 @@ namespace
             break;
         }
 
+        ImGuizmo::MODE mode { ImGuizmo::MODE::WORLD };
+        switch(space)
+        {
+        case DebugAxisRenderSystem::TransformSpace::Local:
+            mode = ImGuizmo::MODE::LOCAL;
+            break;
+        case DebugAxisRenderSystem::TransformSpace::World:
+            mode = ImGuizmo::MODE::WORLD;
+            break;
+        }
+
         auto& viewTransform = utility::ViewTransformCache::GetViewTransform(viewId);
         for (auto [_, debugAxis] : ecs.IterateEntityComponents<components::debug::DebugAxisComponent>())
         {
@@ -89,7 +102,7 @@ namespace
                     viewTransform.m_View.data()
                     , viewTransform.m_Projection.data()
                     , op
-                    , ImGuizmo::LOCAL
+                    , mode
                     , mtx.data()
                     , deltaMatrix.data()
                     ))
@@ -137,7 +150,10 @@ namespace
         }
     }
 
-    void handleGizmoControlUi(atlas::game::scene::systems::debug::DebugAxisRenderSystem::ManipulatorType& type)
+    void handleGizmoControlUi(
+        atlas::game::scene::systems::debug::DebugAxisRenderSystem::ManipulatorType& type,
+        atlas::game::scene::systems::debug::DebugAxisRenderSystem::TransformSpace& space
+        )
     {
         using namespace atlas::game::scene::systems::debug;
 
@@ -151,7 +167,11 @@ namespace
 
         const auto [width, height] = atlas::app_host::Application::Get().GetAppDimensions();
         bool p_open {true};
-        if (ImGui::Begin("menu", &p_open, corner)) {
+
+        constexpr float c_padding = 5.0f;
+        float offset = c_padding;
+        if (ImGui::Begin("ManipulatorType", &p_open, corner))
+        {
             if (ImGui::RadioButton("T", type == DebugAxisRenderSystem::ManipulatorType::Translate))
             {
                 type = DebugAxisRenderSystem::ManipulatorType::Translate;
@@ -167,7 +187,25 @@ namespace
                 type = DebugAxisRenderSystem::ManipulatorType::Scale;
             }
 
-            ImGui::SetWindowPos(ImVec2(width - ImGui::GetWindowWidth(), 0), true);
+            ImGui::SetWindowPos(ImVec2(width - ImGui::GetWindowWidth() - offset, 0), true);
+            offset += ImGui::GetWindowWidth() + c_padding;
+        }
+        ImGui::End();
+
+        if (ImGui::Begin("TransformSpace", &p_open, corner))
+        {
+            if (ImGui::RadioButton("W", space == DebugAxisRenderSystem::TransformSpace::World))
+            {
+                space = DebugAxisRenderSystem::TransformSpace::World;
+            }
+            ImGui::SameLine();
+            if (ImGui::RadioButton("L", space == DebugAxisRenderSystem::TransformSpace::Local))
+            {
+                space = DebugAxisRenderSystem::TransformSpace::Local;
+            }
+
+            ImGui::SetWindowPos(ImVec2(width - ImGui::GetWindowWidth() - offset, 0), true);
+            offset += ImGui::GetWindowWidth();
         }
         ImGui::End();
     }
@@ -189,6 +227,6 @@ void atlas::game::scene::systems::debug::DebugAxisRenderSystem::Render(atlas::sc
     ImGuizmo::SetRect(0, 0, static_cast<float>(width), static_cast<float>(height));
 
     drawGrid();
-    handleGizmoControlUi(m_ManipulatorType);
-    handleGizmos(ecs, m_View, m_ManipulatorType);
+    handleGizmoControlUi(m_ManipulatorType, m_TransformSpace);
+    handleGizmos(ecs, m_View, m_ManipulatorType, m_TransformSpace);
 }
