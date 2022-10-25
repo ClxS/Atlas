@@ -7,8 +7,6 @@
 
 namespace atlas::app_host
 {
-    bool SDL_GetMouseWheel(float* x, float* y);
-
     class Application
     {
     public:

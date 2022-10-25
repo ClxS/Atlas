@@ -13,6 +13,11 @@ namespace atlas::game::scene::systems::debug
             Rotation = 1,
             Scale = 2
         };
+        enum class TransformSpace
+        {
+            Local = 0,
+            World = 1
+        };
 
         explicit DebugAxisRenderSystem(bgfx::ViewId view);
 
@@ -23,6 +28,7 @@ namespace atlas::game::scene::systems::debug
 
     private:
         bgfx::ViewId m_View;
-        ManipulatorType m_ManipulatorType;
+        ManipulatorType m_ManipulatorType{ManipulatorType::Translate};
+        TransformSpace m_TransformSpace{TransformSpace::Local};
     };
 }

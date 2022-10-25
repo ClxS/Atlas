@@ -22,6 +22,7 @@ namespace atlas::scene_editor
         virtual void RegisterTypeHandlers();
         virtual void LoadDataAssets();
         virtual void ConfigureBgfx();
+        virtual void RegisterControlSchemes();
 
         class SceneEditorState* m_EditorState{nullptr};
         rpc::SceneEditingServiceImpl* m_EditorRpc{nullptr};

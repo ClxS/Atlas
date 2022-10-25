@@ -7,25 +7,10 @@
 
 #define WINDOWED 1
 
-namespace
+namespace atlas::input
 {
-    bool g_wheelScrolled = false;
-    float g_wheelX = 0.0f;
-    float g_wheelY = 0.0f;
-}
-
-bool atlas::app_host::SDL_GetMouseWheel(float* x, float* y)
-{
-    if (!g_wheelScrolled)
-    {
-        *x = 0.0f;
-        *y = 0.0f;
-        return false;
-    }
-
-    *x = g_wheelX;
-    *y = g_wheelY;
-    return true;
+    extern void clearMouseWheel_private();
+    extern void setMouseWheel_private(float x, float y);
 }
 
 bool atlas::app_host::platform::PlatformApplication::Initialise(std::string_view applicationName)
@@ -71,7 +56,7 @@ std::tuple<int, int> atlas::app_host::platform::PlatformApplication::GetAppDimen
 
 void atlas::app_host::platform::PlatformApplication::Update()
 {
-    g_wheelScrolled = false;
+    input::clearMouseWheel_private();
 
     SDL_Event currentEvent;
     while(SDL_PollEvent(&currentEvent) != 0)
@@ -83,9 +68,7 @@ void atlas::app_host::platform::PlatformApplication::Update()
             exit(0);
             break;
         case SDL_MOUSEWHEEL:
-            g_wheelScrolled = true;
-            g_wheelX = currentEvent.wheel.preciseX;
-            g_wheelY = currentEvent.wheel.preciseY;
+            atlas::input::setMouseWheel_private(currentEvent.wheel.preciseX, currentEvent.wheel.preciseY);
             break;
         default:
             break;

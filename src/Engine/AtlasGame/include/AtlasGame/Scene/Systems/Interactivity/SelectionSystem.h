@@ -28,7 +28,7 @@ namespace atlas::game::scene::systems::interactivity
             bool m_IsComplete{false};
         };
 
-        void ConsumePick(atlas::scene::EcsManager& ecs, PickRequest& value);
+        static void ConsumePick(atlas::scene::EcsManager& ecs, PickRequest& value);
 
         PickingSystem& m_PickingSystem;
         bool m_IsMouseDown{false};

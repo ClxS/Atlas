@@ -3,6 +3,7 @@ lib "AtlasGame"
         ["links"] = {
             "AtlasAppHost",
             "AtlasCore",
+            "AtlasInput",
             "AtlasUI",
             "AtlasScene",
             "AtlasRender",

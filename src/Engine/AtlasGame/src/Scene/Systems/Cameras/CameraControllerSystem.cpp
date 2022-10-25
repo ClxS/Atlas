@@ -3,6 +3,7 @@
 
 #include "imgui.h"
 #include "ImGuizmo.h"
+#include "InputId.h"
 #include "LookAtCameraComponent.h"
 #include "ModelComponent.h"
 #include "AtlasScene/ECS/Components/EcsManager.h"
@@ -13,6 +14,7 @@
 #include "TransformComponent.h"
 #include "TransformPrivateComponent.h"
 #include "AtlasAppHost/Application.h"
+#include "AtlasInput/UserInputManager.h"
 #include "bx/math.h"
 
 namespace
@@ -177,32 +179,29 @@ namespace
 
     bool updateControls(atlas::scene::EcsManager& ecs, atlas::game::components::cameras::LookAtCameraComponent& camera)
     {
-        // TODO These should be moved into AtlasInput as non-statics once it exists
-        static int previousMouseX = 0;
-        static int previousMouseY = 0;
+        using namespace atlas::game::controls;
+        const auto user = atlas::input::UserInputManager::Get().GetUser(0);
+        if (!user)
+        {
+            return false;
+        }
 
-        int mouseX, mouseY;
+        const int deltaX = user->GetAxisValue(input_id::c_axisYaw);
+        const int deltaY = user->GetAxisValue(input_id::c_axisPitch);
 
-        float speedFactor = camera.m_Distance / 1.0f;
-
-        const Uint8* keyboardState = SDL_GetKeyboardState(nullptr);
-        const int buttons = SDL_GetMouseState(&mouseX, &mouseY);
+        const float speedFactor = camera.m_Distance / 1.0f;
 
         // TODO: Move this to AtlasInput once contexts are added
         if (!ImGuizmo::IsUsing())
         {
-            if ((buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0)
+            if (user->IsButtonDown(input_id::c_buttonLeftTouch))
             {
-                const int deltaX = mouseX - previousMouseX;
-                const int deltaY = mouseY- previousMouseY;
                 camera.m_Yaw += atlas::maths_helpers::Angle::FromRadians(static_cast<float>(deltaX) * c_rotationScaling);
                 camera.m_Pitch += atlas::maths_helpers::Angle::FromRadians(static_cast<float>(deltaY) * c_rotationScaling);
             }
-            else if ((buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0)
+            else if (user->IsButtonDown(input_id::c_buttonPanModifier))
             {
-                const int deltaX = mouseX - previousMouseX;
-                const int deltaY = mouseY - previousMouseY;
-                const bool isVerticalPan = keyboardState[SDL_SCANCODE_LSHIFT] || keyboardState[SDL_SCANCODE_RSHIFT];
+                const bool isVerticalPan = user->IsButtonDown(input_id::c_buttonVerticalPanModifier);
 
                 if(isVerticalPan)
                 {
@@ -220,66 +219,64 @@ namespace
             }
         }
 
-        float wheelX, wheelY;
-        if (atlas::app_host::SDL_GetMouseWheel(&wheelX, &wheelY))
+        const int32_t wheel = user->GetAxisValue(input_id::c_axisZoom);
+        if (wheel != 0)
         {
-            camera.m_Distance -= wheelY * c_zoomScaling * speedFactor;
+            camera.m_Distance -= static_cast<float>(wheel) * c_zoomScaling * speedFactor;
         }
 
-        if(keyboardState[SDL_SCANCODE_W])
+        if(user->IsButtonDown(input_id::c_buttonForward))
         {
             auto [forward, _] = getForwardAndRight(camera);
             forward *= static_cast<float>(1) * c_keyboardMoveScaling * speedFactor;
             camera.m_LookAtPoint += forward;
         }
-        else if(keyboardState[SDL_SCANCODE_S])
+        else if(user->IsButtonDown(input_id::c_buttonBack))
         {
             auto [forward, _] = getForwardAndRight(camera);
             forward *= static_cast<float>(1) * -c_keyboardMoveScaling * speedFactor;
             camera.m_LookAtPoint += forward;
         }
 
-        if(keyboardState[SDL_SCANCODE_A])
+        if(user->IsButtonDown(input_id::c_buttonLeft))
         {
             auto [_, right] = getForwardAndRight(camera);
             right *= static_cast<float>(1) * -c_keyboardMoveScaling * speedFactor;
             camera.m_LookAtPoint += right;
         }
-        else if(keyboardState[SDL_SCANCODE_D])
+        else if(user->IsButtonDown(input_id::c_buttonRight))
         {
             auto [_, right] = getForwardAndRight(camera);
             right *= static_cast<float>(1) * c_keyboardMoveScaling * speedFactor;
             camera.m_LookAtPoint += right;
         }
 
-        if(keyboardState[SDL_SCANCODE_F])
+        if(user->IsButtonDown(input_id::c_buttonFocus))
         {
             focusCamera(ecs, camera);
         }
 
-        previousMouseX = mouseX;
-        previousMouseY = mouseY;
         return true;
     }
 
     bool updateControls(atlas::game::components::cameras::SphericalLookAtCameraComponent& camera)
     {
-        // TODO These should be moved into AtlasInput as non-statics once it exists
-        static int previousMouseX = 0;
-        static int previousMouseY = 0;
+        using namespace atlas::game::controls;
+        const auto user = atlas::input::UserInputManager::Get().GetUser(0);
+        if (!user)
+        {
+            return false;
+        }
 
-        int mouseX, mouseY;
+        const int deltaX = user->GetAxisValue(input_id::c_axisYaw);
+        const int deltaY = user->GetAxisValue(input_id::c_axisPitch);
 
         const float speedFactor = camera.m_Distance / 1.8f;
 
-        const Uint8* keyboardState = SDL_GetKeyboardState(nullptr);
-        const int buttons = SDL_GetMouseState(&mouseX, &mouseY);
         if (!ImGuizmo::IsUsing())
         {
-            if ((buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0)
+            if (user->IsButtonDown(input_id::c_buttonLeftTouch))
             {
-                const int deltaX = mouseX - previousMouseX;
-                const int deltaY = mouseY- previousMouseY;
                 camera.m_CameraYaw -= atlas::maths_helpers::Angle::FromRadians(
                     static_cast<float>(deltaX) * c_rotationScaling,
                     atlas::maths_helpers::Angle::WrapMode::None);
@@ -289,26 +286,24 @@ namespace
             }
         }
 
-        if(keyboardState[SDL_SCANCODE_W])
+        if(user->IsButtonDown(input_id::c_buttonForward))
         {
             moveCamera(camera, c_keyboardMoveScaling * speedFactor, 0.0f);
         }
-        else if(keyboardState[SDL_SCANCODE_S])
+        else if(user->IsButtonDown(input_id::c_buttonBack))
         {
             moveCamera(camera, c_keyboardMoveScaling * -speedFactor, 0.0f);
         }
 
-        if(keyboardState[SDL_SCANCODE_A])
+        if(user->IsButtonDown(input_id::c_buttonLeft))
         {
             moveCamera(camera, 0.0f, c_keyboardMoveScaling * speedFactor);
         }
-        else if(keyboardState[SDL_SCANCODE_D])
+        else if(user->IsButtonDown(input_id::c_buttonRight))
         {
             moveCamera(camera, 0.0f, c_keyboardMoveScaling * -speedFactor);
         }
 
-        previousMouseX = mouseX;
-        previousMouseY = mouseY;
         return true;
     }
 }

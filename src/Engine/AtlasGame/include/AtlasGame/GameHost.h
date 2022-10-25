@@ -10,6 +10,8 @@
 #include <bgfx/platform.h>
 #include <imgui.h>
 #include <ImGuizmo.h>
+
+#include "AtlasInput/UserInputManager.h"
 #include "AtlasRpc/RpcManager.h"
 #include "AtlasRender/Renderer.h"
 #include "AtlasRender/AssetTypes/MeshAsset.h"
@@ -56,6 +58,7 @@ namespace atlas::game
             ReturnCode_ResourceSystemFailed = -3,
             ReturnCode_UIFailed = -4,
             ReturnCode_ImGuiFailed = -5,
+            ReturnCode_InputSystemFailed = -6,
         };
 
         struct Args
@@ -141,12 +144,17 @@ namespace atlas::game
             return true;
         }
 
+        [[nodiscard]] static bool InitialiseInput()
+        {
+            return input::UserInputManager::Get().Initialise();
+        }
+
         [[nodiscard]] int Run();
 
     private:
-        void PrepareImgui()
+        void PrepareImgui() const
         {
-            atlas::app_host::platform::PlatformApplication& platform = atlas::app_host::Application::Get().GetPlatform();
+            app_host::platform::PlatformApplication& platform = app_host::Application::Get().GetPlatform();
             ImGui_ImplSDL2_NewFrame(platform.GetSDLContext().m_Window);
             ImGui_Implbgfx_NewFrame();
             ImGui::NewFrame();
@@ -197,6 +205,11 @@ namespace atlas::game
             return static_cast<int>(ReturnCode::ReturnCode_ResourceSystemFailed);
         }
 
+        if (!InitialiseInput())
+        {
+            return static_cast<int>(ReturnCode::ReturnCode_InputSystemFailed);
+        }
+
         m_Game.OnStartup();
 
         if (!InitialiseUI(m_GameArguments.m_UIView))
@@ -219,6 +232,7 @@ namespace atlas::game
             bgfx::touch(0);
 
             app.Update();
+            input::UserInputManager::Get().Tick();
             m_Game.Tick();
 
             PrepareImgui();
