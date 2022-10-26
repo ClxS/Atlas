@@ -1,6 +1,6 @@
 # Licence
 
-No Licence is currently provided (meaning don't use it!)
+No Licence is currently provided (meaning don't use it!), This repository is here for demonstration purposes only.
 
 # About
 
