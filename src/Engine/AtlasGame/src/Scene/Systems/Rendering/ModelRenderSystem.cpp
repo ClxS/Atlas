@@ -25,6 +25,7 @@ void atlas::game::scene::systems::rendering::ModelRenderSystem::Render(atlas::sc
     uint8_t renderMask = 0;
     for(const auto& pass : m_Passes)
     {
+        bgfx::touch(pass.m_ViewId);
         renderMask |= pass.m_RenderMask;
     }
 
