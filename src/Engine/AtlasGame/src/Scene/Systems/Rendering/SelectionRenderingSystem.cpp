@@ -206,14 +206,19 @@ void SelectionRenderingSystem::RenderSelectedObjects(
         {
             debug_draw::setWireframe(true);
             {
-                bx::Vec3 centre =
+                const bx::Vec3 centre =
                 {
                     segment.m_Bounds.m_Sphere.center.x + positionRaw.m_Position.x(),
                     segment.m_Bounds.m_Sphere.center.y + positionRaw.m_Position.y(),
                     segment.m_Bounds.m_Sphere.center.z + positionRaw.m_Position.z(),
                 };
 
-                const bx::Sphere sphere = { { centre }, segment.m_Bounds.m_Sphere.radius };
+                const float scale = std::max(
+                    std::max(
+                        positionRaw.m_Scale.x(),
+                        positionRaw.m_Scale.y()),
+                        positionRaw.m_Scale.z());
+                const bx::Sphere sphere = { { centre }, segment.m_Bounds.m_Sphere.radius * scale };
                 debug_draw::createScope();
                 debug_draw::setColor(0x44ffc0f0_argb);
                 debug_draw::setLod(0);
