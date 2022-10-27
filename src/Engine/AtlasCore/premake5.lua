@@ -3,5 +3,7 @@ lib "AtlasCore"
         ["links"] = {
             "eigen",
 			"fmt",
+
+			"AtlasTrace",
         }
     }

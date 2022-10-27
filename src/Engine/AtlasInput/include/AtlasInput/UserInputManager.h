@@ -55,7 +55,7 @@ namespace atlas::input
         };
 
         UserInputManager() = default;
-        UserEntry CreateMouseKeyboardUser() const;
+        [[nodiscard]] UserEntry CreateMouseKeyboardUser() const;
         void UpdateKeyboards() const;
         void UpdateMice() const;
 

@@ -29,7 +29,7 @@ namespace atlas::scene_editor
     };
 
     template<typename T>
-    int runSceneEditor([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
+    int runSceneEditor(int argc, char* argv[])
     {
         game::GameHost<T> game{
                 {
@@ -39,6 +39,6 @@ namespace atlas::scene_editor
                     constants::render_views::c_debugGeometry,
                     60
                 }};
-        return game.Run();
+        return game.Run(argc, argv);
     }
 }

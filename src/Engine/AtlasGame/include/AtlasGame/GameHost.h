@@ -11,6 +11,7 @@
 #include <imgui.h>
 #include <ImGuizmo.h>
 
+#include "AtlasCore/CommandLine.h"
 #include "AtlasInput/UserInputManager.h"
 #include "AtlasRpc/RpcManager.h"
 #include "AtlasRender/Renderer.h"
@@ -149,7 +150,7 @@ namespace atlas::game
             return input::UserInputManager::Get().Initialise();
         }
 
-        [[nodiscard]] int Run();
+        [[nodiscard]] int Run(int argc, char* argv[]);
 
     private:
         void PrepareImgui() const
@@ -179,8 +180,10 @@ namespace atlas::game
     };
 
     template <typename TGameImplementation>
-    int GameHost<TGameImplementation>::Run()
+    int GameHost<TGameImplementation>::Run(int argc, char* argv[])
     {
+        core::command_line::CommandLineManager::Get().TryRead(argc, argv);
+
         AT_INFO(AtlasGame, "Initialising Game... {}", 3434);
 
         if (!app_host::Application::Get().Initialise(m_GameArguments.m_GameName))
