@@ -3,4 +3,5 @@
         <Length Type="float" Default="1" />
         <Thickness Type="float" Default="0.05f" />
     </DebugAxis>
+    <EditorHidden />
 </Components>
