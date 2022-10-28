@@ -119,6 +119,7 @@ void atlas::game::scene::systems::interactivity::PickingSystem::Update(atlas::sc
 
 auto atlas::game::scene::systems::interactivity::PickingSystem::Render(atlas::scene::EcsManager& ecs) -> void
 {
+    setViewFrameBuffer(m_PickingBufferView, m_PickingFrame.GetHandle());
     m_ModelRenderSystem->Render(ecs);
 
     const bgfx::TextureHandle blitTexture = m_BlittingFrame.GetHandle();

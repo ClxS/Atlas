@@ -7,6 +7,8 @@
 
 namespace atlas::app_host
 {
+    struct ApplicationArguments;
+
     class Application
     {
     public:
@@ -21,7 +23,11 @@ namespace atlas::app_host
             return s_application;
         }
 
-        [[nodiscard]] bool Initialise(std::string_view applicationName) { return m_Platform.Initialise(applicationName); }
+        [[nodiscard]] bool Initialise(const ApplicationArguments& applicationName)
+        {
+            return m_Platform.Initialise(applicationName);
+        }
+
         [[nodiscard]] std::tuple<int, int> GetAppDimensions() const { return m_Platform.GetAppDimensions(); }
 
         [[nodiscard]] platform::PlatformApplication& GetPlatform() { return m_Platform; }

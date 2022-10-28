@@ -3,5 +3,7 @@ lib "AtlasAppHost"
         ["links"] = {
             "imgui", -- TODO Move this once AtlasInput exists
             "SDL",
+
+            "AtlasCore",
         }
     }

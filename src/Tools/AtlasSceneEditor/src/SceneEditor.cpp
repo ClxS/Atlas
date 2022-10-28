@@ -13,19 +13,10 @@
 #include "AtlasGame/Controls/InputId.h"
 #include "Controls/InputId.h"
 
-DEFINE_COMMAND_ARG_L(IsEmbedded, bool, "embedded", "");
-DEFINE_COMMAND_ARG_L(HostWindowHandle, int32_t, "host_handle", "");
-
 void atlas::scene_editor::SceneEditorGame::OnStartup()
 {
     using namespace resource;
     using namespace scene;
-
-    if (command_line::GetIsEmbedded())
-    {
-        int32_t windowHandle = command_line::GetHostWindowHandle();
-        AT_INFO(SceneEditorGame, "Target Handle: {}", windowHandle);
-    }
 
     RegisterComponents();
     RegisterTypeHandlers();

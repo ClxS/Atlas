@@ -84,10 +84,13 @@ void atlas::render::FrameBuffer::Initialise(
     }
 }
 
-void atlas::render::FrameBuffer::EnsureSize(const uint32_t width, const uint32_t height)
+bool atlas::render::FrameBuffer::EnsureSize(const uint32_t width, const uint32_t height)
 {
-    if (width != m_Width || height != m_Height)
+    if (width == m_Width && height == m_Height)
     {
-        Initialise(width, height, m_IncludeDepth, m_WantsStencil, m_Format, m_Flags);
+        return false;
     }
+
+    Initialise(width, height, m_IncludeDepth, m_WantsStencil, m_Format, m_Flags);
+    return true;
 }

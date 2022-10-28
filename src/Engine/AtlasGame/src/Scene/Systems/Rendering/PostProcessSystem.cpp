@@ -66,9 +66,18 @@ namespace
         std::memcpy(vertexMemory->data, vertices, vertexLayout.getSize(6));
         return createVertexBuffer(vertexMemory, vertexLayout);
     }
+
+    constexpr std::array<const char*, 3> c_targets
+    {
+        {
+            "FXAA",
+            "Vignette",
+            "Copy",
+        }
+    };
 }
 
-atlas::game::scene::systems::rendering::PostProcessSystem::PostProcessSystem(const bgfx::ViewId view, bgfx::FrameBufferHandle gbuffer)
+atlas::game::scene::systems::rendering::PostProcessSystem::PostProcessSystem(const bgfx::ViewId view, const bgfx::FrameBufferHandle* gbuffer)
     : m_View{view}
     , m_GBuffer{gbuffer}
 {
@@ -109,18 +118,9 @@ void atlas::game::scene::systems::rendering::PostProcessSystem::Initialise(atlas
         render::BgfxHandle<bgfx::FrameBufferHandle> m_FrameBuffer;
     };
 
-    const std::array<std::string, 3> targets =
+    for(uint16_t i = 0; i < static_cast<uint16_t>(c_targets.size()); ++i)
     {
-        {
-            "FXAA",
-            "Vignette",
-            "Copy",
-        }
-    };
-
-    for(uint16_t i = 0; i < static_cast<uint16_t>(targets.size()); ++i)
-    {
-        bgfx::setViewName(m_View + i, targets[i].c_str());
+        bgfx::setViewName(m_View + i, c_targets[i]);
         bgfx::setViewClear(m_View + i, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x322e3dFF);
         setViewMode(m_View + i, bgfx::ViewMode::Sequential);
         setViewRect(m_View + i, 0, 0, bgfx::BackbufferRatio::Equal);
@@ -149,7 +149,7 @@ bgfx::TextureHandle atlas::game::scene::systems::rendering::PostProcessSystem::G
     case Scope::Interstitial:
         return getTexture(m_Interstitials.m_FrameBuffer.GetHandle());
     case Scope::InputBuffer:
-        return getTexture(m_GBuffer);
+        return getTexture(*m_GBuffer);
     case Scope::OutputBuffer:
         break;
     }
@@ -165,7 +165,7 @@ bgfx::FrameBufferHandle atlas::game::scene::systems::rendering::PostProcessSyste
     case Scope::Interstitial:
         return m_Interstitials.m_FrameBuffer.GetHandle();
     case Scope::InputBuffer:
-        return m_GBuffer;
+        return *m_GBuffer;
     case Scope::OutputBuffer:
         return BGFX_INVALID_HANDLE;
     }
@@ -184,6 +184,11 @@ void atlas::game::scene::systems::rendering::PostProcessSystem::PrepareFrame()
     setUniform(m_Uniforms.m_FrameBufferSize.Get(), frameBufferSizeForUniform.data());
 
     m_Interstitials.m_FrameBuffer.EnsureSize(width, height);
+
+    for(uint16_t i = 0; i < static_cast<uint16_t>(c_targets.size()); ++i)
+    {
+        setViewRect(m_View + i, 0, 0, bgfx::BackbufferRatio::Equal);
+    }
 }
 
 void atlas::game::scene::systems::rendering::PostProcessSystem::DoFxaa(const bgfx::ViewId viewId, const Scope source, const Scope target) const

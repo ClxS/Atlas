@@ -10,7 +10,7 @@ namespace atlas::game::scene::systems::rendering
     class PostProcessSystem final : public atlas::scene::SystemBase
     {
     public:
-        explicit PostProcessSystem(bgfx::ViewId view, bgfx::FrameBufferHandle gbuffer);
+        explicit PostProcessSystem(bgfx::ViewId view, const bgfx::FrameBufferHandle* gbuffer);
         ~PostProcessSystem() override;
 
         [[nodiscard]] std::string_view GetName() const override { return "PostProcessSystem"; }
@@ -29,7 +29,7 @@ namespace atlas::game::scene::systems::rendering
         };
 
         bgfx::ViewId m_View;
-        bgfx::FrameBufferHandle m_GBuffer;
+        const bgfx::FrameBufferHandle* m_GBuffer;
 
         struct
         {

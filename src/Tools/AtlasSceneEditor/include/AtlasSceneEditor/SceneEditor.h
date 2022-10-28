@@ -33,7 +33,7 @@ namespace atlas::scene_editor
     {
         game::GameHost<T> game{
                 {
-                    "Scene Editor",
+                    { "Scene Editor" },
                     constants::render_views::c_ui,
                     constants::render_views::c_debugui,
                     constants::render_views::c_debugGeometry,

@@ -18,8 +18,9 @@ namespace atlas::render
             bgfx::TextureFormat::Enum format = bgfx::TextureFormat::RGBA32F,
             uint64_t flags = BGFX_TEXTURE_RT);
 
-        void EnsureSize(uint32_t width, uint32_t height);
+        bool EnsureSize(uint32_t width, uint32_t height);
 
+        [[nodiscard]] const bgfx::FrameBufferHandle* GetHandlePtr() const { return &m_Handle; }
         [[nodiscard]] bgfx::FrameBufferHandle GetHandle() const { return m_Handle; }
 
     private:

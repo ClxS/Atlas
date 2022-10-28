@@ -11,6 +11,7 @@
 #include <imgui.h>
 #include <ImGuizmo.h>
 
+#include "AtlasAppHost/ApplicationArguments.h"
 #include "AtlasCore/CommandLine.h"
 #include "AtlasInput/UserInputManager.h"
 #include "AtlasRpc/RpcManager.h"
@@ -64,7 +65,7 @@ namespace atlas::game
 
         struct Args
         {
-            std::string m_GameName;
+            app_host::ApplicationArguments m_ApplicationArgs;
             bgfx::ViewId m_UIView = 0;
             bgfx::ViewId m_DebugUIView = 0;
             bgfx::ViewId m_DebugGeometryView = 0;
@@ -186,7 +187,7 @@ namespace atlas::game
 
         AT_INFO(AtlasGame, "Initialising Game... {}", 3434);
 
-        if (!app_host::Application::Get().Initialise(m_GameArguments.m_GameName))
+        if (!app_host::Application::Get().Initialise(m_GameArguments.m_ApplicationArgs))
         {
             AT_ERROR(AtlasGame, "Failed to initialise application");
             return static_cast<int>(ReturnCode::ReturnCode_ApplicationFailed);

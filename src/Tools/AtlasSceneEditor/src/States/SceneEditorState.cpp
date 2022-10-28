@@ -88,7 +88,15 @@ void atlas::scene_editor::SceneEditorState::ConstructSystems(scene::SystemsBuild
         render::addToFrameGraph("BufferPrep", [this]
         {
             const auto [newWidth, newHeight] = app_host::Application::Get().GetAppDimensions();
-            m_Rendering.m_GBuffer.EnsureSize(newWidth, newHeight);
+
+            if (m_Rendering.m_GBuffer.EnsureSize(newWidth, newHeight))
+            {
+                bgfx::reset(newWidth, newHeight, BGFX_RESET_VSYNC);
+                setViewFrameBuffer(constants::render_views::c_geometry, m_Rendering.m_GBuffer.GetHandle());
+                setViewFrameBuffer(constants::render_views::c_debugGeometry, m_Rendering.m_GBuffer.GetHandle());
+                setViewRect(constants::render_views::c_geometry, 0, 0, bgfx::BackbufferRatio::Equal);
+                setViewRect(constants::render_views::c_debugGeometry, 0, 0, bgfx::BackbufferRatio::Equal);
+            }
         });
         frameBuilder.RegisterSystem<game::scene::systems::cameras::CameraViewProjectionUpdateSystem>(
             std::vector {
@@ -115,7 +123,9 @@ void atlas::scene_editor::SceneEditorState::ConstructSystems(scene::SystemsBuild
 
         frameBuilder.RegisterSystem<game::scene::systems::debug::DebugAxisRenderSystem>(constants::render_views::c_geometry);
 
-        const auto postProcess = frameBuilder.RegisterSystem<game::scene::systems::rendering::PostProcessSystem>(constants::render_views::c_postProcess, m_Rendering.m_GBuffer.GetHandle());
+        const auto postProcess = frameBuilder.RegisterSystem<game::scene::systems::rendering::PostProcessSystem>(
+            constants::render_views::c_postProcess,
+            m_Rendering.m_GBuffer.GetHandlePtr());
         pickingSystem = frameBuilder.RegisterSystem<game::scene::systems::interactivity::PickingSystem>(
             constants::render_views::c_pickingViews,
             constants::render_masks::c_pickable);
