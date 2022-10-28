@@ -5,15 +5,17 @@
 
 #include "AsyncResponder.h"
 #include "AsyncRpcService.h"
+#include "AtlasCore/CommandLine.h"
 #include "AtlasTrace/Logging.h"
 
+DEFINE_COMMAND_ARG_L_DEFAULT(RpcPort, int32_t, "rpc-port", "", 50099);
 
-void atlas::rpc::RpcServer::Initialise(const uint16_t port)
+void atlas::rpc::RpcServer::Initialise()
 {
     assert(!m_Server);
 
     grpc::ServerBuilder builder{};
-    builder.AddListeningPort(std::format("127.0.0.1:{}", port), grpc::InsecureServerCredentials());
+    builder.AddListeningPort(std::format("127.0.0.1:{}", command_line::GetRpcPort()), grpc::InsecureServerCredentials());
 
     for (const auto& service : m_Services)
     {

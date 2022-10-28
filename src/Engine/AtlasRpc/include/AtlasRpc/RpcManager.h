@@ -26,12 +26,10 @@ namespace atlas::rpc
     nullptr,\
     [this](auto a, auto b, auto c, auto d) { METHOD(a, b, c, d); })
 
-    constexpr uint16_t c_DefaultRpcPort = 50099;
-
     class RpcServer
     {
     public:
-        void Initialise(uint16_t port = c_DefaultRpcPort);
+        void Initialise();
         RpcServer() = default;
         ~RpcServer();
 

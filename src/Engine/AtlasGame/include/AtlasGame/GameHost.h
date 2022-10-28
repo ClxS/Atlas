@@ -185,7 +185,7 @@ namespace atlas::game
     {
         core::command_line::CommandLineManager::Get().TryRead(argc, argv);
 
-        AT_INFO(AtlasGame, "Initialising Game... {}", 3434);
+        AT_INFO(AtlasGame, "Initialising Game...");
 
         if (!app_host::Application::Get().Initialise(m_GameArguments.m_ApplicationArgs))
         {
