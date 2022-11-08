@@ -83,6 +83,7 @@ namespace atlas::scene
             assert(idx < c_maxComponents);
             m_ComponentRegistrations[idx] = registration;
             m_ComponentPoolFactory[idx] = ([] { return static_cast<PoolBase*>(new ComponentPool<TComponent>()); });
+            m_ComponentCount = idx + 1;
         }
 
         static const std::span<PoolFactory> GetComponentPoolFactories()
@@ -119,14 +120,15 @@ namespace atlas::scene
             return m_ComponentRegistrationMutex;
         }
 
-        static const std::span<ComponentInfo> GetComponentRegistrations()
+        static std::span<const ComponentInfo> GetComponentRegistrations()
         {
-            return { m_ComponentRegistrations };
+            return { m_ComponentRegistrations.data(), static_cast<size_t>(m_ComponentCount) };
         }
 
     private:
         inline static std::mutex m_ComponentRegistrationMutex;
         inline static std::array<ComponentInfo, c_maxComponents> m_ComponentRegistrations;
         inline static std::array<PoolFactory, c_maxComponents> m_ComponentPoolFactory;
+        inline static int32_t m_ComponentCount = 0;
     };
 }
