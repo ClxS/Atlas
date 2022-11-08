@@ -1,4 +1,7 @@
 <Components>
+    <NameTag>
+        <Name Type="FixedString<32>" Mode="EditorOnly" />
+    </NameTag>
     <Attachment>
         <EntityId Type="EntityId" />
     </Attachment>
