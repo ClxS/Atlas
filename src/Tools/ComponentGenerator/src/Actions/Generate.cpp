@@ -22,6 +22,8 @@ namespace
         std::vector<std::string> m_Dependencies;
     };
 
+    // TODO: Add support for argument matching
+    // TODO: Add support for EditorOnly + other modes
     const std::vector<DefinedType> c_knownTypes
     {
         {"Matrix4f", "Eigen::Matrix4f", { "Eigen/Core" }},
@@ -36,12 +38,14 @@ namespace
         {"double", "double", {  }},
         {"bool", "bool", {  }},
         {"byte", "uint8_t", { "cstdint" }},
+        {"FixedString<32>", "std::array<char, 32>", { "array" }},
         {"ModelAsset", "atlas::resource::AssetPtr<atlas::render::ModelAsset>", { "AtlasResource/AssetPtr.h", "AtlasRender/AssetTypes/ModelAsset.h" }},
     };
 
     struct ComponentField
     {
         std::string m_Name;
+        std::string m_Tag;
         std::string m_Type;
         std::optional<std::string> m_DefaultValue;
     };
@@ -129,7 +133,7 @@ namespace
         {
             ComponentField field{};
             field.m_Name = element->Value();
-            field.m_Type = element->Attribute("Type");
+            field.m_Tag = element->Attribute("Type");
 
             const auto defaultAttribute = element->FindAttribute("Default");
             if (defaultAttribute)
@@ -241,7 +245,7 @@ namespace
         {
             auto item = std::ranges::find_if(c_knownTypes, [field](const DefinedType& type)
             {
-                return type.m_Tag == field.m_Type;
+                return type.m_Tag == field.m_Tag;
             });
 
             if (item != c_knownTypes.end())
@@ -255,6 +259,7 @@ namespace
             else
             {
                 AT_ERROR(ComponentGenerator, "Unknown type {} on Component {}", field.m_Type, component.m_Name);
+                field.m_Type = field.m_Tag;
             }
         }
 
@@ -387,7 +392,7 @@ namespace
                     fieldRegistrations << std::format(
                         "\t\t\t{{ \"{}\", \"{}\", {}, {}, atlas::scene::ComponentFieldInfoId {{ {} }} }}",
                         component.m_Fields[fieldIndex].m_Name,
-                        component.m_Fields[fieldIndex].m_Type,
+                        component.m_Fields[fieldIndex].m_Tag,
                         std::format("offsetof({}, m_{})", fullComponentName, component.m_Fields[fieldIndex].m_Name),
                         std::format("sizeof({})", component.m_Fields[fieldIndex].m_Type),
                         fieldIndex);
