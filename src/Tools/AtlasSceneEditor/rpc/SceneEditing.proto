@@ -11,6 +11,8 @@ service SceneEditingService {
 
   rpc AddComponent(AddComponentRequest) returns (Result) {}
   rpc AddComponents(AddComponentsRequest) returns (Result) {}
+
+  rpc SelectEntity(Entity) returns (Result) {}
 }
 
 message Entity {

@@ -1,3 +1,3 @@
 ﻿<Components SubNamespace="interaction">
-    <Selection />
+    <Selection ComponentVisibility="EditorHidden" />
 </Components>
