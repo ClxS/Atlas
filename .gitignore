@@ -47,3 +47,5 @@ CookFast.bat
 
 # Prebuilt Renderdoc
 !src/ThirdParty/renderdoc_api/**
+
+!prebuilt/**
