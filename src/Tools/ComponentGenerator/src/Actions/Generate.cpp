@@ -22,6 +22,11 @@ namespace
         std::vector<std::string> m_Dependencies;
     };
 
+    const std::vector<std::string> c_metadataTags
+    {
+        "ComponentVisibility"
+    };
+
     // TODO: Add support for argument matching
     // TODO: Add support for EditorOnly + other modes
     const std::vector<DefinedType> c_knownTypes
@@ -42,6 +47,12 @@ namespace
         {"ModelAsset", "atlas::resource::AssetPtr<atlas::render::ModelAsset>", { "AtlasResource/AssetPtr.h", "AtlasRender/AssetTypes/ModelAsset.h" }},
     };
 
+    struct ComponentMetadataEntry
+    {
+        std::string m_Key;
+        std::string m_Value;
+    };
+
     struct ComponentField
     {
         std::string m_Name;
@@ -57,7 +68,7 @@ namespace
         std::optional<std::vector<std::string>> m_RequiredComponents;
         std::optional<std::string> m_SubNamespace;
 
-        bool m_IsPrivate;
+        std::vector<ComponentMetadataEntry> m_Metadata;
         std::vector<ComponentField> m_Fields;
         std::set<fs::path> m_Dependencies;
     };
@@ -104,12 +115,6 @@ namespace
         Component component{};
         component.m_Name = xmlNode->Value();
 
-        const auto isPrivateAttribute = xmlNode->FindAttribute("Private");
-        if (isPrivateAttribute)
-        {
-            component.m_IsPrivate = isPrivateAttribute->BoolValue();
-        }
-
         const auto requiresAttribute = xmlNode->FindAttribute("Requires");
         if (requiresAttribute)
         {
@@ -126,6 +131,17 @@ namespace
         if (inheritsComponents)
         {
             component.m_Inherits = inheritsComponents->Value();
+        }
+
+        for(auto& metadataTag : c_metadataTags)
+        {
+            const auto attribute = xmlNode->FindAttribute(metadataTag.c_str());
+            if (!attribute)
+            {
+                continue;
+            }
+
+            component.m_Metadata.emplace_back(metadataTag, std::string{attribute->Value()});
         }
 
         tinyxml2::XMLElement* element = xmlNode->FirstChildElement();
@@ -364,6 +380,18 @@ namespace
             {
                 std::string fullComponentName = getComponentFinalName(component, args, true);
 
+                std::stringstream metadata;
+                for(size_t metadataIdx = 0; metadataIdx < component.m_Metadata.size(); metadataIdx++)
+                {
+                    if (metadataIdx > 0)
+                    {
+                        metadata << ", ";
+                    }
+
+                    auto& metadataEntry = component.m_Metadata[metadataIdx];
+                    metadata << std::format(R"({{ "{}", "{}" }})", metadataEntry.m_Key, metadataEntry.m_Value);
+                }
+
                 std::stringstream requiredComponents;
                 if (component.m_RequiredComponents.has_value())
                 {
@@ -400,11 +428,12 @@ namespace
 
                 std::stringstream componentRegistration;
                 componentRegistration << std::format(
-                    "{{\n\t\t{},\n\t\t\"{}\",\n\t\t{{ {} }},\n\t\t{{\n{} }} }}",
+                    "{{\n\t\t{},\n\t\t\"{}\",\n\t\t{{ {} }},\n\t\t{{ {} }},\n\t\t{{\n{} }} }}",
                     std::format(
                         "atlas::scene::ComponentRegistry::GetComponentId<{}>()",
                         fullComponentName),
                     component.m_Name,
+                    metadata.str(),
                     requiredComponents.str(),
                     fieldRegistrations.str());
 

@@ -1,5 +1,5 @@
 <Components SubNamespace="cameras">
-    <BaseCamera>
+    <BaseCamera ComponentVisibility="EditorHidden">
         <ViewMatrix Type="Matrix4f" />
         <ProjectionMatrix Type="Matrix4f" />
         <NearFar Type="Vector2f" Default="0.01f, 100.0f" />
@@ -27,7 +27,7 @@
         <Distance Type="float" Default="1.0f" />
     </SphericalLookAtCamera>
 
-    <SphericalLookAtCameraPrivate Private="true">
+    <SphericalLookAtCameraPrivate ComponentVisibility="EditorHidden">
         <LookAt Type="Vector3f" />
         <Camera Type="Vector3f" />
         <View Type="Matrix4f" />

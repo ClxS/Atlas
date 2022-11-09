@@ -20,6 +20,12 @@ namespace atlas::scene
     public:
         static constexpr int c_maxComponents = 256;
 
+        struct ComponentMetadataValue
+        {
+            std::string_view m_Key;
+            std::string_view m_Value;
+        };
+
         struct ComponentFieldInfo
         {
             std::string_view m_Name;
@@ -34,6 +40,7 @@ namespace atlas::scene
             ComponentInfoId m_UniqueId;
             std::string_view m_ComponentName;
 
+            std::vector<ComponentMetadataValue> m_Metadata;
             std::vector<ComponentInfoId> m_RequiredComponents;
             std::vector<ComponentFieldInfo> m_Fields;
 

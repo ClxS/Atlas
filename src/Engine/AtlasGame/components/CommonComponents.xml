@@ -1,11 +1,11 @@
 <Components>
-    <NameTag>
-        <Name Type="FixedString<32>" Mode="EditorOnly" />
+    <NameTag ComponentVisibility="EditorOnly">
+        <Name Type="FixedString<32>" />
     </NameTag>
     <Attachment>
         <EntityId Type="EntityId" />
     </Attachment>
-    <TransformPrivate Private="True">
+    <TransformPrivate ComponentVisibility="EditorHidden">
         <Transform Type="Matrix4f" />
     </TransformPrivate>
     <Transform Requires="Attachment;TransformPrivate">

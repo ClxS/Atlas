@@ -1,7 +1,7 @@
 <Components SubNamespace="debug">
-    <DebugAxis>
+    <DebugAxis ComponentVisibility="EditorHidden">
         <Length Type="float" Default="1" />
         <Thickness Type="float" Default="0.05f" />
     </DebugAxis>
-    <EditorHidden />
+    <EditorHidden ComponentVisibility="EditorHidden" />
 </Components>

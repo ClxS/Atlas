@@ -37,6 +37,12 @@ grpc::Status atlas::scene_editor::rpc::InstanceInteractionServiceImpl::GetCompon
             fieldInfo.set_fieldname(std::string(field.m_Name));
             fieldInfo.set_type(std::string(field.m_Type));
         }
+        for(auto& metadataEntry : component.m_Metadata)
+        {
+            ComponentMetadataEntry& metadata = *info.add_metadata();
+            metadata.set_key(std::string(metadataEntry.m_Key));
+            metadata.set_value(std::string(metadataEntry.m_Value));
+        }
     }
 
     return grpc::Status::OK;

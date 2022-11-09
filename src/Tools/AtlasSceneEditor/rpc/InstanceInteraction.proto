@@ -12,10 +12,16 @@ message ComponentFieldInfo {
   string FieldName = 3;
 }
 
+message ComponentMetadataEntry {
+    string Key = 1;
+    string Value = 2;
+}
+
 message ComponentInfo {
   int32 TypeId = 1;
   string ComponentName = 2;
   repeated ComponentFieldInfo Fields = 3;
+  repeated ComponentMetadataEntry Metadata = 4;
 }
 
 message ComponentRegistry {
