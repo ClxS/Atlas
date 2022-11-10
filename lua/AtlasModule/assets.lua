@@ -1,6 +1,5 @@
 local p = premake
 local vstudio = p.vstudio
-local project = p.project
 local config = p.config
 
 function generateRootAssetSpec(group, namespace)
@@ -22,12 +21,10 @@ function generateAssetSpec(group, namespace)
     generateAssetSpecCore(group, namespace, dataFolder, generatedFolder)
 end
 
-function generateAssetSpecCore(group, namespace, dataFolder, generatedFolder)
+function generateAssetSpecCore(project, group, namespace, dataFolder, generatedFolder)
     dependson {
         "AssetBuilder"
     }
-
-    local project = p.api.scope.project.name
 
     local builderPath = path.getabsolute(toolsDirectory .. '/AssetBuilder.exe')
     local command = string.format('%s -r "%s" -d -ns "%s" -o "%s" -g %s',
@@ -38,16 +35,9 @@ function generateAssetSpecCore(group, namespace, dataFolder, generatedFolder)
                     group)
 
     print("Generating AssetSpec " .. group .. " - " .. namespace)
+    --print("Generating AssetSpec " .. group .. " - " .. namespace .. "(" .. command .. ")")
     os.execute(command)
-
-    files {
-        generatedFolder .. "/**"
-    }
-    exports {
-        ["includedirs"] = {
-            generatedFolder,
-        }
-    }
+    
 end
 
 local function locateAssetRoots()
@@ -63,12 +53,24 @@ local function generateAssetSpecs()
 
         local assetSpec = TOML.parse(content)
         local origin = getDirectory(file)
+        local generatedFolder = origin .. '../generated/include'
         generateAssetSpecCore(
+            assetSpec.assetRoot.project,
             assetSpec.assetRoot.group,
             assetSpec.assetRoot.namespace,
             origin,
-            origin .. '../generated/include'
+            generatedFolder
         )
+
+        project(assetSpec.assetRoot.project)
+        files {
+            generatedFolder .. "/**"
+        }
+        exports {
+            ["includedirs"] = {
+                generatedFolder,
+            }
+        }
     end
 end
 

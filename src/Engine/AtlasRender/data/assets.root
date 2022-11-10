@@ -1,3 +1,4 @@
 [assetRoot]
+project = "AtlasRender"
 group = "engine"
 namespace = "atlas::render::resources"
