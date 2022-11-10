@@ -6,6 +6,7 @@ function test(name)
     		"*.lua",
     		"include/**",
     		"src/**",
+    		"data/**",
     	}
     	links {
     	    "benchmark",

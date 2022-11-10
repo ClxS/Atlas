@@ -1,3 +1,4 @@
+TOML = require "lua/ThirdParty/lua-toml"
 require "lua/AtlasModule"
 
 local engineRoot = ''

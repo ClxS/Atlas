@@ -17,5 +17,3 @@ lib "AtlasUI"
             "__STDC_FORMAT_MACROS",
         }
     }
-
-    generateAssetSpec("engine", "atlas::ui::resources")

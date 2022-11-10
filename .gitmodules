@@ -63,3 +63,6 @@
 [submodule "src/ThirdParty/ImGuizmo"]
 	path = src/ThirdParty/ImGuizmo
 	url = https://github.com/ClxS/ImGuizmo.git
+[submodule "lua/ThirdParty/lua-toml"]
+	path = lua/ThirdParty/lua-toml
+	url = https://github.com/ClxS/lua-toml.git

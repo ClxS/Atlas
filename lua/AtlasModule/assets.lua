@@ -37,8 +37,7 @@ function generateAssetSpecCore(group, namespace, dataFolder, generatedFolder)
                     generatedFolder .. '/' .. project .. '/AssetRegistry.h',
                     group)
 
-    print("Generating AssetSpec for " .. p.api.scope.project.name)
-    --print("Generating AssetSpec for " .. p.api.scope.project.name .. "(" .. command .. ")")
+    print("Generating AssetSpec " .. group .. " - " .. namespace)
     os.execute(command)
 
     files {
@@ -51,6 +50,29 @@ function generateAssetSpecCore(group, namespace, dataFolder, generatedFolder)
     }
 end
 
+local function locateAssetRoots()
+    print('Checking from ' .. rootDirectory .. ' for asset roots')
+    return os.matchfiles(rootDirectory .. '/**/assets.root')
+end
+
+local function generateAssetSpecs()
+    for _, file in pairs(locateAssetRoots()) do
+        local f = io.open(file, "rb")
+        local content = f:read("*all")
+        f:close()
+
+        local assetSpec = TOML.parse(content)
+        local origin = getDirectory(file)
+        generateAssetSpecCore(
+            assetSpec.assetRoot.group,
+            assetSpec.assetRoot.namespace,
+            origin,
+            origin .. '../generated/include'
+        )
+    end
+end
+
 premake.override(premake.main, 'preBake', function(base, prj)
+    generateAssetSpecs();
     base(prj)
 end)

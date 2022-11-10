@@ -7,5 +7,3 @@ lib "AtlasRender"
             "AtlasResource",
         }
     }
-
-    generateAssetSpec("engine", "atlas::render::resources")

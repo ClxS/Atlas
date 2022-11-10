@@ -6,6 +6,7 @@ function lib(name)
     		"*.lua",
     		"include/**",
     		"src/**",
+    		"data/**",
     		"components/**",
     		"platform/Windows/**",
     		"natvis/**"

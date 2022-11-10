@@ -8,6 +8,7 @@ function app(name)
     		"*.lua",
     		"include/**",
     		"src/**",
+    		"data/**",
     		"platform/Windows/**",
     	}
         includedirs {

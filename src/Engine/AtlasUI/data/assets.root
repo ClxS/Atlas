@@ -1,0 +1,3 @@
+[assetRoot]
+group = "engine"
+namespace = "atlas::render::resources"
