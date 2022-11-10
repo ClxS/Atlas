@@ -15,5 +15,6 @@ namespace atlas::scene_editor::rpc
 
         grpc::Status RegisterNotificationEndpoint(grpc::ServerContext*, const SceneUpdateRegistration*, Result*) override;
         grpc::Status GetComponentRegistry(grpc::ServerContext*, const Unit*, ComponentRegistry*) override;
+        grpc::Status GetRenderMasks(grpc::ServerContext*, const Unit*, RenderMasksInfo*) override;
     };
 }

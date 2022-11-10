@@ -4,6 +4,17 @@ import "Common.proto";
 service InstanceInteractionService {
   rpc RegisterNotificationEndpoint(SceneUpdateRegistration) returns (Result) {}
   rpc GetComponentRegistry(Unit) returns (ComponentRegistry) {}
+
+  rpc GetRenderMasks(Unit) returns (RenderMasksInfo) {}
+}
+
+message RenderMask {
+  string Name = 1;
+  uint32 Mask = 2;
+}
+
+message RenderMasksInfo {
+    repeated RenderMask Masks = 1;
 }
 
 message ComponentFieldInfo {

@@ -1,5 +1,7 @@
 ﻿#include "AtlasSceneEditorPCH.h"
 #include "InstanceInteractionService.h"
+
+#include "Constants.h"
 #include "AtlasScene/ECS/Components/ComponentRegistry.h"
 #include "AtlasTrace/Logging.h"
 
@@ -13,6 +15,7 @@ void atlas::scene_editor::rpc::InstanceInteractionServiceImpl::GetEndpointFactor
 {
     methods.push_back(ATLAS_RPC_BIND_METHOD(GetComponentRegistry, Unit, ComponentRegistry));
     methods.push_back(ATLAS_RPC_BIND_METHOD(RegisterNotificationEndpoint, SceneUpdateRegistration, Result));
+    methods.push_back(ATLAS_RPC_BIND_METHOD(GetRenderMasks, Unit, RenderMasksInfo));
 }
 
 grpc::Status atlas::scene_editor::rpc::InstanceInteractionServiceImpl::RegisterNotificationEndpoint(
@@ -44,6 +47,24 @@ grpc::Status atlas::scene_editor::rpc::InstanceInteractionServiceImpl::GetCompon
             metadata.set_value(std::string(metadataEntry.m_Value));
         }
     }
+
+    return grpc::Status::OK;
+}
+
+grpc::Status atlas::scene_editor::rpc::InstanceInteractionServiceImpl::GetRenderMasks(
+    grpc::ServerContext* serverContext, const Unit* unit, RenderMasksInfo* renderMasksInfo)
+{
+    RenderMask* mask = renderMasksInfo->add_masks();
+    mask->set_name("General Geometry");
+    mask->set_mask(constants::render_masks::c_generalGeometry);
+
+    mask = renderMasksInfo->add_masks();
+    mask->set_name("Shader Caster");
+    mask->set_mask(constants::render_masks::c_shadowCaster);
+
+    mask = renderMasksInfo->add_masks();
+    mask->set_name("Pickable");
+    mask->set_mask(constants::render_masks::c_pickable);
 
     return grpc::Status::OK;
 }
