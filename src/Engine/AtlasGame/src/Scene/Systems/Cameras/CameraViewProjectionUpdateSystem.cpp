@@ -4,7 +4,7 @@
 
 #include "LookAtCameraComponent.h"
 #include "SphericalLookAtCameraComponent.h"
-#include "SphericalLookAtCameraComponent_Private.h"
+#include "SphericalLookAtCameraPrivateComponent.h"
 #include "ViewTransformCache.h"
 #include "AtlasAppHost/Application.h"
 #include "AtlasRender/Debug/DebugDraw.h"
@@ -48,7 +48,7 @@ namespace
     void updateViewProjectMatrix(
         const std::vector<bgfx::ViewId> viewIds,
         const atlas::game::components::cameras::SphericalLookAtCameraComponent& camera,
-        atlas::game::components::cameras::SphericalLookAtCameraComponent_Private& cameraPrivate,
+        atlas::game::components::cameras::SphericalLookAtCameraPrivateComponent& cameraPrivate,
         const bool bAddDebugRendering)
     {
         Eigen::Vector3f upVector;
@@ -185,7 +185,7 @@ void atlas::game::scene::systems::cameras::CameraViewProjectionUpdateSystem::Ren
     using namespace atlas::scene;
     using namespace render::debug;
 
-    for(auto [entity, camera, cameraPrivate] : ecs.IterateEntityComponents<components::cameras::SphericalLookAtCameraComponent, components::cameras::SphericalLookAtCameraComponent_Private>())
+    for(auto [entity, camera, cameraPrivate] : ecs.IterateEntityComponents<components::cameras::SphericalLookAtCameraComponent, components::cameras::SphericalLookAtCameraPrivateComponent>())
     {
         updateViewProjectMatrix(m_ViewIds, camera, cameraPrivate, m_bDebugRenderingEnabled);
     }

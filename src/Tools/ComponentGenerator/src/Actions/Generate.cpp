@@ -123,7 +123,7 @@ namespace
             std::string strValue = std::string(requiresAttribute->Value());
             for(const auto& import : std::views::split(strValue, ';'))
             {
-                component.m_RequiredComponents->emplace_back(import);
+                component.m_RequiredComponents->emplace_back(std::string(import.begin(), import.end()));
             }
         }
 

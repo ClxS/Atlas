@@ -38,9 +38,8 @@ namespace atlas::trace::logging
         const auto trimmedFileName = strrchr(std::string(file).c_str(), '\\') ? strrchr(std::string(file).c_str(), '\\') + 1 : file;
         constexpr std::string_view c_format = "[{}][{}][{}:{}] {}\n";
 
-        std::string templatedString = std::format(c_format, getLogLevelAsString(logLevel), channel, trimmedFileName, line, fmt);
-
-        std::string outStr = std::format(templatedString, args...);
+        const std::string templatedString = std::format(c_format, getLogLevelAsString(logLevel), channel, trimmedFileName, line, fmt);
+        std::string outStr = std::vformat(templatedString, std::make_format_args(args...));
 
         printf(outStr.c_str());
 #if defined(WIN32)

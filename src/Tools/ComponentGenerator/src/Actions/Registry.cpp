@@ -43,14 +43,14 @@ ExitCode component_generator::actions::registry(const Arguments& args)
         auto groups = std::views::split(args.m_Groups.m_Value, ';');
         for(const auto& group : groups)
         {
-            outFile << std::format("namespace {} {{ void registerComponents(); }}\n", std::string(group));
+            outFile << std::format("namespace {} {{ void registerComponents(); }}\n", std::string_view(group.begin(), group.end()));
         }
         outFile << "\n";
         outFile << std::format("void {}::buildComponentRegistry()\n", args.m_Namespace.m_Value);
         outFile << "{\n";
         for(const auto& group : groups)
         {
-            outFile << std::format("\t{}::registerComponents();\n", std::string(group));
+            outFile << std::format("\t{}::registerComponents();\n", std::string_view(group.begin(), group.end()));
         }
 
         outFile << "}\n";
