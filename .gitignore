@@ -49,3 +49,4 @@ CookFast.bat
 !src/ThirdParty/renderdoc_api/**
 
 !prebuilt/**
+!tools/protoc/**
