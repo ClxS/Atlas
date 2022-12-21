@@ -11,7 +11,7 @@
                            x:Class="ProjectWizard.Views.MainWindow"
                            Title="Atlas Project Wizard"
                            Width="400"
-                           Height="680"
+                           Height="780"
                            MinWidth="400"
                            CanResize="False"
                            ExtendClientAreaChromeHints="NoChrome"
@@ -107,20 +107,38 @@
                             <SolidColorBrush Color="#22FFFFFF"></SolidColorBrush>
                         </Border.BorderBrush>
                         <StackPanel Margin="10, 0">
-                            <ToggleSwitch IsChecked="{CompiledBinding IncludeEngineSource}" OnContent="Include Engine Source" OffContent="Do Not Include Engine Source"></ToggleSwitch>
-                            <ToggleSwitch IsChecked="{CompiledBinding IncludeToolsSource}" IsEnabled="{CompiledBinding IncludeEngineSource}" Margin="20, 0" OnContent="Include Tools Source" OffContent="Do Not Include Tools Source"></ToggleSwitch>
+                            <ToggleSwitch
+                                IsChecked="{CompiledBinding IncludeEngineSource}"
+                                OnContent="Include Engine Source"
+                                OffContent="Do Not Include Engine Source" />
+                            <ToggleSwitch
+                                IsChecked="{CompiledBinding IncludeToolsSource}"
+                                IsEnabled="{CompiledBinding IncludeEngineSource}"
+                                Margin="20, 0"
+                                OnContent="Include Tools Source"
+                                OffContent="Do Not Include Tools Source" />
                         </StackPanel>
                     </Border>
-                    <ToggleSwitch
-                        Margin="10, 0"
-                        IsChecked="{CompiledBinding UseStandaloneAssetsProject}"
-                        OnContent="Use Standalone Asset Project"
-                        OffContent="Do Not Use Standalone Asset Project"></ToggleSwitch>
-                    <ToggleSwitch
-                        Margin="10, 0"
-                        IsChecked="{CompiledBinding AddEditorIntegrationProject}"
-                        OnContent="Add Editor Integration Project"
-                        OffContent="Do Not Add Editor Integration Project"></ToggleSwitch>
+                    <Border BorderThickness="1">
+                        <Border.BorderBrush>
+                            <SolidColorBrush Color="#22FFFFFF"></SolidColorBrush>
+                        </Border.BorderBrush>
+                        <StackPanel Margin="10, 0">
+                            <ToggleSwitch IsChecked="{CompiledBinding UseComplexProjectLayout}" OnContent="Using Complex Project Layout" OffContent="Using Simple Project Layout"></ToggleSwitch>
+                            <ToggleSwitch
+                                Margin="10, 0"
+                                IsChecked="{CompiledBinding UseStandaloneAssetsProject}"
+                                IsEnabled="{CompiledBinding UseComplexProjectLayout}"
+                                OnContent="Use Standalone Asset Project"
+                                OffContent="Do Not Use Standalone Asset Project"></ToggleSwitch>
+                            <ToggleSwitch
+                                Margin="10, 0"
+                                IsChecked="{CompiledBinding AddEditorIntegrationProject}"
+                                IsEnabled="{CompiledBinding UseComplexProjectLayout}"
+                                OnContent="Add Editor Integration Project"
+                                OffContent="Do Not Add Editor Integration Project"></ToggleSwitch>
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
                 <StackPanel RelativePanel.Below="Capabilities" HorizontalAlignment="Stretch" Name="Extras" Width="{Binding Width, ElementName=ThisWindow}">
                     <Label Margin="10" Content="Extras" FontWeight="Bold" FontSize="20"></Label>

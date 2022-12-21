@@ -20,6 +20,7 @@ public class MainApplicationViewModel : ReactiveObject, IActivatableViewModel, I
     private bool useStandaloneAssetsProject = true;
     private bool addEditorIntegrationProject = true;
     private bool createGitRepository = true;
+    private bool useComplexProjectLayout = true;
     private string projectName;
     private string projectDescription;
     private string projectLocation;
@@ -73,6 +74,12 @@ public class MainApplicationViewModel : ReactiveObject, IActivatableViewModel, I
     {
         get => useStandaloneAssetsProject;
         set => this.RaiseAndSetIfChanged(ref useStandaloneAssetsProject, value);
+    }
+
+    public bool UseComplexProjectLayout
+    {
+        get => useComplexProjectLayout;
+        set => this.RaiseAndSetIfChanged(ref useComplexProjectLayout, value);
     }
 
     public bool AddEditorIntegrationProject
