@@ -3,7 +3,10 @@
 
 atlas::render::Texture::~Texture()
 {
-    destroy(m_Handle);
+    if (isValid(m_Handle))
+    {
+        destroy(m_Handle);
+    }
 }
 
 void atlas::render::Texture::Initialise(

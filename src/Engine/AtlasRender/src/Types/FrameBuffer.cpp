@@ -4,13 +4,14 @@
 #include <cassert>
 
 atlas::render::FrameBuffer::FrameBuffer()
-{
-
-}
+= default;
 
 atlas::render::FrameBuffer::~FrameBuffer()
 {
-    destroy(m_Handle);
+    if (isValid(m_Handle))
+    {
+        destroy(m_Handle);
+    }
 }
 
 void atlas::render::FrameBuffer::Initialise(
