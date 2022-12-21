@@ -3,12 +3,9 @@
 #include <string_view>
 #include <tuple>
 
-namespace atlas
+namespace atlas::app_host
 {
-    namespace app_host
-    {
-        struct ApplicationArguments;
-    }
+    struct ApplicationArguments;
 }
 
 // ReSharper disable once CppInconsistentNaming
@@ -38,7 +35,6 @@ namespace atlas::app_host::platform
         [[nodiscard]] SdlContext& GetSDLContext() { return m_Sdl; }
 
         void Update();
-
 
     private:
         SdlContext m_Sdl{};
