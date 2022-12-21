@@ -61,4 +61,9 @@ function includeEngineTools()
 	group("Engine/Tools")
     include(engineRoot .. "/src/Tools/Core")
     include(engineRoot .. "/src/Tools/AssetBuilder")
+
+	include(engineRoot .. "/src/Tools/ProjectWizard")
+
+	group("Engine/Tools/External")
+	include(engineRoot .. "/src/External/Nephrite.lua")
 end

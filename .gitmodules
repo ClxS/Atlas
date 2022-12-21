@@ -66,3 +66,6 @@
 [submodule "lua/ThirdParty/lua-toml"]
 	path = lua/ThirdParty/lua-toml
 	url = https://github.com/ClxS/lua-toml.git
+[submodule "src/External/Nephrite"]
+	path = src/External/Nephrite
+	url = https://github.com/ClxS/Nephrite.git

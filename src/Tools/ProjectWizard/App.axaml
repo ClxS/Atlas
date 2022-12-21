@@ -1,0 +1,14 @@
+﻿<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:projectWizard="clr-namespace:ProjectWizard"
+             xmlns:themes="clr-namespace:Nephrite.Avalonia.Themes;assembly=Nephrite.Avalonia"
+             x:Class="ProjectWizard.App">
+    <Application.DataTemplates>
+        <projectWizard:ViewLocator />
+    </Application.DataTemplates>
+
+    <Application.Styles>
+        <FluentTheme Mode="Dark" />
+        <themes:NephriteTheme Mode="Dark" />
+    </Application.Styles>
+</Application>
