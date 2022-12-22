@@ -4,13 +4,15 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
+using Nephrite.Avalonia;
+using Nephrite.Avalonia.Controls;
 using ProjectWizard.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Validation.Extensions;
 
 namespace ProjectWizard.Views;
 
-public partial class MainWindow : ReactiveWindow<MainApplicationViewModel>
+public partial class MainWindow : NephriteWindow<MainApplicationViewModel>
 {
     public MainWindow()
     {
@@ -21,19 +23,19 @@ public partial class MainWindow : ReactiveWindow<MainApplicationViewModel>
             this.BindValidation(
                     this.ViewModel,
                     vm => vm.ProjectName,
-                    view => view.NameValidation.Text)
+                    view => view.NameValidation.ValidationError)
                 .DisposeWith(d);
             this.BindValidation(
                     this.ViewModel,
                     vm => vm.ProjectLocation,
-                    view => view.LocationValidation.Text)
+                    view => view.LocationValidation.ValidationError)
                 .DisposeWith(d);
         });
     }
 
-    public TextBlock NameValidation => this.FindControl<TextBlock>("ProjectNameValidation");
+    public ValidationAdornerBorder NameValidation => this.FindControl<ValidationAdornerBorder>("ProjectNameValidation");
 
-    public TextBlock LocationValidation => this.FindControl<TextBlock>("ProjectLocationValidation");
+    public ValidationAdornerBorder LocationValidation => this.FindControl<ValidationAdornerBorder>("ProjectLocationValidation");
 
     private void InitializeComponent()
     {

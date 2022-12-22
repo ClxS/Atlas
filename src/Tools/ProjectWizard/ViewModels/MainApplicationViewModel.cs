@@ -46,7 +46,7 @@ public class MainApplicationViewModel : ReactiveObject, IActivatableViewModel, I
                 .DisposeWith(d);
             this.ValidationRule(
                     vm => vm.ProjectLocation,
-                    name => name != null && !File.Exists(name) && (!Directory.Exists(name) || Directory.GetFiles(name).Length == 0),
+                    name => name != null && !File.Exists(name) && (!Directory.Exists(name) || (Directory.GetFiles(name).Length == 0 && Directory.GetDirectories(name).Length == 0)),
                     "Project Location must be an empty or non-existing folder")
                 .DisposeWith(d);
         });
