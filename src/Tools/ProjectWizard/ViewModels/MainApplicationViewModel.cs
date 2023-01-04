@@ -15,15 +15,16 @@ namespace ProjectWizard.ViewModels;
 public class MainApplicationViewModel : ReactiveObject, IActivatableViewModel, IValidatableViewModel
 {
     private readonly Lazy<IStorageProvider> storageProvider;
-    private bool includeEngineSource;
-    private bool includeToolsSource;
+    private bool includeEngineSource = true;
+    private bool includeToolsSource = true;
     private bool useStandaloneAssetsProject = true;
-    private bool addEditorIntegrationProject = true;
+    private bool addEditorIntegrationProject = false;
     private bool createGitRepository = true;
     private bool useComplexProjectLayout = true;
     private string projectName;
     private string projectDescription;
     private string projectLocation;
+    private bool isBusy;
 
     public MainApplicationViewModel(Lazy<IStorageProvider> storageProvider)
     {
@@ -49,6 +50,14 @@ public class MainApplicationViewModel : ReactiveObject, IActivatableViewModel, I
                     name => name != null && !File.Exists(name) && (!Directory.Exists(name) || (Directory.GetFiles(name).Length == 0 && Directory.GetDirectories(name).Length == 0)),
                     "Project Location must be an empty or non-existing folder")
                 .DisposeWith(d);
+            this.ValidationRule(
+                vm => vm.IncludeEngineSource,
+                value => value,
+                "Sourceless builds not yet supported");
+            this.ValidationRule(
+                vm => vm.IncludeToolsSource,
+                value => value,
+                "Sourceless builds not yet supported");
         });
     }
 
@@ -112,6 +121,12 @@ public class MainApplicationViewModel : ReactiveObject, IActivatableViewModel, I
         set => this.RaiseAndSetIfChanged(ref projectLocation, value);
     }
 
+    public bool IsBusy
+    {
+        get => isBusy;
+        private set => this.RaiseAndSetIfChanged(ref isBusy, value);
+    }
+
     public async Task BrowseProjectLocation()
     {
         var provider = this.storageProvider.Value;
@@ -140,5 +155,7 @@ public class MainApplicationViewModel : ReactiveObject, IActivatableViewModel, I
         {
             return;
         }
+
+        this.IsBusy = true;
     }
 }

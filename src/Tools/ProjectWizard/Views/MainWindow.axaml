@@ -13,11 +13,12 @@
                            x:Class="ProjectWizard.Views.MainWindow"
                            Title="Atlas Project Wizard"
                            Width="400"
-                           Height="780"
+                           Height="680"
                            MinWidth="400"
                            CanResize="False"
                            x:DataType="viewModels:MainApplicationViewModel">
-    <ScrollViewer Grid.Row="1">
+    <Grid>
+        <ScrollViewer Grid.Row="1">
         <ScrollViewer.Styles>
             <Style Selector="TextBlock.Validation">
                 <Setter Property="Foreground" Value="Red"></Setter>
@@ -58,18 +59,24 @@
                     <Border.BorderBrush>
                         <SolidColorBrush Color="#22FFFFFF"></SolidColorBrush>
                     </Border.BorderBrush>
-                    <StackPanel Margin="10, 0">
-                        <ToggleSwitch
-                            IsChecked="{CompiledBinding IncludeEngineSource}"
-                            OnContent="Include Engine Source"
-                            OffContent="Do Not Include Engine Source" />
-                        <ToggleSwitch
-                            IsChecked="{CompiledBinding IncludeToolsSource}"
-                            IsEnabled="{CompiledBinding IncludeEngineSource}"
-                            Margin="20, 0"
-                            OnContent="Include Tools Source"
-                            OffContent="Do Not Include Tools Source" />
-                    </StackPanel>
+                    <controls:ValidationAdornerBorder
+                        Name="IncludeSourceValidationError"
+                        Margin="10, 0">
+                        <StackPanel>
+                                <ToggleSwitch
+                                    IsEnabled="False"
+                                    IsChecked="{CompiledBinding IncludeEngineSource}"
+                                    OnContent="Include Engine Source"
+                                    OffContent="Do Not Include Engine Source" />
+                                <ToggleSwitch
+                                    IsEnabled="False"
+                                    IsChecked="{CompiledBinding IncludeToolsSource}"
+                                    Margin="20, 0"
+                                    OnContent="Include Tools Source"
+                                    OffContent="Do Not Include Tools Source" />
+                                <!-- IsEnabled="{CompiledBinding IncludeEngineSource}" -->
+                        </StackPanel>
+                    </controls:ValidationAdornerBorder>
                 </Border>
                 <Border BorderThickness="1">
                     <Border.BorderBrush>
@@ -80,13 +87,13 @@
                         <ToggleSwitch
                             Margin="10, 0"
                             IsChecked="{CompiledBinding UseStandaloneAssetsProject}"
-                            IsEnabled="{CompiledBinding UseComplexProjectLayout}"
+                            IsEnabled="False"
                             OnContent="Use Standalone Asset Project"
                             OffContent="Do Not Use Standalone Asset Project"></ToggleSwitch>
                         <ToggleSwitch
                             Margin="10, 0"
                             IsChecked="{CompiledBinding AddEditorIntegrationProject}"
-                            IsEnabled="{CompiledBinding UseComplexProjectLayout}"
+                            IsEnabled="False"
                             OnContent="Add Editor Integration Project"
                             OffContent="Do Not Add Editor Integration Project"></ToggleSwitch>
                     </StackPanel>
@@ -112,4 +119,15 @@
             </StackPanel>
         </RelativePanel>
     </ScrollViewer>
+        <Border IsVisible="{CompiledBinding IsBusy}" Background="#CC000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <StackPanel Margin="0,-150,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <controls:ProgressRing
+                    IsActive="True"
+                    Width="50"
+                    Height="50"
+                    Foreground="#6666ff" Margin="0,0,0,20" />
+                <TextBlock FontWeight="Bold" Text="Creating Project..."></TextBlock>
+            </StackPanel>
+        </Border>
+    </Grid>
 </avalonia:NephriteWindow>

@@ -30,12 +30,24 @@ public partial class MainWindow : NephriteWindow<MainApplicationViewModel>
                     vm => vm.ProjectLocation,
                     view => view.LocationValidation.ValidationError)
                 .DisposeWith(d);
+            this.BindValidation(
+                    this.ViewModel,
+                    vm => vm.IncludeEngineSource,
+                    view => view.SourceValidation.ValidationError)
+                .DisposeWith(d);
+            this.BindValidation(
+                    this.ViewModel,
+                    vm => vm.IncludeToolsSource,
+                    view => view.SourceValidation.ValidationError)
+                .DisposeWith(d);
         });
     }
 
     public ValidationAdornerBorder NameValidation => this.FindControl<ValidationAdornerBorder>("ProjectNameValidation");
 
     public ValidationAdornerBorder LocationValidation => this.FindControl<ValidationAdornerBorder>("ProjectLocationValidation");
+
+    public ValidationAdornerBorder SourceValidation => this.FindControl<ValidationAdornerBorder>("IncludeSourceValidationError");
 
     private void InitializeComponent()
     {
