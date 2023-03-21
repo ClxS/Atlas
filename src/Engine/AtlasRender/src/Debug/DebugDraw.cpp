@@ -2325,7 +2325,7 @@ struct DebugDrawEncoderImpl
         pop();
     }
 
-    void drawGrid(const bx::Vec3& _normal, const bx::Vec3& _center, uint32_t _size, float _step)
+    void drawGrid(const bx::Vec3& _normal, const bx::Vec3& _center, uint32_t width, uint32_t height, float _step)
     {
         const Attrib& attrib = m_Attrib[m_Stack];
 
@@ -2336,8 +2336,8 @@ struct DebugDrawEncoderImpl
         udir = mul(udir, _step);
         vdir = mul(vdir, _step);
 
-        const uint32_t num = (_size / 2) * 2 + 1;
-        const float halfExtent = static_cast<float>(_size / 2);
+        const uint32_t num = (width / 2) * 2 + 1;
+        const float halfExtent = static_cast<float>(width / 2);
 
         const bx::Vec3 umin = mul(udir, -halfExtent);
         const bx::Vec3 umax = mul(udir, halfExtent);
@@ -2837,10 +2837,11 @@ void atlas::render::debug::debug_draw::drawCapsule(
 void atlas::render::debug::debug_draw::drawGrid(
     const bx::Vec3& normal,
     const bx::Vec3& center,
-    const uint32_t size,
+    const uint32_t width,
+    const uint32_t height,
     const float step)
 {
-    s_dde.drawGrid(normal, center, size, step);
+    s_dde.drawGrid(normal, center, width, height, step);
 }
 
 atlas::render::debug::DebugDrawEncoderScopePush atlas::render::debug::debug_draw::createScope()

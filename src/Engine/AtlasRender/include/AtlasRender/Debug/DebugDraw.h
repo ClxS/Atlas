@@ -95,7 +95,7 @@ namespace atlas::render::debug
 
         void drawCapsule(const bx::Vec3& from, const bx::Vec3& to, float radius);
 
-        void drawGrid(const bx::Vec3& normal, const bx::Vec3& center, uint32_t size = 20, float step = 1.0f);
+        void drawGrid(const bx::Vec3& normal, const bx::Vec3& center, uint32_t width = 20, uint32_t height = 20, float step = 1.0f);
 
         DebugDrawEncoderScopePush createScope();
     }
