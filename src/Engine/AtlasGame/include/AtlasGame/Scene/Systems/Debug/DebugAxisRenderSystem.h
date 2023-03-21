@@ -19,7 +19,7 @@ namespace atlas::game::scene::systems::debug
             World = 1
         };
 
-        explicit DebugAxisRenderSystem(bgfx::ViewId view);
+        explicit DebugAxisRenderSystem(bgfx::ViewId view, bool drawGrid);
 
         [[nodiscard]] std::string_view GetName() const override { return "DebugAxisRenderSystem"; }
 
@@ -28,6 +28,7 @@ namespace atlas::game::scene::systems::debug
 
     private:
         bgfx::ViewId m_View;
+        bool m_DrawGrid;
         ManipulatorType m_ManipulatorType{ManipulatorType::Translate};
         TransformSpace m_TransformSpace{TransformSpace::Local};
     };

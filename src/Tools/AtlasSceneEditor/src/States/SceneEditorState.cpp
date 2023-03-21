@@ -121,7 +121,7 @@ void atlas::scene_editor::SceneEditorState::ConstructSystems(scene::SystemsBuild
             constants::render_views::c_selectionViews,
             m_Rendering.m_GBuffer.GetHandle());
 
-        frameBuilder.RegisterSystem<game::scene::systems::debug::DebugAxisRenderSystem>(constants::render_views::c_geometry);
+        frameBuilder.RegisterSystem<game::scene::systems::debug::DebugAxisRenderSystem>(constants::render_views::c_geometry, true);
 
         const auto postProcess = frameBuilder.RegisterSystem<game::scene::systems::rendering::PostProcessSystem>(
             constants::render_views::c_postProcess,

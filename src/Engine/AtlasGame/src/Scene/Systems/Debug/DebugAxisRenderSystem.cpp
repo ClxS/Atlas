@@ -19,10 +19,14 @@
 
 namespace
 {
-    void drawGrid()
+    void drawGrid(const atlas::core::Colour32 gridColour)
     {
-        atlas::render::debug::debug_draw::setColor(atlas::core::colours::c_white);
-        atlas::render::debug::debug_draw::drawGrid({ 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, 100);
+        atlas::render::debug::debug_draw::setColor(gridColour);
+        atlas::render::debug::debug_draw::drawGrid(
+            { 0.0f, 1.0f, 0.0f },
+            { 0.0f, 0.0f, 0.0f },
+            100,
+            100);
     }
 
     void handleGizmos(
@@ -211,8 +215,9 @@ namespace
     }
 }
 
-atlas::game::scene::systems::debug::DebugAxisRenderSystem::DebugAxisRenderSystem(const bgfx::ViewId view)
+atlas::game::scene::systems::debug::DebugAxisRenderSystem::DebugAxisRenderSystem(const bgfx::ViewId view, bool drawGrid)
     : m_View{view}
+    , m_DrawGrid{drawGrid}
 {
 }
 
@@ -226,7 +231,12 @@ void atlas::game::scene::systems::debug::DebugAxisRenderSystem::Render(atlas::sc
     auto [width, height] = app_host::Application::Get().GetAppDimensions();
     ImGuizmo::SetRect(0, 0, static_cast<float>(width), static_cast<float>(height));
 
-    drawGrid();
+    if (m_DrawGrid)
+    {
+        drawGrid(
+            core::colours::c_white * Eigen::Vector4f(1.0, 1.0f, 1.0f, 0.3f));
+    }
+
     handleGizmoControlUi(m_ManipulatorType, m_TransformSpace);
     handleGizmos(ecs, m_View, m_ManipulatorType, m_TransformSpace);
 }
