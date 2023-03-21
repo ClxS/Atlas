@@ -51,6 +51,27 @@ namespace atlas::core
             };
         }
 
+        [[nodiscard]] Colour32 operator*(const Eigen::Vector4f& other) const
+        {
+            return Colour32 {
+                static_cast<uint8_t>(static_cast<float>(m_A) * other.w()),
+                static_cast<uint8_t>(static_cast<float>(m_R) * other.x()),
+                static_cast<uint8_t>(static_cast<float>(m_G) * other.y()),
+                static_cast<uint8_t>(static_cast<float>(m_B) * other.z()),
+            };
+        }
+
+        [[nodiscard]] Colour32 operator*(const Colour32& other) const
+        {
+            Eigen::Vector4f otherAsVector = other.GetVector4f();
+            return Colour32 {
+                static_cast<uint8_t>(static_cast<float>(m_A) * otherAsVector.w()),
+                static_cast<uint8_t>(static_cast<float>(m_R) * otherAsVector.x()),
+                static_cast<uint8_t>(static_cast<float>(m_G) * otherAsVector.y()),
+                static_cast<uint8_t>(static_cast<float>(m_B) * otherAsVector.z()),
+            };
+        }
+
     private:
         uint8_t m_R = 0x00;
         uint8_t m_G = 0x00;
