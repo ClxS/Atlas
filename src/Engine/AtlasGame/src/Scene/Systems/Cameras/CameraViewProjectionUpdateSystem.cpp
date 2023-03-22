@@ -3,6 +3,7 @@
 #include "Scene/Systems/Cameras/CameraViewProjectionUpdateSystem.h"
 
 #include "LookAtCameraComponent.h"
+#include "LookAtCameraPrivateComponent.h"
 #include "SphericalLookAtCameraComponent.h"
 #include "SphericalLookAtCameraPrivateComponent.h"
 #include "ViewTransformCache.h"
@@ -15,7 +16,10 @@
 
 namespace
 {
-    void updateViewProjectMatrix(const std::vector<bgfx::ViewId> viewIds, const atlas::game::components::cameras::LookAtCameraComponent& camera)
+    void updateViewProjectMatrix(
+        const std::vector<bgfx::ViewId> viewIds,
+        const atlas::game::components::cameras::LookAtCameraComponent& camera,
+        atlas::game::components::cameras::LookAtCameraPrivateComponent& cameraPrivate)
     {
         Eigen::Matrix3f cameraRotation;
         cameraRotation =
@@ -34,6 +38,10 @@ namespace
             0.1f,
             100.0f,
             bgfx::getCaps()->homogeneousDepth);
+        cameraPrivate.m_Projection = projection;
+        cameraPrivate.m_View = view;
+        cameraPrivate.m_Forward = (cameraOffset - camera.m_LookAtPoint).normalized();
+        bx::mtxMul(cameraPrivate.m_ViewProjection.data(), view.data(), projection.data());
 
         if (camera.m_IsRenderActive)
         {
@@ -190,14 +198,17 @@ void atlas::game::scene::systems::cameras::CameraViewProjectionUpdateSystem::Ren
         updateViewProjectMatrix(m_ViewIds, camera, cameraPrivate, m_bDebugRenderingEnabled);
     }
 
-    for(auto [entity, camera] : ecs.IterateEntityComponents<components::cameras::LookAtCameraComponent>())
+    for(auto [entity, camera, cameraPrivate] : ecs.IterateEntityComponents<
+        components::cameras::LookAtCameraComponent,
+        components::cameras::LookAtCameraPrivateComponent
+        >())
     {
         if (!camera.m_IsRenderActive)
         {
             continue;
         }
 
-        updateViewProjectMatrix(m_ViewIds, camera);
+        updateViewProjectMatrix(m_ViewIds, camera, cameraPrivate);
     }
 }
 

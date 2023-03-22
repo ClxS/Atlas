@@ -1,7 +1,5 @@
 <Components SubNamespace="cameras">
     <BaseCamera ComponentVisibility="EditorHidden">
-        <ViewMatrix Type="Matrix4f" />
-        <ProjectionMatrix Type="Matrix4f" />
         <NearFar Type="Vector2f" Default="0.01f, 100.0f" />
         <IsRenderActive Type="bool" />
         <IsControlActive Type="bool" />
@@ -9,13 +7,19 @@
 
     <FreeCamera Inherits="BaseCamera" Requires="Transform" />
 
-    <LookAtCamera Inherits="BaseCamera">
+    <LookAtCamera Inherits="BaseCamera" Implies="LookAtCamera">
         <Up Type="Vector3f" Default="0.0f, 1.0f, 0.0f" />
         <LookAtPoint Type="Vector3f" Default="7.0f, 0.0f, 0.0f" />
         <Yaw Type="Angle" />
         <Pitch Type="Angle" />
         <Distance Type="float" Default="1.0f" />
     </LookAtCamera>
+    <LookAtCameraPrivate ComponentVisibility="EditorHidden">
+        <View Type="Matrix4f" />
+        <Projection Type="Matrix4f" />
+        <ViewProjection Type="Matrix4f" />
+        <Forward Type="Vector3f" />
+    </LookAtCameraPrivate>
 
     <SphericalLookAtCamera Inherits="BaseCamera" Implies="SphericalLookAtCameraPrivate">
         <SphericalCentre Type="Vector3f" />
