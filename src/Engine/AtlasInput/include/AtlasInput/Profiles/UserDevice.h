@@ -7,6 +7,7 @@
 
 namespace atlas::input::profiles
 {
+    // To do, add button Pressed/Released API
     class UserDevice
     {
     public:

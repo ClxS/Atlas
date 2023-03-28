@@ -36,5 +36,6 @@
         <Camera Type="Vector3f" />
         <View Type="Matrix4f" />
         <Projection Type="Matrix4f" />
+        <ViewProjection Type="Matrix4f" />
     </SphericalLookAtCameraPrivate>
 </Components>

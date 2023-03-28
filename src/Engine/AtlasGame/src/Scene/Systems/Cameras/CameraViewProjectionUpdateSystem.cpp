@@ -48,7 +48,11 @@ namespace
             for(const auto viewId : viewIds)
             {
                 bgfx::setViewTransform(viewId, view.data(), projection.data());
-                atlas::game::utility::ViewTransformCache::SetViewTransform(viewId, view, projection);
+                atlas::game::utility::ViewTransformCache::SetViewTransform(
+                    viewId,
+                    view,
+                    projection,
+                    cameraPrivate.m_ViewProjection);
             }
         }
     }
@@ -97,13 +101,14 @@ namespace
         cameraPrivate.m_LookAt = lookAtPosition;
         cameraPrivate.m_View = view;
         cameraPrivate.m_Projection = projection;
+        bx::mtxMul(cameraPrivate.m_ViewProjection.data(), view.data(), projection.data());
 
         if (camera.m_IsRenderActive)
         {
             for(const auto viewId : viewIds)
             {
                 bgfx::setViewTransform(viewId, view.data(), projection.data());
-                atlas::game::utility::ViewTransformCache::SetViewTransform(viewId, view, projection);
+                atlas::game::utility::ViewTransformCache::SetViewTransform(viewId, view, projection, cameraPrivate.m_ViewProjection);
             }
         }
 
