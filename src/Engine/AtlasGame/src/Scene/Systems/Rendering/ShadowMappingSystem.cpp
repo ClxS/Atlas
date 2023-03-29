@@ -12,7 +12,12 @@ atlas::game::scene::systems::rendering::ShadowMappingSystem::ShadowMappingSystem
     const bgfx::ViewId shadowViewId,
     const uint8_t shadowCasterRenderMask,
     const uint16_t shadowMapWidth,
-    const uint16_t shadowMapHeight)
+    const uint16_t shadowMapHeight,
+    std::function<
+        void(
+            atlas::scene::EcsManager&,
+            const resource::AssetPtr<render::ShaderProgram>&,
+            const resource::AssetPtr<render::ShaderProgram>&)> additionalRender)
     : ModelRenderSystem
       {
           shadowViewId,
@@ -34,15 +39,20 @@ atlas::game::scene::systems::rendering::ShadowMappingSystem::ShadowMappingSystem
       , m_ShadowViewId{shadowViewId}
       , m_ShadowMapWidth(shadowMapWidth)
       , m_ShadowMapHeight(shadowMapHeight)
+      , m_AdditionalRender(std::move(additionalRender))
 {
 }
 
 void atlas::game::scene::systems::rendering::ShadowMappingSystem::Initialise(atlas::scene::EcsManager& ecsManager)
 {
-    m_Programs.m_ShadowMap = resource::ResourceLoader::LoadAsset<
+    m_Programs.m_ShadowMapInstanced = resource::ResourceLoader::LoadAsset<
         render::resources::CoreBundle,
         render::ShaderProgram>(
         render::resources::core_bundle::shaders::c_shadowMapBasic);
+    m_Programs.m_ShadowMapUninstanced = resource::ResourceLoader::LoadAsset<
+        render::resources::CoreBundle,
+        render::ShaderProgram>(
+        render::resources::core_bundle::shaders::c_shadowMapBasicUninstanced);
 
     const bgfx::TextureHandle frameBufferTextures[] =
     {
@@ -107,4 +117,8 @@ void atlas::game::scene::systems::rendering::ShadowMappingSystem::Render(atlas::
     render::setShadowCaster(0, {projectionMatrix * lightViewMatrix, getTexture(m_ShadowMapFrameBuffer)});
 
     ModelRenderSystem::Render(ecs);
+    if (m_AdditionalRender)
+    {
+        m_AdditionalRender(ecs, m_Programs.m_ShadowMapInstanced, m_Programs.m_ShadowMapUninstanced);
+    }
 }

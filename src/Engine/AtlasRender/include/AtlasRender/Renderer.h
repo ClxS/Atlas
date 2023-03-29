@@ -58,6 +58,13 @@ namespace atlas::render
 
     void draw(
         bgfx::ViewId viewId,
+        const bgfx::TransientVertexBuffer& vertexBuffer,
+        const resource::AssetPtr<ShaderProgram>& program,
+        const Eigen::Matrix4f& transform,
+        uint8_t flags = BGFX_DISCARD_ALL);
+
+    void draw(
+        bgfx::ViewId viewId,
         bgfx::VertexBufferHandle vertexBuffer,
         bgfx::IndexBufferHandle indexBuffer,
         const resource::AssetPtr<ShaderProgram>& program,

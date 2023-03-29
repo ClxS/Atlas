@@ -79,6 +79,7 @@ void atlas::scene_editor::SceneEditorGame::RegisterControlSchemes()
     mouse->SetMapping(game::controls::input_id::c_axisYaw, MouseAxis::X);
     mouse->SetMapping(game::controls::input_id::c_buttonPanModifier, MouseButton::Middle);
     mouse->SetMapping(game::controls::input_id::c_buttonLeftTouch, MouseButton::Left);
+    mouse->SetMapping(game::controls::input_id::c_buttonRightTouch, MouseButton::Right);
 
     input::UserInputManager::Get().AddControlScheme(std::move(keyboard));
     input::UserInputManager::Get().AddControlScheme(std::move(mouse));

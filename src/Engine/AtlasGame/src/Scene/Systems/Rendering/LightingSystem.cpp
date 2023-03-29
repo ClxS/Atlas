@@ -4,6 +4,7 @@
 #include <format>
 
 #include "DirectionalLightComponent.h"
+#include "AtlasRender/Debug/DebugDraw.h"
 #include "AtlasScene/ECS/Components/EcsManager.h"
 
 void atlas::game::scene::systems::rendering::LightingSystem::Initialise(atlas::scene::EcsManager& ecsManager)
@@ -35,5 +36,11 @@ void atlas::game::scene::systems::rendering::LightingSystem::Render(atlas::scene
         setUniform(m_Uniforms.m_LightDirections[lightIndex].Get(), light.m_Direction.data());
         setUniform(m_Uniforms.m_LightColours[lightIndex].Get(), light.m_Colour.GetVector4f().data());
         lightIndex++;
+
+        render::debug::debug_draw::setColor(core::colours::c_red);
+        render::debug::debug_draw::drawCylinder(
+            { 0.0f, 0.0f, 0.0f },
+            { light.m_Direction.x(), light.m_Direction.y(), light.m_Direction.z() },
+            0.01f);
     }
 }

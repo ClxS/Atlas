@@ -68,6 +68,19 @@ void initDrawingData()
     }
 }
 
+void atlas::render::draw(
+    const bgfx::ViewId viewId,
+    const bgfx::TransientVertexBuffer& vertexBuffer,
+    const resource::AssetPtr<ShaderProgram>& program,
+    const Eigen::Matrix4f& transform,
+    const uint8_t flags)
+{
+    setIntrinsicTextureSlots(program);
+
+    bgfx::setTransform(transform.data());
+    setVertexBuffer(0, &vertexBuffer);
+    submit(viewId, program->GetHandle(), flags);
+}
 
 void atlas::render::draw(
     const bgfx::ViewId viewId,

@@ -10,7 +10,16 @@ namespace atlas::game::scene::systems::rendering
     class ShadowMappingSystem final : public ModelRenderSystem
     {
     public:
-        explicit ShadowMappingSystem(bgfx::ViewId shadowViewId, uint8_t shadowCasterRenderMask, uint16_t shadowMapWidth = 2048, uint16_t shadowMapHeight = 2048);
+        explicit ShadowMappingSystem(
+            bgfx::ViewId shadowViewId,
+            uint8_t shadowCasterRenderMask,
+            uint16_t shadowMapWidth = 2048,
+            uint16_t shadowMapHeight = 2048,
+            std::function<
+                void(
+                    atlas::scene::EcsManager&,
+                    const resource::AssetPtr<render::ShaderProgram>&,
+                    const resource::AssetPtr<render::ShaderProgram>&)> additionalRender = nullptr);
 
         [[nodiscard]] std::string_view GetName() const override { return "ShadowMappingSystem"; }
 
@@ -24,9 +33,16 @@ namespace atlas::game::scene::systems::rendering
 
         struct
         {
-            resource::AssetPtr<render::ShaderProgram> m_ShadowMap;
+            resource::AssetPtr<render::ShaderProgram> m_ShadowMapInstanced;
+            resource::AssetPtr<render::ShaderProgram> m_ShadowMapUninstanced;
         } m_Programs;
 
         bgfx::FrameBufferHandle m_ShadowMapFrameBuffer{BGFX_INVALID_HANDLE};
+
+        std::function<
+                void(
+                    atlas::scene::EcsManager&,
+                    const resource::AssetPtr<render::ShaderProgram>&,
+                    const resource::AssetPtr<render::ShaderProgram>&)> m_AdditionalRender;
     };
 }

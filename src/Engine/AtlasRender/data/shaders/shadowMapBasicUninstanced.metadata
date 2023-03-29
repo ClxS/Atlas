@@ -1,0 +1,4 @@
+[shaderProgram]
+vertex = "engine/shaders/shadowMapBasic/vert_uninstanced"
+fragment = "engine/shaders/shadowMapBasic/frag"
+textureSlotCount = 0

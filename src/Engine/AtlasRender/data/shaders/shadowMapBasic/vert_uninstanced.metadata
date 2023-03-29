@@ -1,0 +1,4 @@
+[shader]
+type = "vertex"
+model = "5_0"
+source = "vert_uninstanced.sc"

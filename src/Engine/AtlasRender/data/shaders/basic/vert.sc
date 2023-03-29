@@ -11,7 +11,7 @@ void main()
 
 	vec4 worldPos = mul(model, vec4(a_position, 1.0) );
 	gl_Position = mul(u_viewProj, worldPos);
-	
+
 	vec3 normal = a_normal * 2.0 - 1.0;
 	vec3 wnormal = mul(model, vec4(normal.xyz, 0.0) ).xyz;
 	v_normal = normalize(wnormal);
@@ -22,7 +22,7 @@ void main()
 
 	const float shadowMapOffset = 0.001;
 	vec3 posOffset = a_position + normal.xyz * shadowMapOffset;
-	v_shadowcoord = (mul(mul(u_lightMtx, model), vec4(posOffset, 1.0)) + vec4(1.0, 1.0, 0.0, 0.0)) 
+	v_shadowcoord = (mul(mul(u_lightMtx, model), vec4(posOffset, 1.0)) + vec4(1.0, 1.0, 0.0, 0.0))
 		* vec4(0.5, 0.5, 1.0, 1.0);
 	v_shadowcoord.y = 1.0 - v_shadowcoord.y;
 }

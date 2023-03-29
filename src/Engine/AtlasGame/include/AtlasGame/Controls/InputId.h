@@ -11,6 +11,7 @@ namespace atlas::game::controls::input_id
     inline static const core::StringHash c_buttonPanModifier {"PanModifier"};
     inline static const core::StringHash c_buttonVerticalPanModifier {"VerticalPanModifier"};
     inline static const core::StringHash c_buttonLeftTouch {"LeftTouch"};
+    inline static const core::StringHash c_buttonRightTouch {"RightTouch"};
     inline static const core::StringHash c_buttonExtendSelection {"ExtendSelection"};
 
     inline static const core::StringHash c_axisZoom {"Zoom"};

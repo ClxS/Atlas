@@ -41,6 +41,4 @@ void main()
 	vec3 brdf = (lc.x + lc.y)  * u_lightColour0 * diffuseColor * visibility;
 	vec3 final = toGamma(abs(ambient + brdf) );
 	gl_FragColor = vec4(abs(ambient + brdf) , 1.0);
-
-	gl_FragColor = vec4(diffuseColor, 1.0f);
 }
